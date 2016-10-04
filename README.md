@@ -1,5 +1,7 @@
 # libprogbase
 
+[Repository home](https://github.com/PublicHadyniak/libprogbase)
+
 ## Installation and linkage
 
 Clone this repository, cd to root directory and execute:
