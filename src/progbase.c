@@ -3,27 +3,27 @@
 static char * inputString(FILE* fp, size_t size);
 
 int getInt(void) {
-	int integer = 0;
-	scanf("%i", &integer);
-	return integer;
+	char input[100];
+	fgets(input, 100, stdin);
+	return atoi(input);
 }
 
 long getLong(void) {
-	long lng = 0L;
-	scanf("%ld", &lng);
-	return lng;
+	char input[100];
+	fgets(input, 100, stdin);
+	return atol(input);
 }
 
-float getFLoat(void) {
-	float flt = 0.0;
-	scanf("%f", &flt);
-	return flt;
+float getFloat(void) {
+	char input[100];
+	fgets(input, 100, stdin);
+	return atof(input);
 }
 
 double getDouble(void) {
-	double dbl = 0.0;
-	scanf("%lf", &dbl);
-	return dbl;
+	char input[100];
+	fgets(input, 100, stdin);
+	return atof(input);
 }
 
 string getString(void) {

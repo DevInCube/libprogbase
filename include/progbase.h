@@ -17,7 +17,7 @@ void freeString(string);
 
 int getInt(void);
 long getLong(void);
-float getFLoat(void);
+float getFloat(void);
 double getDouble(void);
 
 #endif
