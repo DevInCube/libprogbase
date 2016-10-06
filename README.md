@@ -4,7 +4,7 @@
 
 ## Installation and linkage
 
-Clone this repository, cd to root directory and execute:
+Clone this repository, cd to newly created `libprogbase/` directory and execute this command in it:
 ~~~~
 sudo make install
 ~~~~
