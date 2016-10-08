@@ -1,3 +1,7 @@
+#define _POSIX_C_SOURCE 200809L
+
+#include <time.h>
+
 #include "progbase.h"
 
 static char * inputString(FILE* fp, size_t size);
@@ -55,4 +59,12 @@ char * inputString(FILE * fp, size_t size) {
     str[len++] = '\0';
 
     return realloc(str, sizeof(char) * len);
+}
+
+void sleepMillis(unsigned long int milliseconds) {
+	struct timespec tim;
+	tim.tv_sec = 0;
+	tim.tv_nsec = milliseconds * 1000000L;
+	
+	nanosleep(&tim, NULL);
 }

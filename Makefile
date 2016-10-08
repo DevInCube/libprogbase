@@ -1,17 +1,31 @@
 CC=gcc
 LOCALDIR=/usr/local
 
+repo:
+	@git remote -v
+
+version: 
+	@echo "libprogbase 0.1.0"
+	
+git-pull: 
+	@echo "Updating libprogbase..."
+	@git pull origin master
+	
+update: git-pull install
+
 install: headers libprogbase
 
 headers:
-	echo "copying headers..."
-	cp include/*.h $(LOCALDIR)/include/
+	@echo "Copying headers to" $(LOCALDIR)/include/
+	@ls include/*.h
+	@sudo cp include/*.h $(LOCALDIR)/include/
 
 libprogbase:
-	echo "building library..."
-	gcc -c src/*.c -Iinclude
-	ar rcs $@.a *.o
-	echo "copying library..."
-	mv $@.a $(LOCALDIR)/lib/$@.a
-	rm *.o
+	@echo "Building library" $@.a
+	@gcc -c src/*.c -Iinclude
+	@ar rcs $@.a *.o
+	@echo "Copying library" $@.a "to" $(LOCALDIR)/lib/
+	@sudo mv $@.a $(LOCALDIR)/lib/$@.a
+	@echo "Cleaning up"
+	@rm *.o
 

@@ -1,4 +1,4 @@
-# libprogbase
+# libprogbase v0.1.0
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
 
@@ -13,6 +13,18 @@ Include header files from `include/` directory and compile your code with linker
 ~~~~
 gcc main.c -lprogbase
 ~~~~
+
+## Library update
+
+### Auto (since 0.1.0) 
+
+~~~~
+sudo make update
+~~~~
+
+### Manual
+
+You need to re-install library.
 
 ## Headers
 
@@ -52,6 +64,28 @@ int main(void) {
 	printf("Entered: %s\n", s);
 	
 	freeString(s);
+	return 0;
+}
+~~~~
+
+Sleep milliseconds sample (since 0.1.0):
+~~~~c
+#include <stdio.h>
+#include <progbase.h>
+
+int main(void) {
+	int i = 0;
+	const unsigned long MILLIS = 100;
+	
+	for (i = 0; i < 100; i++) {
+		if (0 == i % 10) {
+			puts("");
+		}
+		printf("%i\t", i);
+		fflush(stdout);
+		sleepMillis(MILLIS);
+	}
+	puts("");
 	return 0;
 }
 ~~~~

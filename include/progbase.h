@@ -20,4 +20,6 @@ long getLong(void);
 float getFloat(void);
 double getDouble(void);
 
+void sleepMillis(unsigned long int milliseconds);
+
 #endif
