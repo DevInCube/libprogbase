@@ -63,7 +63,12 @@ char * inputString(FILE * fp, size_t size) {
 
 void sleepMillis(unsigned long int milliseconds) {
 	struct timespec tim;
-	tim.tv_sec = 0;
+	unsigned long int seconds = 0;
+	if (milliseconds >= 1000) {
+		seconds = milliseconds / 1000L;
+		milliseconds = milliseconds % 1000L;
+	}
+	tim.tv_sec = seconds;
 	tim.tv_nsec = milliseconds * 1000000L;
 	
 	nanosleep(&tim, NULL);
