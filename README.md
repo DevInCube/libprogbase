@@ -14,13 +14,23 @@ Include header files from `include/` directory and compile your code with linker
 gcc main.c -lprogbase
 ~~~~
 
+## Check library version (since 0.1.0)
+
+You need to cd to cloned `libprogbase/` directory and execute command:
+~~~~
+make version
+~~~~
+
 ## Library update
 
 ### Auto (since 0.1.0) 
 
+You need to cd to cloned `libprogbase/` directory and execute command:
 ~~~~
 sudo make update
 ~~~~
+
+And that's all.
 
 ### Manual
 
@@ -68,7 +78,7 @@ int main(void) {
 }
 ~~~~
 
-Sleep milliseconds sample (since 0.1.0):
+Sleep milliseconds sample `sleepMillis()` (since 0.1.0):
 ~~~~c
 #include <stdio.h>
 #include <progbase.h>

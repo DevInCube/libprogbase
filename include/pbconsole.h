@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 
+#define CON_MIN_ROWS 5
+#define CON_MIN_COLS 29
+
 #define INTENSITY 60
 
 enum conAttribute_e {
@@ -16,7 +19,7 @@ enum conAttribute_e {
 	ATTR_CROSSEDOUT,
 	FG_BLACK = 30,
 	FG_RED,
-	FG_GREEN, 
+	FG_GREEN,
 	FG_YELLOW,
 	FG_BLUE,
 	FG_MAGENTA,
@@ -25,7 +28,7 @@ enum conAttribute_e {
 	FG_DEFAULT = 39,
 	BG_BLACK = 40,
 	BG_RED,
-	BG_GREEN, 
+	BG_GREEN,
 	BG_YELLOW,
 	BG_BLUE,
 	BG_MAGENTA,
@@ -34,7 +37,7 @@ enum conAttribute_e {
 	BG_DEFAULT = 49,
 	FG_INTENSITY_BLACK = 90,
 	FG_INTENSITY_RED,
-	FG_INTENSITY_GREEN, 
+	FG_INTENSITY_GREEN,
 	FG_INTENSITY_YELLOW,
 	FG_INTENSITY_BLUE,
 	FG_INTENSITY_MAGENTA,
@@ -42,7 +45,7 @@ enum conAttribute_e {
 	FG_INTENSITY_WHITE,
 	BG_INTENSITY_BLACK = 100,
 	BG_INTENSITY_RED,
-	BG_INTENSITY_GREEN, 
+	BG_INTENSITY_GREEN,
 	BG_INTENSITY_YELLOW,
 	BG_INTENSITY_BLUE,
 	BG_INTENSITY_MAGENTA,
@@ -56,6 +59,15 @@ void conSetAttr(int attr);
 void conClear(void);
 void conReset(void);
 
+int conIsKeyDown(void);
+char conGetChar(void);
+
+struct consize {
+	unsigned short cols;
+	unsigned short rows;
+};
+
+struct consize conGetSize(void);
+void conResize(unsigned short cols, unsigned short rows);
+
 #endif
-
-

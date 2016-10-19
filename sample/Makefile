@@ -3,8 +3,7 @@ CVERSION=c89
 CFLAGS=-std=$(CVERSION) -Wall -Werror -pedantic-errors
 LDFLAGS=-lprogbase -lm
 
-.PHONY: compile 
+.PHONY: compile
 
-compile: 
-	$(CC) *.c $(CFLAGS) $(LDFLAGS) -o program
-
+compile:
+	$(CC) main.c $(CFLAGS) $(LDFLAGS) -o program

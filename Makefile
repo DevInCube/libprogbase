@@ -4,13 +4,13 @@ LOCALDIR=/usr/local
 repo:
 	@git remote -v
 
-version: 
-	@echo "libprogbase 0.1.0"
-	
-git-pull: 
+version:
+	@echo "libprogbase 0.1.1"
+
+git-pull:
 	@echo "Updating libprogbase..."
 	@git pull origin master
-	
+
 update: git-pull install
 
 install: headers libprogbase
@@ -28,4 +28,3 @@ libprogbase:
 	@sudo mv $@.a $(LOCALDIR)/lib/$@.a
 	@echo "Cleaning up"
 	@rm *.o
-
