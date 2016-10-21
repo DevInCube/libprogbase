@@ -53,6 +53,12 @@ enum conAttribute_e {
 	BG_INTENSITY_WHITE,
 };
 
+struct conpos {
+	unsigned int column;
+	unsigned int row;
+};
+
+struct conpos conGetPos(void);
 void conMove(int row, int col);
 void conSetAttr(int attr);
 

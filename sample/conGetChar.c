@@ -12,6 +12,7 @@ int main(void) {
 	int x = 40;
 	int y = 5;
 	int clear = 1;
+	struct conpos pos;
 	atexit(conClear);
 	conClear();
 	printf("Use 'wasd' to move, 'c' to toggle clear, 'q' to quit:\n");
@@ -58,7 +59,10 @@ int main(void) {
 		if (y <= box_top) y = box_top + 1;
 		if (y >= box_top + box_height) y = box_top + box_height - 1;
 		conMove(y, x);
+		pos = conGetPos();
 		putchar('@');
+		conMove(3, 1);
+		printf("Row: %i\nCol: %i", pos.row, pos.column);
 	}
 	printf("\nThe end.\n");
 	return 0;

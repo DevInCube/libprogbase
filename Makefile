@@ -5,7 +5,7 @@ repo:
 	@git remote -v
 
 version:
-	@echo "libprogbase 0.1.1"
+	@echo "libprogbase 0.1.2"
 
 git-pull:
 	@echo "Updating libprogbase..."
