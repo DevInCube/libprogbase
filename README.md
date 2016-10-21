@@ -1,6 +1,23 @@
-# libprogbase v0.1.1
+# libprogbase v0.1.2
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
+
+## New in v0.1.2
+
+/* terminal size data */
+struct consize {
+	unsigned short cols;
+	unsigned short rows;
+};
+~~~~
+
+New `pbconsole.h` functions:
+
+~~~~c
+
+/* detect if some key is down (non-blocking) */
+struct conpos conGetPos(void);
+~~~~
 
 ## New in v0.1.1
 
@@ -20,7 +37,7 @@ New `pbconsole.h` functions:
 ~~~~c
 
 /* detect if some key is down (non-blocking) */
-int conIsKeyDown(void); 
+int conIsKeyDown(void);
 
 /* get key down code without pressing Enter key */
 char conGetChar(void);  
@@ -67,7 +84,7 @@ make version
 
 ## Library update
 
-### Auto (since 0.1.0) 
+### Auto (since 0.1.0)
 
 You need to cd to cloned `libprogbase/` directory and execute command:
 ~~~~
@@ -100,7 +117,7 @@ int main(void) {
 	printf("Enter int: ");
 	i = getInt();
 	printf("Entered: %d\n", i);
-	
+
 	printf("Enter long: ");
 	l = getLong();
 	printf("Entered: %ld\n", l);
@@ -116,7 +133,7 @@ int main(void) {
 	printf("Enter string: ");
 	s = getString();
 	printf("Entered: %s\n", s);
-	
+
 	freeString(s);
 	return 0;
 }
@@ -130,7 +147,7 @@ Sleep milliseconds sample `sleepMillis()` (since 0.1.0):
 int main(void) {
 	int i = 0;
 	const unsigned long MILLIS = 100;
-	
+
 	for (i = 0; i < 100; i++) {
 		if (0 == i % 10) {
 			puts("");
