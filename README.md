@@ -1,6 +1,50 @@
-# libprogbase v0.1.0
+# libprogbase v0.1.1
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
+
+## New in v0.1.1
+
+New `pbconsole.h` type:
+
+~~~~c
+
+/* terminal size data */
+struct consize {
+	unsigned short cols;
+	unsigned short rows;
+};
+~~~~
+
+New `pbconsole.h` functions:
+
+~~~~c
+
+/* detect if some key is down (non-blocking) */
+int conIsKeyDown(void); 
+
+/* get key down code without pressing Enter key */
+char conGetChar(void);  
+
+/* get cols and rows terminal size structure */
+struct consize conGetSize(void);  
+
+/* set terminal cols and rows size */
+void conResize(unsigned short cols, unsigned short rows);  
+~~~~
+
+New `pbconsole.h` constants:
+
+~~~~c
+
+#define CON_MIN_ROWS 5
+#define CON_MIN_COLS 29
+~~~~
+
+Samples:
+
+* [conIsKeyDown.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conIsKeyDown.c)
+* [conGetChar.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conGetChar.c)
+* [conResize.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conResize.c)
 
 ## Installation and linkage
 
