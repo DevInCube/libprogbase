@@ -4,10 +4,12 @@
 
 ## New in v0.1.2
 
-/* terminal size data */
-struct consize {
-	unsigned short cols;
-	unsigned short rows;
+~~~~c
+
+/* terminal cursor position */
+struct conpos {
+	unsigned int column;
+	unsigned int row;
 };
 ~~~~
 
@@ -15,7 +17,7 @@ New `pbconsole.h` functions:
 
 ~~~~c
 
-/* detect if some key is down (non-blocking) */
+/* get terminal cursor position */
 struct conpos conGetPos(void);
 ~~~~
 
