@@ -74,6 +74,6 @@ struct consize {
 };
 
 struct consize conGetSize(void);
-void conResize(unsigned short cols, unsigned short rows);
+void conResize(unsigned short rows, unsigned short cols);
 
 #endif

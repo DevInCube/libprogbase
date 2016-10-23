@@ -48,7 +48,7 @@ char conGetChar(void);
 struct consize conGetSize(void);  
 
 /* set terminal cols and rows size */
-void conResize(unsigned short cols, unsigned short rows);  
+void conResize(unsigned short rows, unsigned short cols);  
 ~~~~
 
 New `pbconsole.h` constants:
