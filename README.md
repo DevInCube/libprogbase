@@ -1,6 +1,17 @@
-# libprogbase v0.1.2
+# libprogbase v0.1.3
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
+
+## New in v0.1.3
+
+New `pbconsole.h` functions:
+
+~~~~c
+
+/* functions to control cursor visibility */
+void conHideCursor(void);
+void conShowCursor(void);
+~~~~
 
 ## New in v0.1.2
 

@@ -1,3 +1,4 @@
+LIBVERSION=0.1.3
 CC=gcc
 LOCALDIR=/usr/local
 
@@ -5,7 +6,7 @@ repo:
 	@git remote -v
 
 version:
-	@echo "libprogbase 0.1.2"
+	@echo "libprogbase "$(LIBVERSION)
 
 git-pull:
 	@echo "Updating libprogbase..."
