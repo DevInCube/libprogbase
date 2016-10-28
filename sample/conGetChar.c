@@ -30,6 +30,7 @@ int main(void) {
 	}
 	conMove(y, x);
 	putchar('@');
+	conHideCursor();
 	while (key != 'q') {
 		conMove(2, 1);
 		key = conGetChar();
@@ -65,5 +66,6 @@ int main(void) {
 		printf("Row: %i\nCol: %i", pos.row, pos.column);
 	}
 	printf("\nThe end.\n");
+	conShowCursor();
 	return 0;
 }
