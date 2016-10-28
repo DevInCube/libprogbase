@@ -15,10 +15,22 @@
 
 void conMove(int row, int col) {
 	printf("\e[%i;%iH", row, col);
+	fflush(stdout);
 }
 
 void conSetAttr(int attr) {
 	printf("\e[%im", attr);
+	fflush(stdout);
+}
+
+void conHideCursor(void) {
+	printf("\033[?25l");
+	fflush(stdout);
+}
+
+void conShowCursor(void) {
+	printf("\033[?25h");
+	fflush(stdout);
 }
 
 void conClear(void) {
