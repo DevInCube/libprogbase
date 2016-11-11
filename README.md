@@ -78,7 +78,12 @@ Samples:
 
 ## Installation and linkage
 
-Clone this repository, cd to newly created `libprogbase/` directory and execute this command in it:
+Clone this repository with command:
+~~~~
+git clone https://github.com/PublicHadyniak/libprogbase.git
+~~~~
+
+Change directory to newly created `libprogbase/` directory and execute this command:
 ~~~~
 sudo make install
 ~~~~
@@ -90,7 +95,7 @@ gcc main.c -lprogbase
 
 ## Check library version (since 0.1.0)
 
-You need to cd to cloned `libprogbase/` directory and execute command:
+You need to change directory to cloned `libprogbase/` directory and execute command:
 ~~~~
 make version
 ~~~~
@@ -99,7 +104,9 @@ make version
 
 ### Auto (since 0.1.0)
 
-You need to cd to cloned `libprogbase/` directory and execute command:
+Works only if you cloned this repository with Git.
+
+Change directory to cloned `libprogbase/` and execute command:
 ~~~~
 sudo make update
 ~~~~
