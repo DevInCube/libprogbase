@@ -6,28 +6,44 @@
 
 static char * inputString(FILE* fp, size_t size);
 
+char getChar(void) {
+	char val = 0;
+	string input = getString();
+	val = input[0];
+	freeString(input);
+	return val;
+}
+
 int getInt(void) {
-	char input[100];
-	fgets(input, 100, stdin);
-	return atoi(input);
+	int val = 0;
+	string input = getString();
+	val = atoi(input);
+	freeString(input);
+	return val;
 }
 
 long getLong(void) {
-	char input[100];
-	fgets(input, 100, stdin);
-	return atol(input);
+	long val = 0L;
+	string input = getString();
+	val = atol(input);
+	freeString(input);
+	return val;
 }
 
 float getFloat(void) {
-	char input[100];
-	fgets(input, 100, stdin);
-	return atof(input);
+	float val = 0;
+	string input = getString();
+	val = atof(input);
+	freeString(input);
+	return val;
 }
 
 double getDouble(void) {
-	char input[100];
-	fgets(input, 100, stdin);
-	return atof(input);
+	double val = 0;
+	string input = getString();
+	val = atof(input);
+	freeString(input);
+	return val;
 }
 
 string getString(void) {
@@ -43,14 +59,14 @@ char * inputString(FILE * fp, size_t size) {
     char * str;
     int ch;
     size_t len = 0;
-    str = realloc(NULL, sizeof(char) * size); /* size is start size */
+    str = (char *)realloc(NULL, sizeof(char) * size); /* size is start size */
     if (NULL == str) {
 		return str;
 	}
     while (EOF != (ch = fgetc(fp)) && ch != '\n') {
         str[len++] = ch;
         if (len == size) {
-            str = realloc(str, sizeof(char) * (size += 16));
+            str = (char *)realloc(str, sizeof(char) * (size += 16));
             if(NULL == str) {
 				return str;
 			}
@@ -58,13 +74,13 @@ char * inputString(FILE * fp, size_t size) {
     }
     str[len++] = '\0';
 
-    return realloc(str, sizeof(char) * len);
+    return (char *)realloc(str, sizeof(char) * len);
 }
 
 void sleepMillis(unsigned long int milliseconds) {
 	struct timespec tim;
 	tim.tv_sec = (milliseconds / 1000L);
 	tim.tv_nsec = (milliseconds % 1000L) * 1000000L;
-	
+
 	nanosleep(&tim, NULL);
 }

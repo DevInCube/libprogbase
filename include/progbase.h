@@ -15,6 +15,7 @@ string getString(void);
  */
 void freeString(string);
 
+char getChar(void);
 int getInt(void);
 long getLong(void);
 float getFloat(void);

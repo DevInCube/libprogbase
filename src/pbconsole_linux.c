@@ -1,3 +1,5 @@
+#define _BSD_SOURCE
+#define _POSIX_SOURCE
 #include <pbconsole.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,12 +16,12 @@
 #endif
 
 void conMove(int row, int col) {
-	printf("\e[%i;%iH", row, col);
+	printf("\033[%i;%iH", row, col);
 	fflush(stdout);
 }
 
 void conSetAttr(int attr) {
-	printf("\e[%im", attr);
+	printf("\033[%im", attr);
 	fflush(stdout);
 }
 
@@ -99,8 +101,8 @@ void conResize(unsigned short rows, unsigned short cols) {
 
 struct consize conGetSize(void) {
     struct winsize w;
-    ioctl(0, TIOCGWINSZ, &w);
 	struct consize size;
+    ioctl(0, TIOCGWINSZ, &w);
 	size.cols = w.ws_col;
 	size.rows = w.ws_row;
 	return size;
@@ -115,11 +117,10 @@ struct conpos conGetPos(void) {
 	tcgetattr(0, &save);
 	cfmakeraw(&raw);
 	tcsetattr(0, TCSANOW, &raw);
-	if (isatty(fileno(stdin)))
-	{
+	if (isatty(fileno(stdin))) {
 		write(1, cmd, sizeof(cmd));
 		read (0, buf ,sizeof(buf));
-		sscanf(buf, "\033[%d;%d", &(pos.row), &(pos.column));
+		sscanf(buf, "\033[%u;%u", &(pos.row), &(pos.column));
 	}
 	tcsetattr(0, TCSANOW, &save);
 	fflush(stdout);
