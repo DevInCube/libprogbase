@@ -1,6 +1,18 @@
-# libprogbase v0.1.3
+# libprogbase v0.1.4
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
+
+## New in v0.1.4
+
+New `progbase.h` function:
+
+~~~~c
+char getChar(void);
+~~~~
+
+All input functions were fixed to skip redundant characters from stdin stream after '\n' character.
+
+Added new `.gcc-flags.json` config file for Atom gcc-linter plugin. All sources updated, some warnings and errors fixed.
 
 ## New in v0.1.3
 
