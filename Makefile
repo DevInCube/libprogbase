@@ -29,3 +29,10 @@ libprogbase:
 	@sudo mv $@.a $(LOCALDIR)/lib/$@.a
 	@echo "Cleaning up"
 	@rm *.o
+
+build:
+	@gcc -c src/*.c -Iinclude
+	@ar rcs $@.a *.o
+
+clean:
+	@rm *.o
