@@ -1,5 +1,7 @@
 # libprogbase v0.1.4
 
+<a href='https://travis-ci.org/PublicHadyniak/libprogbase/builds'><img src='https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master'></a>
+
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
 
 ## New in v0.1.4
