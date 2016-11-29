@@ -59,7 +59,7 @@ char * inputString(FILE * fp, size_t size) {
     char * str;
     int ch;
     size_t len = 0;
-    str = (char *)realloc(NULL, sizeof(char) * size); /* size is start size */
+    str = (char *)realloc(NULL, sizeof(char) * size);
     if (NULL == str) {
 		return str;
 	}
