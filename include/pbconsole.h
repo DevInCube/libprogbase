@@ -79,4 +79,7 @@ void conResize(unsigned short rows, unsigned short cols);
 void conHideCursor(void);
 void conShowCursor(void);
 
+void conLockInput(void);
+void conUnlockInput(void);
+
 #endif

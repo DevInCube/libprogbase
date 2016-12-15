@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <string.h>
+#include <assert.h>
 
 #ifndef CON_MIN_ROWS
 #	define CON_MIN_ROWS 5
@@ -125,4 +127,20 @@ struct conpos conGetPos(void) {
 	tcsetattr(0, TCSANOW, &save);
 	fflush(stdout);
 	return pos;
+}
+
+static struct termios orig;
+
+void conLockInput(void) {
+    struct termios new;
+    assert(0 == tcgetattr(STDIN_FILENO, &orig));
+    memcpy(&new, &orig, sizeof(struct termios));
+    new.c_lflag &= !(ECHO | ICANON | ECHOE | ECHOK | ECHONL | ICRNL);
+    new.c_cc[VTIME] = 0;
+    new.c_cc[VMIN] = 0;
+    assert(0 == tcsetattr(STDIN_FILENO, TCSANOW, &new));
+}
+
+void conUnlockInput(void) {
+    assert(0 == tcsetattr(STDIN_FILENO, TCSANOW, &orig));
 }

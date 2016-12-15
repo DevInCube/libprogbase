@@ -36,3 +36,6 @@
 
 # gcov
 *.gcno
+
+.tags
+.buildconfig

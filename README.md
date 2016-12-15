@@ -1,8 +1,20 @@
-# libprogbase v0.1.4
+# libprogbase v0.1.5
 
 <a href='https://travis-ci.org/PublicHadyniak/libprogbase/builds'><img src='https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master'></a>
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
+
+## New in v0.1.5
+
+New `pbconsole.h` functions:
+
+~~~~c
+
+void conLockInput(void);
+void conUnlockInput(void);
+~~~~
+
+Sample: [conLock.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conLock.c)
 
 ## New in v0.1.4
 

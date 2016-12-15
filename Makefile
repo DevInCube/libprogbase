@@ -1,4 +1,4 @@
-LIBVERSION=0.1.4
+LIBVERSION=0.1.5
 CC=gcc
 LOCALDIR=/usr/local
 
