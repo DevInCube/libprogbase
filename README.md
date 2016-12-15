@@ -14,7 +14,10 @@ void conLockInput(void);
 void conUnlockInput(void);
 ~~~~
 
-Sample: [conLock.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conLock.c)
+Samples:
+
+* [conLock.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conLock.c)
+* [conLockFire.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conLockFire.c)
 
 ## New in v0.1.4
 
