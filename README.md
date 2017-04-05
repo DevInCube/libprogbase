@@ -1,8 +1,14 @@
-# libprogbase v0.1.5
+# libprogbase v0.1.6
 
 <a href='https://travis-ci.org/PublicHadyniak/libprogbase/builds'><img src='https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master'></a>
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
+
+## New in v0.1.6
+
+* Now you can link this library with C++ programs.
+* `CMakeLists.txt` for __cmake__ compilation under __VSCode__.
+
 
 ## New in v0.1.5
 
