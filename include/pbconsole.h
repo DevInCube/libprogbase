@@ -58,9 +58,16 @@ struct conpos {
 	unsigned int row;
 };
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 struct conpos conGetPos(void);
 void conMove(int row, int col);
 void conSetAttr(int attr);
+
+void strConMove(char * str, int row, int col);
+void strConSetAttr(char * str, int attr);
 
 void conClear(void);
 void conReset(void);
@@ -81,5 +88,9 @@ void conShowCursor(void);
 
 void conLockInput(void);
 void conUnlockInput(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

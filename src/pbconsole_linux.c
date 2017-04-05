@@ -27,6 +27,18 @@ void conSetAttr(int attr) {
 	fflush(stdout);
 }
 
+void strConMove(char * str, int row, int col) {
+	char tmp[20] = "";
+	sprintf(tmp, "\033[%i;%iH", row, col);
+	strcat(str, tmp);
+}
+
+void strConSetAttr(char * str, int attr) {
+	char tmp[20] = "";
+	sprintf(tmp, "\033[%im", attr);
+	strcat(str, tmp);
+}
+
 void conHideCursor(void) {
 	printf("\033[?25l");
 	fflush(stdout);

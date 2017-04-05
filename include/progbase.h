@@ -6,6 +6,10 @@
 
 typedef char * string;
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 /**
  *	you should free string after usage with freeString function
  */
@@ -22,5 +26,9 @@ float getFloat(void);
 double getDouble(void);
 
 void sleepMillis(unsigned long int milliseconds);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

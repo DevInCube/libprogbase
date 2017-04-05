@@ -122,6 +122,12 @@ struct World World_new(int width, int height, int cx, int cy) {
     world.tmp = malloc(world.mapSize);
     world.prev = malloc(world.mapSize);
     memset(world.map, 0, world.mapSize);
+    /* Glyder */
+    /*world.map[(cy - 1) * world.w + (cx - 1)] = MAX_STATE;
+    world.map[(cy) * world.w + (cx - 1)] = MAX_STATE;
+    world.map[(cy + 1) * world.w + (cx - 1)] = MAX_STATE;
+    world.map[(cy + 1) * world.w + (cx)] = MAX_STATE;
+    world.map[(cy + 0) * world.w + (cx + 1)] = MAX_STATE;*/
     world.map[cy * world.w + cx] = MAX_STATE;
     world.map[(cy + 1) * world.w + cx] = MAX_STATE;
     world.map[(cy + 1) * world.w + (cx + 1)] = MAX_STATE;
