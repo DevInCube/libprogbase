@@ -20,3 +20,6 @@ install:
 	@mkdir ./build
 	@cd ./build && cmake .. && make && sudo make install
 	@rm ./build -rf 
+
+build:
+	cmake . && make
