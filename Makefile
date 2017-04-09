@@ -1,4 +1,4 @@
-LIBVERSION=0.1.5
+LIBVERSION=0.2.0
 CC=gcc
 LOCALDIR=/usr/local
 
@@ -14,25 +14,9 @@ git-pull:
 
 update: git-pull install
 
-install: headers libprogbase
-
-headers:
-	@echo "Copying headers to" $(LOCALDIR)/include/
-	@ls include/*.h
-	@sudo cp include/*.h $(LOCALDIR)/include/
-
-libprogbase:
-	@echo "Building library" $@.a
-	@gcc -c src/*.c -Iinclude
-	@ar rcs $@.a *.o
-	@echo "Copying library" $@.a "to" $(LOCALDIR)/lib/
-	@sudo mv $@.a $(LOCALDIR)/lib/$@.a
-	@echo "Cleaning up"
-	@rm *.o
-
-build:
-	@gcc -c src/*.c -Iinclude
-	@ar rcs $@.a *.o
-
-clean:
-	@rm *.o
+install: 
+	@echo "Building and installing libprogbase..." $@.a
+	@rm ./build -rf 
+	@mkdir ./build
+	@cd ./build && cmake .. && make && sudo make install
+	@rm ./build -rf 
