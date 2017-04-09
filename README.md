@@ -1,14 +1,14 @@
 # libprogbase v0.2.0
 
-<a href='https://travis-ci.org/PublicHadyniak/libprogbase/builds'><img src='https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master'></a>
+[![Travis-CI](https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master)](https://travis-ci.org/PublicHadyniak/libprogbase/builds)
 
 [Repository home](https://github.com/PublicHadyniak/libprogbase)
 
 ## New in v0.2.0
 
-* Added new module progbase/net` for TCP and UDP networking.
+* Added new module `progbase/net` for TCP and UDP networking.
 * `pbconsole.h` became deprecated, use `progbase/console.h` instead.
-* Now `make install` uses __cmake__ and `CMakeLists.txt` for build and install.
+* Now `make install` uses __cmake__ and `CMakeLists.txt` to build and install library.
 
 ## New in v0.1.6
 
