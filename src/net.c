@@ -56,15 +56,37 @@ bool UdpClient_bind(UdpClient * self, IpAddress * address) {
 		sizeof(self->address.addr)) >= 0;
 }
 
-static bool __udp_receive(int sock, IpAddress * address, NetMessage * message);
-static bool __udp_send(int sock, IpAddress * address, NetMessage * message);
-
 bool UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * address) {
-	return __udp_receive(self->socket, address, message);
+	struct sockaddr_in addr;  // to get sender address
+	socklen_t addrlen = sizeof(addr);
+	int bytes = recvfrom(
+		self->socket, 
+		message->buffer, 
+		message->bufferLength,  // maximum bytes to receive in buffer
+		0,  // control flags
+		(struct sockaddr*)&addr, 
+		&addrlen);
+	message->buffer[bytes] = '\0';  // terminate c-string
+	if (address != NULL) {
+		address->addr = addr;
+	}
+	message->dataLength = bytes;
+	message->sentDataLength = 0;
+	return bytes >= 0;
 }
 
 bool UdpClient_sendTo(UdpClient * self, NetMessage * message, IpAddress * address) {
-	return __udp_send(self->socket, address, message);
+	struct sockaddr_in addr = address->addr;
+	socklen_t addrlen = sizeof(addr);
+	int bytes = sendto(
+		self->socket, 
+		message->buffer, 
+		message->dataLength, 
+		0,  // control flags
+		(struct sockaddr*)&addr, 
+		addrlen);
+	message->sentDataLength = bytes;
+	return bytes >= 0;
 }
 
 void UdpClient_close(UdpClient * self) {
@@ -109,39 +131,6 @@ int NetMessage_dataLength(NetMessage * self) {
 	return self->dataLength;
 }
 
-static bool __udp_receive(int sock, IpAddress * address, NetMessage * message) {
-	struct sockaddr_in addr;  // to get sender address
-	socklen_t addrlen = sizeof(addr);
-	int bytes = recvfrom(
-		sock, 
-		message->buffer, 
-		message->bufferLength,  // maximum bytes to receive in buffer
-		0,  // control flags
-		(struct sockaddr*)&addr, 
-		&addrlen);
-	message->buffer[bytes] = '\0';  // terminate c-string
-	if (address != NULL) {
-		address->addr = addr;
-	}
-	message->dataLength = bytes;
-	message->sentDataLength = 0;
-	return bytes >= 0;
-}
-
-static bool __udp_send(int sock, IpAddress * address, NetMessage * message) {
-	struct sockaddr_in addr = address->addr;
-	socklen_t addrlen = sizeof(addr);
-	int bytes = sendto(
-		sock, 
-		message->buffer, 
-		message->dataLength, 
-		0,  // control flags
-		(struct sockaddr*)&addr, 
-		addrlen);
-	message->sentDataLength = bytes;
-	return bytes >= 0;
-}
-
 // TCP
 
 static bool TcpListener_listen(TcpListener * self, int queueMaxSize);
@@ -167,12 +156,15 @@ bool TcpListener_bind(TcpListener * self, IpAddress * address) {
 		(struct sockaddr*)&(self->address.addr), 
 		sizeof(self->address.addr)) >= 0;
 }
+
 bool TcpListener_listen(TcpListener * self, int queueMaxSize) {
 	return listen(self->socket, queueMaxSize) >= 0;
 }
+
 void TcpListener_close(TcpListener * self) {
 	close(self->socket);
 }
+
 TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client) {
 	struct sockaddr_in addr;
 	socklen_t addrlen = sizeof(addr);
@@ -186,6 +178,7 @@ TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client) {
 	client->address.addr = addr;
 	return client;
 }
+
 IpAddress * TcpListener_address(TcpListener * self) {
 	return &self->address;
 }
@@ -201,13 +194,16 @@ TcpClient * TcpClient_init(TcpClient * self) {
 	self->socket = sock;
 	return self;
 }
+
 bool TcpClient_connect(TcpClient * self, IpAddress * serverAddress) {
 	int addrlen = sizeof(serverAddress->addr);
 	return connect(self->socket, (struct sockaddr*)&serverAddress->addr, addrlen) >= 0;
 }
+
 void TcpClient_close(TcpClient * self) {
 	close(self->socket);
 }
+
 bool TcpClient_receive(TcpClient * self, NetMessage * message) {
 	int bytes = read(self->socket, message->buffer, message->bufferLength);
 	message->buffer[bytes] = '\0';  // terminate c-string
@@ -215,6 +211,7 @@ bool TcpClient_receive(TcpClient * self, NetMessage * message) {
 	message->sentDataLength = 0;
 	return bytes >= 0;
 }
+
 bool TcpClient_send(TcpClient * self, NetMessage * message) {
 	int bytes = (int)send(
 		self->socket, 
@@ -224,6 +221,7 @@ bool TcpClient_send(TcpClient * self, NetMessage * message) {
 	message->sentDataLength = bytes;
 	return bytes >= 0;
 }
+
 IpAddress * TcpClient_address(TcpClient * self) {
 	return &self->address;
 }
