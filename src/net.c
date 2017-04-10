@@ -56,14 +56,14 @@ bool UdpClient_bind(UdpClient * self, IpAddress * address) {
 		sizeof(self->address.addr)) >= 0;
 }
 
-static NetMessage * __udp_receive(int sock, IpAddress * address, NetMessage * message);
-static int __udp_send(int sock, IpAddress * address, NetMessage * message);
+static bool __udp_receive(int sock, IpAddress * address, NetMessage * message);
+static bool __udp_send(int sock, IpAddress * address, NetMessage * message);
 
-NetMessage * UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * address) {
+bool UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * address) {
 	return __udp_receive(self->socket, address, message);
 }
 
-int UdpClient_sendTo(UdpClient * self, NetMessage * message, IpAddress * address) {
+bool UdpClient_sendTo(UdpClient * self, NetMessage * message, IpAddress * address) {
 	return __udp_send(self->socket, address, message);
 }
 
@@ -109,7 +109,7 @@ int NetMessage_dataLength(NetMessage * self) {
 	return self->dataLength;
 }
 
-static NetMessage * __udp_receive(int sock, IpAddress * address, NetMessage * message) {
+static bool __udp_receive(int sock, IpAddress * address, NetMessage * message) {
 	struct sockaddr_in addr;  // to get sender address
 	socklen_t addrlen = sizeof(addr);
 	int bytes = recvfrom(
@@ -124,19 +124,22 @@ static NetMessage * __udp_receive(int sock, IpAddress * address, NetMessage * me
 		address->addr = addr;
 	}
 	message->dataLength = bytes;
-	return message;
+	message->sentDataLength = 0;
+	return bytes >= 0;
 }
 
-static int __udp_send(int sock, IpAddress * address, NetMessage * message) {
+static bool __udp_send(int sock, IpAddress * address, NetMessage * message) {
 	struct sockaddr_in addr = address->addr;
 	socklen_t addrlen = sizeof(addr);
-	return (int)sendto(
+	int bytes = sendto(
 		sock, 
 		message->buffer, 
 		message->dataLength, 
 		0,  // control flags
 		(struct sockaddr*)&addr, 
 		addrlen);
+	message->sentDataLength = bytes;
+	return bytes >= 0;
 }
 
 // TCP
@@ -205,18 +208,21 @@ bool TcpClient_connect(TcpClient * self, IpAddress * serverAddress) {
 void TcpClient_close(TcpClient * self) {
 	close(self->socket);
 }
-NetMessage * TcpClient_receive(TcpClient * self, NetMessage * message) {
-	int n = read(self->socket, message->buffer, message->bufferLength);
-	message->buffer[n] = '\0';  // terminate c-string
+bool TcpClient_receive(TcpClient * self, NetMessage * message) {
+	int bytes = read(self->socket, message->buffer, message->bufferLength);
+	message->buffer[bytes] = '\0';  // terminate c-string
 	message->dataLength = n;
-	return message;
+	message->sentDataLength = 0;
+	return bytes >= 0;
 }
-int TcpClient_send(TcpClient * self, NetMessage * message) {
-	return (int)send(
+bool TcpClient_send(TcpClient * self, NetMessage * message) {
+	int bytes = (int)send(
 		self->socket, 
 		message->buffer, 
 		message->dataLength,
 		0);
+	message->sentDataLength = bytes;
+	return bytes >= 0;
 }
 IpAddress * TcpClient_address(TcpClient * self) {
 	return &self->address;

@@ -25,7 +25,8 @@ typedef struct NetMessage NetMessage;
 struct NetMessage {
 	char * buffer;  /**< buffer to store message data */
 	size_t bufferLength;  /**< maximum length of data buffer */
-	int dataLength;  /** length of actual data in buffer */
+	int dataLength;  /**< length of actual data in buffer */
+	int sentDataLength;  /** length of data actually sent to receiver */
 };
 
 NetMessage * NetMessage_init(NetMessage * self, char * buf, size_t bufLen);
@@ -44,8 +45,8 @@ UdpClient * UdpClient_init(UdpClient * self);
 UdpClient * UdpClient_initBind(UdpClient * self, int port);
 bool UdpClient_bind(UdpClient * self, IpAddress * address);
 void UdpClient_close(UdpClient * self);
-NetMessage * UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * address);
-int UdpClient_sendTo(UdpClient * self, NetMessage * message, IpAddress * address);
+bool UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * address);
+bool UdpClient_sendTo(UdpClient * self, NetMessage * message, IpAddress * address);
 IpAddress * UdpClient_address(UdpClient * self);
 
 /* TCP Protocol */
@@ -73,8 +74,8 @@ struct TcpClient {
 TcpClient * TcpClient_init(TcpClient * self);
 bool TcpClient_connect(TcpClient * self, IpAddress * serverAddress);
 void TcpClient_close(TcpClient * self);
-NetMessage * TcpClient_receive(TcpClient * self, NetMessage * message);
-int TcpClient_send(TcpClient * self, NetMessage * message);
+bool TcpClient_receive(TcpClient * self, NetMessage * message);
+bool TcpClient_send(TcpClient * self, NetMessage * message);
 IpAddress * TcpClient_address(TcpClient * self);
 
 #ifdef __cplusplus

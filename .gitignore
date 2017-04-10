@@ -40,4 +40,4 @@
 .tags
 .buildconfig
 
-/build
+**/build
