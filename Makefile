@@ -15,7 +15,7 @@ git-pull:
 update: git-pull install
 
 install: 
-	@echo "Building and installing libprogbase..." $@.a
+	@echo "Building and installing libprogbase..."
 	@rm ./build -rf 
 	@mkdir ./build
 	@cd ./build && cmake .. && make && sudo make install

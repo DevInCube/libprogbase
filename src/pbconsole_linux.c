@@ -1,6 +1,6 @@
 #define _BSD_SOURCE
 #define _POSIX_SOURCE
-#include <pbconsole.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <termios.h>
@@ -9,6 +9,8 @@
 #include <sys/ioctl.h>
 #include <string.h>
 #include <assert.h>
+
+#include <progbase/console.h>
 
 #ifndef CON_MIN_ROWS
 #	define CON_MIN_ROWS 5
