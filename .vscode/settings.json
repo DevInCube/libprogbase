@@ -7,5 +7,9 @@
 		"-I../include",
 		"-Iinclude",
 		"-I./"
-	]
+	],
+	"files.associations": {
+		"thread": "cpp",
+		"functional": "cpp"
+	}
 }

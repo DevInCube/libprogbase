@@ -2,86 +2,60 @@
 
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdbool.h>
 
-#include <progbase/thread.h>
+#include "../include/progbase/thread.h"
 
-struct thread_s {
-    pthread_t tid;
-};
-
-static thread_t * __thread_new(void) {
-    return malloc(sizeof(struct thread_s));
+bool Thread_create(Thread * self, ThreadFunction func, void * arg) {
+	return pthread_create(
+		&(self->tid), 
+		(const pthread_attr_t *)NULL, 
+		func, 
+		arg) >= 0;
 }
 
-// helper functions
-thread_t * thread_current(void) {
-    thread_t * thread = __thread_new();
-    thread->tid = pthread_self();
-    return thread;
+bool Thread_equal(Thread a, Thread b) {
+	return pthread_equal(a.tid, b.tid);
 }
 
-void thread_exit(void * retval) {
-    pthread_exit(retval);
+Thread Thread_current(void) {
+	return (Thread){
+		.tid = pthread_self()
+	};
 }
 
-// constructors
-thread_t * thread_new(thread_func_t func) {
-    return thread_newArgs(func, NULL);
+void Thread_exit(int retval) {
+	pthread_exit((void *)&retval);
 }
 
-thread_t * thread_newArgs(thread_func_t func, void * args) {
-    thread_t * thread = __thread_new();
-    int err = pthread_create(&(thread->tid), (const pthread_attr_t *)NULL, func, args);
-    if (0 != err) {
-        return NULL;  // @todo
-    }
-    return thread;
+bool Thread_detach(Thread self) {
+	return pthread_cancel(self.tid) >= 0;
 }
 
-// destructor
-void thread_free(thread_t * self) {
-    free(self);
-}
-
-// methods
-int thread_join(const thread_t * self) {
-    return pthread_join(self->tid, NULL);
-}
-
-int thread_join_result(const thread_t * self, void ** result) {
-    return pthread_join(self->tid, result);
-}
-
-int thread_terminate(const thread_t * self) {
-    return pthread_cancel(self->tid);
-}
-
-int thread_equals(const thread_t * self, const thread_t * obj) {
-    return pthread_equal(self->tid, obj->tid);
+bool Thread_join(Thread self, int * res) {
+	void ** result = NULL;
+	if (pthread_join(self.tid, result) < 0) 
+		return false;
+	*res = **(int **)result;
+	return true;
 }
 
 /* MUTEX */
 
-struct mutex_s {
-    pthread_mutex_t pmutex;
-};
-
-mutex_t * mutex_new(void) {
-    mutex_t * mutex = malloc(sizeof(struct mutex_s));
-    pthread_mutex_init(&(mutex->pmutex), NULL);
-    return mutex;
+bool Mutex_init(Mutex * self, int type) {
+	return pthread_mutex_init(&(self->pmutex), NULL) >= 0;
 }
 
-void mutex_free(mutex_t * self) {
-    free(self);
+bool Mutex_lock(Mutex * self) {
+	return pthread_mutex_lock(&(self->pmutex)) >= 0;
 }
 
-void mutex_lock(mutex_t * self) {
-    pthread_mutex_lock(&(self->pmutex));
+bool Mutex_unlock(Mutex * self) {
+	return pthread_mutex_unlock(&(self->pmutex)) >= 0;
 }
 
-void mutex_unlock(mutex_t * self) {
-    pthread_mutex_unlock(&(self->pmutex));
+void Mutex_destroy(Mutex * self) {
+	pthread_mutex_destroy(&self->pmutex);
 }
 
 #endif // __linux__
