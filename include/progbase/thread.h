@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+// note: http://en.cppreference.com/w/c/thread
+
 // types
 typedef struct thread_s thread_t;
 typedef void * (*thread_func_t)(void *);
