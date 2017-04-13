@@ -2,7 +2,7 @@
 
 #include <time.h>
 
-#include "progbase.h"
+#include <progbase.h>
 
 static char * inputString(FILE* fp, size_t size);
 

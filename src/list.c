@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/progbase/list.h"
+#include <progbase/list.h>
 
 /* array.h */
 

@@ -3,12 +3,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <assert.h>
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <string.h>
-#include <assert.h>
 
 #include <progbase/console.h>
 

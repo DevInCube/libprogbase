@@ -4,13 +4,15 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#include "../include/progbase/thread.h"
+#include <progbase/thread.h>
+
+typedef void * (*pthread_func)(void *);
 
 bool Thread_create(Thread * self, ThreadFunction func, void * arg) {
 	return pthread_create(
 		&(self->tid), 
 		(const pthread_attr_t *)NULL, 
-		func, 
+		(pthread_func)func, 
 		arg) >= 0;
 }
 
@@ -36,7 +38,8 @@ bool Thread_join(Thread self, int * res) {
 	void ** result = NULL;
 	if (pthread_join(self.tid, result) < 0) 
 		return false;
-	*res = **(int **)result;
+	// cast pthread void * result to int
+	*res = *(int *)result;
 	return true;
 }
 

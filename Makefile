@@ -17,7 +17,7 @@ install:
 	@rm ./build -rf 
 	@mkdir ./build
 	@cd ./build && cmake .. && make && sudo make install
-	@rm ./build -rf 
+	@rm ./build -rf <progbase.h>
 
 build:
 	cmake . && make

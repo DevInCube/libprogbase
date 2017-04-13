@@ -3,12 +3,11 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <fs.h>
 #include <time.h>
 
 #include <progbase.h>
-#include "../include/progbase/list.h"
-#include "../include/progbase/events.h"
+#include <progbase/list.h>
+#include <progbase/events.h>
 
 void Event_free(Event ** dataPtr);
 

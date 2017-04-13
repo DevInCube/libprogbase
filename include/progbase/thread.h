@@ -18,7 +18,7 @@ struct Thread {
     pthread_t tid;
 };
 
-typedef void * (*ThreadFunction)(void *);
+typedef int (*ThreadFunction)(void *);
 
 bool Thread_create(Thread * self, ThreadFunction func, void * arg);
 bool Thread_equal(Thread a, Thread b);
