@@ -1,6 +1,4 @@
 LIBVERSION=0.3.0
-CC=gcc
-LOCALDIR=/usr/local
 
 repo:
 	@git remote -v
