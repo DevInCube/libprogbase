@@ -4,6 +4,7 @@ include_directories(include)
 file(GLOB LIB_SOURCES "src/*.c")
 
 project (progbase)
+set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
 add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES})
 
 install(
