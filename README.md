@@ -1,8 +1,21 @@
-# libprogbase v0.2.0
+# libprogbase v0.3.0
 
-[![Travis-CI](https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master)](https://travis-ci.org/PublicHadyniak/libprogbase/builds)
+[![Travis-CI][travis-badge]][travis-builds]
 
-[Repository home](https://github.com/PublicHadyniak/libprogbase)
+[Repository home][home]
+
+## New in v0.3.0
+
+* New module `progbase/thread` for multithreading. Includes __Thread__ and __Mutex__ types.
+* New module `progbase/list` with generic data-type `List` collection.
+* New module `progbase/events` for event-driven development. Added samples for `progbase/events`.
+* New function in `progbase/net` module:
+
+  `Ip_resolveHostname()` to convert hostname to IP-address (`progbase.herokuapp.com -> 54.217.217.104`):
+
+  ```c
+  bool Ip_resolveHostname(char * ipv4, const char * hostname);
+  ```
 
 ## New in v0.2.0
 
@@ -120,16 +133,19 @@ Samples:
 ## Installation and linkage
 
 Clone this repository with command:
+
 ~~~~
 git clone https://github.com/PublicHadyniak/libprogbase.git
 ~~~~
 
 Change directory to newly created `libprogbase/` directory and execute this command:
+
 ~~~~
 sudo make install
 ~~~~
 
 Include header files from `include/` directory and compile your code with linker option `-lprogbase`:
+
 ~~~~
 gcc main.c -lprogbase
 ~~~~
@@ -137,6 +153,7 @@ gcc main.c -lprogbase
 ## Check library version (since 0.1.0)
 
 You need to change directory to cloned `libprogbase/` directory and execute command:
+
 ~~~~
 make version
 ~~~~
@@ -148,6 +165,7 @@ make version
 Works only if you cloned this repository with Git.
 
 Change directory to cloned `libprogbase/` and execute command:
+
 ~~~~
 sudo make update
 ~~~~
@@ -163,6 +181,7 @@ You need to re-install library.
 ### progbase.h
 
 Sample usage to read all available data type values from terminal:
+
 ~~~~c
 #include <stdio.h>
 #include <stdlib.h>
@@ -201,7 +220,8 @@ int main(void) {
 ~~~~
 
 Sleep milliseconds sample `sleepMillis()` (since 0.1.0):
-~~~~c
+
+```c
 #include <stdio.h>
 #include <progbase.h>
 
@@ -220,4 +240,9 @@ int main(void) {
 	puts("");
 	return 0;
 }
-~~~~
+```
+
+
+[home]: https://github.com/PublicHadyniak/libprogbase
+[travis-badge]: https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master
+[travis-builds]: https://travis-ci.org/PublicHadyniak/libprogbase/builds

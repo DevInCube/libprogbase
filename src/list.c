@@ -2,10 +2,11 @@
     @brief Generic list implementation
 */
 
-#include <list.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../include/progbase/list.h"
 
 /* array.h */
 
