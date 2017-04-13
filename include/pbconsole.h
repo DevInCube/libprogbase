@@ -1,10 +1,8 @@
 /** @file 
-	@brief this header file is deprecated. Use <progbase/console.h> instead 
+	@brief Deprecated Console I\O module
 */
-#ifndef PBCONSOLE_H
-#define PBCONSOLE_H
+
+#pragma once
 
 #warning <pbconsole.h> header file is deprecated. Use <progbase/console.h> instead 
 #include <progbase/console.h>
-
-#endif

@@ -6,6 +6,10 @@
 
 #include <limits.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
 	@typedef Event
 */
@@ -129,3 +133,7 @@ typedef enum {
 	UpdateEventTypeId,  /**< event is generated in every iteration of event loop */
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,5 +1,8 @@
-#ifndef THREAD_H_INCLUDED
-#define THREAD_H_INCLUDED
+/** @file
+    @brief Threading module
+*/
+
+#pragma once
 
 #include <pthread.h>
 
@@ -39,6 +42,3 @@ void Mutex_destroy(Mutex * self);
 #ifdef __cplusplus
 }
 #endif
-
-
-#endif // THREAD_H_INCLUDED

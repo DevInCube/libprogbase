@@ -1,12 +1,15 @@
 /** @file
     @brief Generic list abstract data type
 */
+
 #pragma once
 
 #include <stdlib.h>
 #include <stdbool.h>
-// #include <mem.h>
-// #include <collections/enumerable.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
     @struct List
@@ -96,3 +99,7 @@ void List_clear(List * self);
     @brief returns a List Enumerator to iterate over List elements
 */
 // Enumerator * List_getEnumerator(List * self);
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,7 +1,14 @@
-#ifndef CONSOLE_H
-#define CONSOLE_H
+/** @file
+    @brief Console I\O module
+*/
+
+#pragma once
 
 #include <stdio.h>
+
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 #define CON_MIN_ROWS 5
 #define CON_MIN_COLS 29
@@ -58,10 +65,6 @@ struct conpos {
 	unsigned int row;
 };
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 struct conpos conGetPos(void);
 void conMove(int row, int col);
 void conSetAttr(int attr);
@@ -91,6 +94,4 @@ void conUnlockInput(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

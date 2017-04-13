@@ -1,5 +1,8 @@
-#ifndef PROGBASE_H
-#define PROGBASE_H
+/** @file
+    @brief Progbase common module
+*/
+
+#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +32,4 @@ void sleepMillis(unsigned long int milliseconds);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

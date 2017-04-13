@@ -1,5 +1,8 @@
-#ifndef NET_H
-#define NET_H
+/** @file
+    @brief Networking module
+*/
+
+#pragma once
 
 #include <stdbool.h>
 #include <netinet/in.h>
@@ -84,7 +87,4 @@ IpAddress * TcpClient_address(TcpClient * self);
 
 #ifdef __cplusplus
 }
-#endif
-
-
 #endif
