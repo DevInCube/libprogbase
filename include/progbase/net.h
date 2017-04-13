@@ -10,6 +10,8 @@ extern "C" {
 
 /* IP Protocol */
 
+bool Ip_resolveHostname(char * ipv4, const char * hostname);
+
 typedef struct IpAddress IpAddress;
 struct IpAddress {
 	struct sockaddr_in addr;
@@ -19,6 +21,8 @@ IpAddress * IpAddress_init(IpAddress * self, const char * ipv4, int port);
 IpAddress * IpAddress_initAny(IpAddress * self, int port);
 const char * IpAddress_address(IpAddress * self);
 int IpAddress_port(IpAddress * self);
+void IpAddress_setAddress(IpAddress * self, const char * ipv4);
+void IpAddress_setPort(IpAddress * self, int port);
 
 /* UDP Protocol */
 typedef struct NetMessage NetMessage;

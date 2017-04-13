@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <progbase.h>
 #include <progbase/net.h>
-#include <pbconsole.h>
+#include <progbase/console.h>
 
 #define BUFFER_LEN 1024
 

@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h> 
 #include <resolv.h>
 #include <string.h>
 #include <assert.h>
@@ -28,12 +29,33 @@ IpAddress * IpAddress_initAny(IpAddress * self, int port) {
 	return self;
 }
 
+bool Ip_resolveHostname(char * ipv4, const char * hostname) {
+	struct hostent *he = gethostbyname(hostname);         
+    if (NULL == he) return false;
+ 
+    struct in_addr ** addr_list = (struct in_addr **) he->h_addr_list;
+    for(int i = 0; addr_list[i] != NULL; i++) 
+    {
+		strcpy(ipv4, inet_ntoa(*addr_list[i]));
+        return true;
+    }
+    return false;
+}
+
 const char * IpAddress_address(IpAddress * self) {
 	return inet_ntoa(self->addr.sin_addr);
 }
 
+void IpAddress_setAddress(IpAddress * self, const char * ipv4) {
+	self->addr.sin_addr.s_addr = inet_addr(ipv4);
+}
+
 int IpAddress_port(IpAddress * self) {
 	return ntohs(self->addr.sin_port);
+}
+
+void IpAddress_setPort(IpAddress * self, int port) {
+	self->addr.sin_port = htons(port);
 }
 
 // UDP
