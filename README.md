@@ -1,8 +1,30 @@
-# libprogbase v0.3.0
+# libprogbase v0.3.1
 
 [![Travis-CI][travis-badge]][travis-builds]
 
 [Repository home][home]
+
+## New in v0.3.1
+
+* `make version` now defines version of __installed__ library.
+* You can use new macro `PROGBASE_VERSION_CHECK(maj, min, patch)` from `<progbase.h>` to check your code compatibility with installed library. Example:
+
+  	```c
+  	#include <progbase.h>
+
+	#ifdef PROGBASE_VERSION
+		#if !PROGBASE_VERSION_CHECK(0, 3, 1)
+			#error "Please, update your libprogbase to version >= 0.3.1"
+		#endif
+	#else
+		#warning "Update your libprogbase to version >= 0.3.1 to enable version check"
+	#endif 
+
+	int main(void) {
+		puts("My libprogbase version: " PROGBASE_VERSION);
+		return 0;
+	} 
+  	```
 
 ## New in v0.3.0
 

@@ -1,10 +1,10 @@
-LIBVERSION=0.3.0
+LIB_PATH=/usr/local/lib/libprogbase.a
 
 repo:
 	@git remote -v
 
 version:
-	@echo "libprogbase "$(LIBVERSION)
+	@echo "libprogbase " & strings $(LIB_PATH) | grep Version -m 1 | cut -d " " -f 2
 
 git-pull:
 	@echo "Updating libprogbase..."

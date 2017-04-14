@@ -227,7 +227,9 @@ void TcpClient_close(TcpClient * self) {
 
 bool TcpClient_receive(TcpClient * self, NetMessage * message) {
 	int bytes = read(self->socket, message->buffer, message->bufferLength);
-	message->buffer[bytes] = '\0';  // terminate c-string
+	if (bytes < message->bufferLength) {
+		message->buffer[bytes] = '\0';  // terminate c-string
+	}
 	message->dataLength = bytes;
 	message->sentDataLength = 0;
 	return bytes >= 0;

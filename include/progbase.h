@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "progbase_info.h"
+
 typedef char * string;
 
 #ifdef __cplusplus
