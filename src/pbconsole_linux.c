@@ -161,3 +161,65 @@ void conLockInput(void) {
 void conUnlockInput(void) {
     assert(0 == tcsetattr(STDIN_FILENO, TCSANOW, &orig));
 }
+
+// new interface implementation
+
+ConsoleCursorPosition Console_cursorPosition(void) { 
+	struct conpos pos = conGetPos();
+	return (ConsoleCursorPosition) {
+		.column = pos.column,
+		.row = pos.row
+	};
+}
+
+void Console_setCursorPosition(unsigned short row, unsigned short column) {
+	conMove(row, column);
+}
+
+void Console_setCursorAttributes(int attributes) {
+	conSetAttr(attributes);
+}
+
+void Console_clear(void) {
+	conClear();
+}
+
+void Console_reset(void) {
+	conReset();
+}
+
+int Console_isKeyDown(void) {
+	return conIsKeyDown();
+}
+
+char Console_getChar(void) {
+	return conGetChar();
+}
+
+ConsoleSize Console_size(void) {
+	struct consize size = conGetSize();
+	return (ConsoleSize) {
+		.columns = size.cols,
+		.rows = size.rows
+	};
+}
+
+void Console_setSize(unsigned short rows, unsigned short columns) {
+	conResize(rows, columns);
+}
+
+void Console_hideCursor(void) {
+	conHideCursor();
+}
+
+void Console_showCursor(void) {
+	conShowCursor();
+}
+
+void Console_lockInput(void) {
+	conLockInput();
+}
+
+void Console_unlockInput(void) {
+	conUnlockInput();
+}
