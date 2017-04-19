@@ -13,4 +13,4 @@ install(
 )
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
-SET(CMAKE_C_FLAGS "-std=c99 -Werror -Wall -pedantic-errors")
+SET(CMAKE_C_FLAGS "-std=c99 -Wall -pedantic-errors")
