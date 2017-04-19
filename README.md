@@ -1,8 +1,12 @@
-# libprogbase v0.3.1
+# libprogbase v0.3.2
 
 [![Travis-CI][travis-badge]][travis-builds]
 
 [Repository home][home]
+
+## New in v0.3.2
+
+* Alternative `progbase/console` module interface added
 
 ## New in v0.3.1
 
