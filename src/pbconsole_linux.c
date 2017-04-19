@@ -177,7 +177,7 @@ void Console_setCursorPosition(unsigned short row, unsigned short column) {
 	conMove(row, column);
 }
 
-void Console_setCursorAttributes(int attributes) {
+void Console_setCursorAttribute(int attributes) {
 	conSetAttr(attributes);
 }
 
