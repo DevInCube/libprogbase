@@ -103,6 +103,7 @@ struct ConsoleCursorPosition {
 ConsoleCursorPosition Console_cursorPosition(void);
 void Console_setCursorPosition(unsigned short row, unsigned short column);
 void Console_setCursorAttribute(int attributes);
+void Console_setCursorAttributes(int attributes);
 
 void Console_clear(void);
 void Console_reset(void);

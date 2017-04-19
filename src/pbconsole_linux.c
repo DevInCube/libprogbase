@@ -181,6 +181,10 @@ void Console_setCursorAttribute(int attributes) {
 	conSetAttr(attributes);
 }
 
+void Console_setCursorAttributes(int attributes) {
+	conSetAttr(attributes);
+}
+
 void Console_clear(void) {
 	conClear();
 }
