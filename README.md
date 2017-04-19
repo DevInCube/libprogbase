@@ -1,8 +1,12 @@
-# libprogbase v0.3.2
+# libprogbase v0.3.3
 
 [![Travis-CI][travis-badge]][travis-builds]
 
 [Repository home][home]
+
+## New in v0.3.3
+
+* New function `Console_setCursorAttribute()` in `progbase/console` module
 
 ## New in v0.3.2
 
