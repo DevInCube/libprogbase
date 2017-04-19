@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-SET(CMAKE_C_FLAGS "-std=c99 -Werror -Wall -pedantic-errors")
-
 include_directories(include)
 file(GLOB LIB_SOURCES "src/*.c")
 
@@ -14,3 +12,5 @@ install(
     FILES_MATCHING PATTERN "*.h"
 )
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
+
+SET(CMAKE_C_FLAGS "-std=c99 -Werror -Wall -pedantic-errors")
