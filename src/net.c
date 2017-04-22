@@ -6,6 +6,14 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h> 
+#include <stdio.h>
+
+#ifndef SSL_MISSING
+	#include <openssl/ssl.h>
+#else
+	// install: sudo apt-get install libssl-dev
+	#warning "SSL is not installed"
+#endif
 
 #include <progbase/net.h>
 
@@ -209,6 +217,7 @@ IpAddress * TcpListener_address(TcpListener * self) {
 // Tcp client
 
 TcpClient * TcpClient_init(TcpClient * self) {
+	self->ssl = NULL;
 	self->socket = -1;
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
@@ -218,35 +227,155 @@ TcpClient * TcpClient_init(TcpClient * self) {
 	return self;
 }
 
+struct __Ssl_priv {
+#ifndef SSL_MISSING
+	SSL_CTX * ssl_ctx;
+    SSL * conn;
+#else
+	int _void;
+#endif
+};
+
+bool Ssl_connect(Ssl * self, TcpClient * client);
+bool Ssl_send(Ssl * self, NetMessage * message);
+bool Ssl_receive(Ssl * self, NetMessage * message);
+void Ssl_close(Ssl * self);
+
 bool TcpClient_connect(TcpClient * self, IpAddress * serverAddress) {
+	self->ssl = NULL;
 	int addrlen = sizeof(serverAddress->addr);
-	return connect(self->socket, (struct sockaddr*)&serverAddress->addr, addrlen) >= 0;
+	bool status = connect(
+		self->socket, 
+		(struct sockaddr*)&serverAddress->addr, 
+		addrlen) >= 0;
+	if (status && self->ssl != NULL) {
+		return Ssl_connect(self->ssl, self);
+	}
+	return status;
+}
+
+bool TcpClient_connectSecure(TcpClient * self, IpAddress * serverAddress, Ssl * ssl) {
+	self->ssl = ssl;
+	int addrlen = sizeof(serverAddress->addr);
+	bool status = connect(
+		self->socket, 
+		(struct sockaddr*)&serverAddress->addr, 
+		addrlen) >= 0;
+	if (status && self->ssl != NULL) {
+		return Ssl_connect(self->ssl, self);
+	}
+	return status;
 }
 
 void TcpClient_close(TcpClient * self) {
+	if (self->ssl != NULL) {
+		Ssl_close(self->ssl);
+	}
 	close(self->socket);
 }
 
 bool TcpClient_receive(TcpClient * self, NetMessage * message) {
-	int bytes = read(self->socket, message->buffer, message->bufferLength);
-	if (bytes <= message->bufferLength) {
-		message->buffer[bytes] = '\0';  // terminate c-string
+	int bytes = -1;
+	if (self->ssl != NULL) {
+		return Ssl_receive(self->ssl, message);
+	} else {
+		bytes = read(self->socket, message->buffer, message->bufferLength);
+		if (bytes <= message->bufferLength) {
+			message->buffer[bytes] = '\0';  // terminate c-string
+		}
+		message->dataLength = bytes;
+		message->sentDataLength = 0;
 	}
-	message->dataLength = bytes;
-	message->sentDataLength = 0;
 	return bytes >= 0;
 }
 
 bool TcpClient_send(TcpClient * self, NetMessage * message) {
-	int bytes = (int)send(
-		self->socket, 
-		message->buffer, 
-		message->dataLength,
-		0);
-	message->sentDataLength = bytes;
+	int bytes = -1;
+	if (self->ssl != NULL) {
+		return Ssl_send(self->ssl, message);
+	} else {
+		bytes = (int)send(
+			self->socket, 
+			message->buffer, 
+			message->dataLength,
+			0);
+		message->sentDataLength = bytes;
+	}
 	return bytes >= 0;
 }
 
 IpAddress * TcpClient_address(TcpClient * self) {
 	return &self->address;
 }
+
+// SSL Protocol
+
+Ssl * Ssl_init(Ssl * self) {
+#ifndef SSL_MISSING
+	self->__priv = malloc(sizeof(__Ssl_priv));
+    self->__priv->conn = NULL;
+    SSL_load_error_strings();
+    SSL_library_init();
+    SSL_CTX *ssl_ctx = SSL_CTX_new(SSLv23_client_method());
+    self->__priv->ssl_ctx = ssl_ctx;
+#endif
+    return self;
+}
+
+bool Ssl_connect(Ssl * self, TcpClient * client) {
+#ifndef SSL_MISSING
+    //
+    // create an SSL connection and attach it to the socket
+    self->__priv->conn = SSL_new(self->__priv->ssl_ctx);
+	if (NULL == self->__priv->conn) {
+		return false;
+	}
+	//
+	// bind ssl for client socket
+    SSL_set_fd(self->__priv->conn, client->socket);
+    //
+    // perform the SSL/TLS handshake with the server - when on the
+    // server side, this would use SSL_accept()
+    return SSL_connect(self->__priv->conn);
+#else
+	return false;
+#endif
+}
+
+bool Ssl_send(Ssl * self, NetMessage * message) {
+#ifndef SSL_MISSING
+    int bytes = SSL_write(self->__priv->conn, (void *)message->buffer, message->dataLength);
+    message->sentDataLength = bytes;
+    return bytes >= 0;
+#else
+	return false;
+#endif
+}
+
+bool Ssl_receive(Ssl * self, NetMessage * message) {
+#ifndef SSL_MISSING
+    int bytes = SSL_read(self->__priv->conn, message->buffer, message->bufferLength);
+    if (bytes < message->bufferLength) {
+        message->buffer[bytes] = '\0';  // null-terminate string
+    }
+    message->dataLength = bytes;
+    return bytes >= 0;
+#else
+	return false;
+#endif
+}
+
+void Ssl_close(Ssl * self) {
+#ifndef SSL_MISSING
+    SSL_shutdown(self->__priv->conn);
+    SSL_free(self->__priv->conn);
+#endif
+}
+
+void Ssl_cleanup(Ssl * self) {
+#ifndef SSL_MISSING
+    SSL_CTX_free(self->__priv->ssl_ctx);
+	free(self->__priv);
+#endif
+}
+

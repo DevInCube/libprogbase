@@ -60,6 +60,15 @@ IpAddress * UdpClient_address(UdpClient * self);
 
 typedef struct TcpListener TcpListener;
 typedef struct TcpClient TcpClient;
+typedef struct Ssl Ssl;
+
+typedef struct __Ssl_priv __Ssl_priv;
+struct Ssl {
+    __Ssl_priv * __priv;
+};
+
+Ssl * Ssl_init(Ssl * self);
+void Ssl_cleanup(Ssl * self);
 
 struct TcpListener {
 	IpAddress address;  /**< server IP-address */
@@ -76,10 +85,12 @@ IpAddress * TcpListener_address(TcpListener * self);
 struct TcpClient {
 	IpAddress address;  /**< server IP-address */
 	int socket;
+	Ssl * ssl;
 };
 
 TcpClient * TcpClient_init(TcpClient * self);
 bool TcpClient_connect(TcpClient * self, IpAddress * serverAddress);
+bool TcpClient_connectSecure(TcpClient * self, IpAddress * serverAddress, Ssl * ssl);
 void TcpClient_close(TcpClient * self);
 bool TcpClient_receive(TcpClient * self, NetMessage * message);
 bool TcpClient_send(TcpClient * self, NetMessage * message);
