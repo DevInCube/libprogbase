@@ -1,8 +1,13 @@
-# libprogbase v0.3.3
+# libprogbase v0.3.4
 
 [![Travis-CI][travis-badge]][travis-builds]
 
 [Repository home][home]
+
+## New in v0.3.4
+
+* New type `Ssl` and function `TcpClient_connectSecure()` in `progbase/net` module for secure connections.
+    __Note__ that it is important to install `libssl-dev` linux package before installing this version of library to use this security features.
 
 ## New in v0.3.3
 
