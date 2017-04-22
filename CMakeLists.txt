@@ -15,6 +15,9 @@ if(NOT OPENSSL_FOUND)
 endif()
 
 add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES})
+if (OPENSSL_FOUND) 
+    target_link_libraries(${CMAKE_PROJECT_NAME} ssl)
+endif()
 set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
 
 install(
