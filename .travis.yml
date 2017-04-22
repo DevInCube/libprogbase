@@ -5,4 +5,7 @@ os:
 compiler: 
   - gcc
 
+before_install:
+  - sudo apt-get install libssl-dev
+
 script: make build
