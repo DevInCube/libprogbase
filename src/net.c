@@ -87,7 +87,9 @@ bool UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * a
 		0,  // control flags
 		(struct sockaddr*)&addr, 
 		&addrlen);
-	message->buffer[bytes] = '\0';  // terminate c-string
+	if (bytes <= message->bufferLength) {
+		message->buffer[bytes] = '\0';  // terminate c-string
+	}
 	if (address != NULL) {
 		address->addr = addr;
 	}
@@ -121,7 +123,7 @@ IpAddress * UdpClient_address(UdpClient * self) {
 NetMessage * NetMessage_init(NetMessage * self, char * buf, size_t bufLen) {
 	memset(self, 0, sizeof(*self));
     self->buffer = buf;
-    self->bufferLength = bufLen;
+    self->bufferLength = bufLen - 1;  // to store null-symbol
 	return self;
 }
 
@@ -227,7 +229,7 @@ void TcpClient_close(TcpClient * self) {
 
 bool TcpClient_receive(TcpClient * self, NetMessage * message) {
 	int bytes = read(self->socket, message->buffer, message->bufferLength);
-	if (bytes < message->bufferLength) {
+	if (bytes <= message->bufferLength) {
 		message->buffer[bytes] = '\0';  // terminate c-string
 	}
 	message->dataLength = bytes;
