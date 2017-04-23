@@ -8,20 +8,20 @@
 
 Now all releases and corresponding release notes will be published in [__Releases__][releases] section
 
-## New in v0.3.4
+### New in v0.3.4
 
 * New type `Ssl` and function `TcpClient_connectSecure()` in `progbase/net` module for secure connections.
     __Note__ that it is important to install `libssl-dev` linux package before installing this version of library to use this security features.
 
-## New in v0.3.3
+### New in v0.3.3
 
 * New function `Console_setCursorAttribute()` in `progbase/console` module
 
-## New in v0.3.2
+### New in v0.3.2
 
 * Alternative `progbase/console` module interface added
 
-## New in v0.3.1
+### New in v0.3.1
 
 * `make version` now defines version of __installed__ library.
 * You can use new macro `PROGBASE_VERSION_CHECK(maj, min, patch)` from `<progbase.h>` to check your code compatibility with installed library. Example:
@@ -43,7 +43,7 @@ Now all releases and corresponding release notes will be published in [__Release
 	} 
   	```
 
-## New in v0.3.0
+### New in v0.3.0
 
 * New module `progbase/thread` for multithreading. Includes __Thread__ and __Mutex__ types.
 * New module `progbase/list` with generic data-type `List` collection.
@@ -56,19 +56,19 @@ Now all releases and corresponding release notes will be published in [__Release
   bool Ip_resolveHostname(char * ipv4, const char * hostname);
   ```
 
-## New in v0.2.0
+### New in v0.2.0
 
 * Added new module `progbase/net` for TCP and UDP networking.
 * `pbconsole.h` became deprecated, use `progbase/console.h` instead.
 * Now `make install` uses __cmake__ and `CMakeLists.txt` to build and install library.
 
-## New in v0.1.6
+### New in v0.1.6
 
 * Now you can link this library with C++ programs.
 * `CMakeLists.txt` for __cmake__ compilation under __VSCode__.
 
 
-## New in v0.1.5
+### New in v0.1.5
 
 New `pbconsole.h` functions:
 
@@ -83,7 +83,7 @@ Samples:
 * [conLock.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conLock.c)
 * [conLockFire.c](https://github.com/PublicHadyniak/libprogbase/blob/master/sample/conLockFire.c)
 
-## New in v0.1.4
+### New in v0.1.4
 
 New `progbase.h` function:
 
@@ -95,7 +95,7 @@ All input functions were fixed to skip redundant characters from stdin stream af
 
 Added new `.gcc-flags.json` config file for Atom gcc-linter plugin. All sources updated, some warnings and errors fixed.
 
-## New in v0.1.3
+### New in v0.1.3
 
 New `pbconsole.h` functions:
 
@@ -106,7 +106,7 @@ void conHideCursor(void);
 void conShowCursor(void);
 ~~~~
 
-## New in v0.1.2
+### New in v0.1.2
 
 ~~~~c
 
@@ -125,7 +125,7 @@ New `pbconsole.h` functions:
 struct conpos conGetPos(void);
 ~~~~
 
-## New in v0.1.1
+### New in v0.1.1
 
 New `pbconsole.h` type:
 
@@ -189,7 +189,7 @@ Include header files from `include/` directory and compile your code with linker
 gcc main.c -lprogbase
 ~~~~
 
-## Check library version (since 0.1.0)
+## Check library version (since version 0.1.0)
 
 You need to change directory to cloned `libprogbase/` directory and execute command:
 
@@ -197,9 +197,9 @@ You need to change directory to cloned `libprogbase/` directory and execute comm
 make version
 ~~~~
 
-## Library update
+## Update library
 
-### Auto (since 0.1.0)
+### Update with script (since version 0.1.0)
 
 Works only if you cloned this repository with Git.
 
@@ -209,77 +209,9 @@ Change directory to cloned `libprogbase/` and execute command:
 sudo make update
 ~~~~
 
-And that's all.
+### Reinstall
 
-### Manual
-
-You need to re-install library.
-
-## Headers
-
-### progbase.h
-
-Sample usage to read all available data type values from terminal:
-
-~~~~c
-#include <stdio.h>
-#include <stdlib.h>
-#include <progbase.h>
-
-int main(void) {
-	int i = 0;
-	long l = 0;
-	float f = 0;
-	double d = 0;
-	string s = "";
-
-	printf("Enter int: ");
-	i = getInt();
-	printf("Entered: %d\n", i);
-
-	printf("Enter long: ");
-	l = getLong();
-	printf("Entered: %ld\n", l);
-
-	printf("Enter float: ");
-	f = getFloat();
-	printf("Entered: %f\n", f);
-
-	printf("Enter double: ");
-	d = getDouble();
-	printf("Entered: %lf\n", d);
-
-	printf("Enter string: ");
-	s = getString();
-	printf("Entered: %s\n", s);
-
-	freeString(s);
-	return 0;
-}
-~~~~
-
-Sleep milliseconds sample `sleepMillis()` (since 0.1.0):
-
-```c
-#include <stdio.h>
-#include <progbase.h>
-
-int main(void) {
-	int i = 0;
-	const unsigned long MILLIS = 100;
-
-	for (i = 0; i < 100; i++) {
-		if (0 == i % 10) {
-			puts("");
-		}
-		printf("%i\t", i);
-		fflush(stdout);
-		sleepMillis(MILLIS);
-	}
-	puts("");
-	return 0;
-}
-```
+You can reinstall the library to update it to newer version.
 
 
 [home]: https://github.com/PublicHadyniak/libprogbase
