@@ -4,6 +4,10 @@
 
 [Repository home][home]
 
+## Releases
+
+Now all releases and corresponding release notes will be published in [__Releases__][releases] section
+
 ## New in v0.3.4
 
 * New type `Ssl` and function `TcpClient_connectSecure()` in `progbase/net` module for secure connections.
@@ -279,5 +283,6 @@ int main(void) {
 
 
 [home]: https://github.com/PublicHadyniak/libprogbase
+[releases]: https://github.com/PublicHadyniak/libprogbase/releases
 [travis-badge]: https://travis-ci.org/PublicHadyniak/libprogbase.svg?branch=master
 [travis-builds]: https://travis-ci.org/PublicHadyniak/libprogbase/builds
