@@ -9,6 +9,10 @@ version:
 git-pull:
 	@echo "Updating libprogbase..."
 	@git pull origin master
+	@git fetch --tags
+	latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+	@git checkout $latestTag
+	@echo "Switch to release version " + $latestTag
 
 update: git-pull install
 
