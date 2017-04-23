@@ -1,7 +1,8 @@
 GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo "Updating libprogbase..."
+printf "${YELLOW}Updating libprogbase code...${NC}\n"
 # pull latest repo code
 git pull origin master
 # fetch release tags from remote
@@ -11,7 +12,7 @@ latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
 # checkout to latest release code
 git checkout $latestTag
 
-printf "${GREEN}Installing libprogbase $latestTag:${NC}\n"
+printf "${YELLOW}Installing libprogbase $latestTag:${NC}\n"
 echo "Building and installing libprogbase..."
 # clean and make build directory
 rm ./build -rf && mkdir ./build
@@ -21,7 +22,7 @@ cd ./build && cmake .. && make && sudo make install && cd ../
 rm ./build -rf
 
 # check installed library version
-printf "${GREEN}Checking installed version:${NC}\n"
+printf "${YELLOW}Checking installed version:${NC}\n"
 make version
 
 # return from git `detached HEAD` state
