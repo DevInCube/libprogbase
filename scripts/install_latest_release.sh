@@ -15,15 +15,12 @@ git checkout $latestTag
 printf "${YELLOW}Installing libprogbase $latestTag:${NC}\n"
 echo "Building and installing libprogbase..."
 # clean and make build directory
-rm ./build -rf && mkdir ./build
+rm ./build -rf ; mkdir ./build
 # build nd install static library with cmake
-cd ./build && cmake .. && make && sudo make install && cd ../
+cd ./build ; cmake .. ; make ; sudo make install ; cd ../
 # cleanup build directory
 rm ./build -rf
 
-# check installed library version
-printf "${YELLOW}Checking installed version:${NC}\n"
-make version
-
 # return from git `detached HEAD` state
 git checkout master
+printf "${YELLOW}libprogbase $latestTag installation finished.${NC}\n"

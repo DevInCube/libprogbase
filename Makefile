@@ -1,10 +1,8 @@
-LIB_PATH=/usr/local/lib/libprogbase.a
-
 repo:
 	@git remote -v
 
 version:
-	@echo "libprogbase " & strings $(LIB_PATH) | grep Version -m 1 | cut -d " " -f 2
+	@sh scripts/print_installed_version.sh
 
 update: 
 	@sh scripts/install_latest_release.sh
