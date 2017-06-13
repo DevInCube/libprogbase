@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 echo "Building and installing libprogbase..."
 # clean and make build directory
 rm ./build -rf ; mkdir ./build

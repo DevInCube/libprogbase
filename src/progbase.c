@@ -57,6 +57,7 @@ void freeString(string str) {
 char * inputString(FILE * fp, size_t size) {
     /* The size is extended by the input with the value of the provisional */
     char * str;
+    char * strold;
     int ch;
     size_t len = 0;
     str = (char *)realloc(NULL, sizeof(char) * size);
@@ -66,8 +67,10 @@ char * inputString(FILE * fp, size_t size) {
     while (EOF != (ch = fgetc(fp)) && ch != '\n') {
         str[len++] = ch;
         if (len == size) {
+            strold = str;
             str = (char *)realloc(str, sizeof(char) * (size += 16));
             if(NULL == str) {
+                free(strold);
 				return str;
 			}
         }
