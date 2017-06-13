@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h> 
+#include <netdb.h>
 #include <stdio.h>
 
 #ifndef SSL_MISSING
@@ -37,11 +38,11 @@ IpAddress * IpAddress_initAny(IpAddress * self, int port) {
 }
 
 bool Ip_resolveHostname(char * ipv4, const char * hostname) {
-	struct hostent *he = gethostbyname(hostname);         
+	struct hostent *he = gethostbyname(hostname);
     if (NULL == he) return false;
- 
+
     struct in_addr ** addr_list = (struct in_addr **) he->h_addr_list;
-    for(int i = 0; addr_list[i] != NULL; i++) 
+    for(int i = 0; addr_list[i] != NULL; i++)
     {
 		strcpy(ipv4, inet_ntoa(*addr_list[i]));
         return true;
@@ -80,8 +81,8 @@ UdpClient * UdpClient_init(UdpClient * self) {
 bool UdpClient_bind(UdpClient * self, IpAddress * address) {
 	self->address = *address;
     return bind(
-		self->socket, 
-		(struct sockaddr*)&(self->address.addr), 
+		self->socket,
+		(struct sockaddr*)&(self->address.addr),
 		sizeof(self->address.addr)) >= 0;
 }
 
@@ -89,11 +90,11 @@ bool UdpClient_receiveFrom(UdpClient * self, NetMessage * message, IpAddress * a
 	struct sockaddr_in addr;  // to get sender address
 	socklen_t addrlen = sizeof(addr);
 	int bytes = recvfrom(
-		self->socket, 
-		message->buffer, 
+		self->socket,
+		message->buffer,
 		message->bufferLength,  // maximum bytes to receive in buffer
 		0,  // control flags
-		(struct sockaddr*)&addr, 
+		(struct sockaddr*)&addr,
 		&addrlen);
 	if (bytes <= message->bufferLength) {
 		message->buffer[bytes] = '\0';  // terminate c-string
@@ -110,11 +111,11 @@ bool UdpClient_sendTo(UdpClient * self, NetMessage * message, IpAddress * addres
 	struct sockaddr_in addr = address->addr;
 	socklen_t addrlen = sizeof(addr);
 	int bytes = sendto(
-		self->socket, 
-		message->buffer, 
-		message->dataLength, 
+		self->socket,
+		message->buffer,
+		message->dataLength,
 		0,  // control flags
-		(struct sockaddr*)&addr, 
+		(struct sockaddr*)&addr,
 		addrlen);
 	message->sentDataLength = bytes;
 	return bytes >= 0;
@@ -148,7 +149,7 @@ NetMessage * NetMessage_setDataString(NetMessage * self, const char * str) {
 	int dataLength = strlen(str) + 1;  // + null-termination
 	if (dataLength >= self->bufferLength) {
 		assert(0 && "Buffer overflow error");
-	} 
+	}
 	strcpy(self->buffer, str);
 	self->dataLength = dataLength;
 	return self;
@@ -183,8 +184,8 @@ bool TcpListener_start(TcpListener * self) {
 bool TcpListener_bind(TcpListener * self, IpAddress * address) {
 	self->address = *address;
     return bind(
-		self->socket, 
-		(struct sockaddr*)&(self->address.addr), 
+		self->socket,
+		(struct sockaddr*)&(self->address.addr),
 		sizeof(self->address.addr)) >= 0;
 }
 
@@ -201,7 +202,7 @@ TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client) {
 	socklen_t addrlen = sizeof(addr);
 	client->socket = accept(
 		self->socket,
-		(struct sockaddr *)&addr, 
+		(struct sockaddr *)&addr,
 		&addrlen);
 	if (client->socket < 0) {
 		assert(0 && "Accept error");
@@ -245,8 +246,8 @@ bool TcpClient_connect(TcpClient * self, IpAddress * serverAddress) {
 	self->ssl = NULL;
 	int addrlen = sizeof(serverAddress->addr);
 	bool status = connect(
-		self->socket, 
-		(struct sockaddr*)&serverAddress->addr, 
+		self->socket,
+		(struct sockaddr*)&serverAddress->addr,
 		addrlen) >= 0;
 	if (status && self->ssl != NULL) {
 		return Ssl_connect(self->ssl, self);
@@ -258,8 +259,8 @@ bool TcpClient_connectSecure(TcpClient * self, IpAddress * serverAddress, Ssl * 
 	self->ssl = ssl;
 	int addrlen = sizeof(serverAddress->addr);
 	bool status = connect(
-		self->socket, 
-		(struct sockaddr*)&serverAddress->addr, 
+		self->socket,
+		(struct sockaddr*)&serverAddress->addr,
 		addrlen) >= 0;
 	if (status && self->ssl != NULL) {
 		return Ssl_connect(self->ssl, self);
@@ -295,8 +296,8 @@ bool TcpClient_send(TcpClient * self, NetMessage * message) {
 		return Ssl_send(self->ssl, message);
 	} else {
 		bytes = (int)send(
-			self->socket, 
-			message->buffer, 
+			self->socket,
+			message->buffer,
 			message->dataLength,
 			0);
 		message->sentDataLength = bytes;
@@ -332,7 +333,9 @@ bool Ssl_connect(Ssl * self, TcpClient * client) {
 	}
 	//
 	// bind ssl for client socket
-    SSL_set_fd(self->__priv->conn, client->socket);
+    if(SSL_set_fd(self->__priv->conn, client->socket) < 0) {
+	return false;
+    }
     //
     // perform the SSL/TLS handshake with the server - when on the
     // server side, this would use SSL_accept()
@@ -348,6 +351,7 @@ bool Ssl_send(Ssl * self, NetMessage * message) {
     message->sentDataLength = bytes;
     return bytes >= 0;
 #else
+	errno = EPERM;
 	return false;
 #endif
 }
@@ -361,6 +365,7 @@ bool Ssl_receive(Ssl * self, NetMessage * message) {
     message->dataLength = bytes;
     return bytes >= 0;
 #else
+	errno = EPERM;
 	return false;
 #endif
 }
