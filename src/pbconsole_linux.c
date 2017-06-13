@@ -130,7 +130,6 @@ struct consize conGetSize(void) {
 
 struct conpos conGetPos(void) {
 	struct conpos pos = {0, 0};
-	char buf[8];
 	char cmd[] = "\033[6n";
 	struct termios save, raw;
 	fflush(stdout);
@@ -138,6 +137,7 @@ struct conpos conGetPos(void) {
 	cfmakeraw(&raw);
 	tcsetattr(0, TCSANOW, &raw);
 	if (isatty(fileno(stdin))) {
+                char buf[8];
 		write(1, cmd, sizeof(cmd));
 		read (0, buf ,sizeof(buf));
 		sscanf(buf, "\033[%u;%u", &(pos.row), &(pos.column));

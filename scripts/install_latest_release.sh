@@ -9,7 +9,7 @@ git pull origin master
 # fetch release tags from remote
 git fetch --tags
 # get latest release tag
-latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 # checkout to latest release code
 git checkout $latestTag
 
