@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <time.h>
+#include <string.h>
 
 #include <progbase.h>
 
@@ -54,7 +55,37 @@ void freeString(string str) {
 	free(str);
 }
 
-char * inputString(FILE * fp, size_t size) {
+char * getStringAr(char buffer[], size_t bufferLength) {
+	fgets(buffer, bufferLength, stdin);
+	buffer[strlen(buffer) - 1] = '\0';
+	return buffer;
+}
+
+void printChar(char character) { 
+	printf("%c", character); 
+}
+
+void printInt(int integer) { 
+	printf("%d", integer); 
+}
+
+void printLong(long longInteger) { 
+	printf("%ld", longInteger); 
+}
+
+void printFloat(float floatingPoint) {
+	printf("%f", floatingPoint);
+}
+
+void printDouble(double doublePrecision) {
+	printf("%lf", doublePrecision);
+}
+
+void printString(const char buffer[]) {
+	printf("%s", buffer);
+}
+
+static char * inputString(FILE * fp, size_t size) {
     /* The size is extended by the input with the value of the provisional */
     char * str;
     char * strold;

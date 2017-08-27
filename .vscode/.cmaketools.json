@@ -7,5 +7,54 @@
     "description": "Emit debug information without performing optimizations"
   },
   "activeEnvironments": [],
-  "codeModel": null
+  "codeModel": {
+    "configurations": [
+      {
+        "name": "Debug",
+        "projects": [
+          {
+            "buildDirectory": "/home/devincube/projects/libprogbase/build",
+            "name": "progbase",
+            "sourceDirectory": "/home/devincube/projects/libprogbase",
+            "targets": [
+              {
+                "artifacts": [
+                  "/home/devincube/projects/libprogbase/build/libprogbase.a"
+                ],
+                "buildDirectory": "/home/devincube/projects/libprogbase/build",
+                "fileGroups": [
+                  {
+                    "compileFlags": "-std=c99 -Wall -g   -std=gnu99",
+                    "includePath": [
+                      {
+                        "path": "/home/devincube/projects/libprogbase/include"
+                      }
+                    ],
+                    "isGenerated": false,
+                    "language": "C",
+                    "sources": [
+                      "src/events.c",
+                      "src/list.c",
+                      "src/net.c",
+                      "src/pbconsole_linux.c",
+                      "src/progbase.c",
+                      "src/thread_linux.c"
+                    ]
+                  }
+                ],
+                "fullName": "libprogbase.a",
+                "linkerLanguage": "C",
+                "name": "progbase",
+                "sourceDirectory": "/home/devincube/projects/libprogbase",
+                "type": "STATIC_LIBRARY"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cookie": "0.6830773890313773",
+    "inReplyTo": "codemodel",
+    "type": "reply"
+  }
 }

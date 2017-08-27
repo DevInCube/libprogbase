@@ -29,6 +29,14 @@ int getInt(void);
 long getLong(void);
 float getFloat(void);
 double getDouble(void);
+char * getStringAr(char buffer[], size_t bufferLength);
+
+void printChar(char character);
+void printInt(int integer);
+void printLong(long longInteger);
+void printFloat(float floatingPoint);
+void printDouble(double doublePrecision);
+void printString(const char buffer[]);
 
 void sleepMillis(unsigned long int milliseconds);
 
