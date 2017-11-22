@@ -120,26 +120,26 @@ void conResize(unsigned short rows, unsigned short cols) {
 }
 
 struct consize conGetSize(void) {
-    struct winsize w;
-	struct consize size;
+    struct winsize w = {0};
     ioctl(0, TIOCGWINSZ, &w);
-	size.cols = w.ws_col;
-	size.rows = w.ws_row;
-	return size;
+	return (struct consize) {
+		.cols = w.ws_col,
+		.rows = w.ws_row
+	};
 }
 
 struct conpos conGetPos(void) {
 	struct conpos pos = {0, 0};
 	char cmd[] = "\033[6n";
-	struct termios save, raw;
+	struct termios save = {0}, raw = {0};
 	fflush(stdout);
 	tcgetattr(0, &save);
 	cfmakeraw(&raw);
 	tcsetattr(0, TCSANOW, &raw);
 	if (isatty(fileno(stdin))) {
-                char buf[8];
+        char buf[8] = {0};
 		write(1, cmd, sizeof(cmd));
-		read (0, buf ,sizeof(buf));
+		read (0, buf, sizeof(buf));
 		sscanf(buf, "\033[%u;%u", &(pos.row), &(pos.column));
 	}
 	tcsetattr(0, TCSANOW, &save);
