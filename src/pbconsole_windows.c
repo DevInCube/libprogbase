@@ -34,7 +34,7 @@ enum WinConsoleColor {
 
 static int FG_COLOR_CHOOSER(int FG) {
 	if(FG == FG_BLACK)
-		return darkgray;
+		return black;
 	else if(FG == FG_RED)
 		return red;
 	else if(FG == FG_GREEN)
@@ -52,7 +52,7 @@ static int FG_COLOR_CHOOSER(int FG) {
 	else if(FG == FG_DEFAULT)
 		return 15;
 	else if(FG == FG_INTENSITY_BLACK)
-		return black;
+		return darkgray;
 	else if(FG == FG_INTENSITY_RED)
 		return lightred;
 	else if(FG == FG_INTENSITY_GREEN)
@@ -71,7 +71,7 @@ static int FG_COLOR_CHOOSER(int FG) {
 
 static int BG_COLOR_CHOOSER(int BG) {
 	if(BG == BG_BLACK)
-		return darkgray;
+		return black;
 	else if(BG == BG_RED)
 		return red;
 	else if(BG == BG_GREEN)
@@ -89,7 +89,7 @@ static int BG_COLOR_CHOOSER(int BG) {
 	else if(BG == BG_DEFAULT)
 		return 0;
 	else if(BG == BG_INTENSITY_BLACK)
-		return black;
+		return darkgray;
 	else if(BG == BG_INTENSITY_RED)
 		return lightred;
 	else if(BG == BG_INTENSITY_GREEN)
