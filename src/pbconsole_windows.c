@@ -158,9 +158,11 @@ void conSetAttr(int attr) {
 }
 
 void strConMove(char * str, int row, int col) {
+	/* TODO */
 }
 
 void strConSetAttr(char * str, int attr) {
+	/* TODO */
 }
 
 void conClear(void) {
@@ -191,6 +193,9 @@ struct consize conGetSize(void) {
 void conResize(unsigned short rows, unsigned short cols) {
 	HWND console = GetConsoleWindow();
 	RECT r;
+	/* TODO */
+	rows = (short)(((double) rows * 17.5));
+	cols = (short)(((double) cols * 7.6));
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, rows, cols, TRUE);
 }
