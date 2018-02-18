@@ -194,10 +194,10 @@ void conResize(unsigned short rows, unsigned short cols) {
 	HWND console = GetConsoleWindow();
 	RECT r;
 	/* TODO */
-	rows = (short)(((double) rows * 17.5));
-	cols = (short)(((double) cols * 7.6));
+	rows = (short)(((double) rows * 15 + 69));
+	cols = (short)(((double) cols * 7.3 + 39));
 	GetWindowRect(console, &r);
-	MoveWindow(console, r.left, r.top, rows, cols, TRUE);
+	MoveWindow(console, r.left, r.top, cols, rows, TRUE);
 }
 
 
