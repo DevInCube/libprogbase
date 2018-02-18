@@ -136,8 +136,8 @@ struct conpos conGetPos(void) {
 
 void conMove(int row, int col) {
 	COORD cursorPos;
-	cursorPos.X = row;
-  	cursorPos.Y = col;
+	cursorPos.X = col;
+  	cursorPos.Y = row;
   	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursorPos);
 }
 
@@ -192,7 +192,7 @@ void conResize(unsigned short rows, unsigned short cols) {
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
-	MoveWindow(console, r.left, r.top, cols, rows, TRUE);
+	MoveWindow(console, r.left, r.top, rows, cols, TRUE);
 }
 
 
