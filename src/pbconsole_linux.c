@@ -165,7 +165,7 @@ void conUnlockInput(void) {
 
 // new interface implementation
 
-ConsoleCursorPosition Console_cursorPosition(void) { 
+ConsoleCursorPosition Console_cursorPosition(void) {
 	struct conpos pos = conGetPos();
 	return (ConsoleCursorPosition) {
 		.column = pos.column,
@@ -228,3 +228,7 @@ void Console_lockInput(void) {
 void Console_unlockInput(void) {
 	conUnlockInput();
 }
+
+// dummy windows-only implementation
+void Console_winFullScreenFix(void) {}
+void Console_winSetColorAttributes(const int background, const int text){}

@@ -113,6 +113,14 @@ static char WinConsoleColorToColorSchemeColor(const int color) {
 			return 'A' + color - 10;
 }
 
+// fix the problem in all Windows distributions
+// which prevence fullscreen command prompt window
+void Console_winFullScreenFix(void) {
+	system("mode 800");
+}
+
+// not included to header, dangerous method
+// which make global color change in command prompt
 void Console_winMainColorScheme(const int background, const int text) {
 	char back = WinConsoleColorToColorSchemeColor(background);
 	char txt = WinConsoleColorToColorSchemeColor(text);
@@ -121,6 +129,8 @@ void Console_winMainColorScheme(const int background, const int text) {
 	system(setColor);
 }
 
+// simple native widows command prompty utility in one line
+// which change both background and text color
 void Console_winSetColorAttributes(const int background, const int text) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD) ((background << 4) | text));
 }
