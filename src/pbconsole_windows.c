@@ -5,6 +5,7 @@
 #include <conio.h>
 
 #include <progbase\console.h>
+#include <progbase\console_win_ext.h>
 
 #ifndef CON_MIN_ROWS
 #	define CON_MIN_ROWS 5
@@ -119,8 +120,8 @@ void Console_winFullScreenFix(void) {
 	system("mode 800");
 }
 
-// not included to header, dangerous method
-// which make global color change in command prompt
+// make global color change in command prompt
+// may clear up all other color changes
 void Console_winMainColorScheme(const int background, const int text) {
 	char back = WinConsoleColorToColorSchemeColor(background);
 	char txt = WinConsoleColorToColorSchemeColor(text);
@@ -200,12 +201,14 @@ struct consize conGetSize(void) {
 	};
 }
 
+// it change size by pixels
 void conResize(unsigned short rows, unsigned short cols) {
 	HWND console = GetConsoleWindow();
 	RECT r;
 	/* TODO */
-	rows = (short)(((double) rows * 15 + 69));
-	cols = (short)(((double) cols * 7.3 + 39));
+	// formula which calculate rows/cols into pixel size
+	rows = (short)(((double) rows * 15 + /*size of window manager panel*/ 69));
+	cols = (short)(((double) cols * 7.3 + /*size of scrolling panel*/ 39));
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, cols, rows, TRUE);
 }

@@ -145,10 +145,6 @@ void Console_showCursor(void);
 void Console_lockInput(void);
 void Console_unlockInput(void);
 
-// Windows-only, if needed
-void Console_winFullScreenFix(void);
-void Console_winSetColorAttributes(const int background, const int text);
-
 #ifdef __cplusplus
 }
 #endif
