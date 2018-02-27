@@ -60,6 +60,25 @@ enum conAttribute_e {
 	BG_INTENSITY_WHITE
 };
 
+enum WinConsoleColor {
+	black = 0,
+	blue = 1,
+	green = 2,
+	cyan = 3,
+	red = 4,
+	magenta = 5,
+	brown = 6,
+	lightgray = 7,
+	darkgray = 8,
+	lightblue = 9,
+	lightgreen = 10,
+	lightcyan = 11,
+	lightred = 12,
+	lightmagenta = 13,
+	yellow = 14,
+	white = 15
+};
+
 struct conpos {
 	unsigned int column;
 	unsigned int row;
