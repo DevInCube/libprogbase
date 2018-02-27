@@ -281,41 +281,10 @@ void Console_unlockInput(void) {
 	conUnlockInput();
 }
 
-// some windows only functions that not included to release
-// but may be needed
-/*
-static char WinConsoleColorToColorSchemeColor(const int color) {
-		if(color <= lightblue)
-			return '0' + color;
-		else if(color > lightgreen)
-			return 'A' + color - 10;
-}
-*/
-
 // fix the problem in all Windows distributions
 // which prevence fullscreen command prompt window
 /*
 void Console_winFullScreenFix(void) {
 	system("mode 800");
-}
-*/
-
-// make global color change in command prompt
-// may clear up all other color changes
-/*
-void Console_winMainColorScheme(const int background, const int text) {
-	char back = WinConsoleColorToColorSchemeColor(background);
-	char txt = WinConsoleColorToColorSchemeColor(text);
-	char setColor[8];
-	sprintf(setColor, "color %c%c", back, txt);
-	system(setColor);
-}
-*/
-
-// simple native widows command prompty utility in one line
-// which change both background and text color
-/*
-void Console_winSetColorAttributes(const int background, const int text) {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD) ((background << 4) | text));
 }
 */
