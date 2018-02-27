@@ -57,6 +57,5 @@ SET(CMAKE_C_FLAGS "-std=c99 -Wall")
 #     DIRECTORY include\ DESTINATION minGW\include
 #     FILES_MATCHING PATTERN "*.h"
 # )
-# install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
-#
+# install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION minGW\lib)
 # SET(CMAKE_C_FLAGS "-std=c99 -Wall")
