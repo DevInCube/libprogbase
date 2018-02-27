@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-// LINUX
+# LINUX
 set(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 find_package(OpenSSL QUIET)
@@ -31,8 +31,11 @@ install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
 SET(CMAKE_C_FLAGS "-std=c99 -Wall")
 
-// WINDOWS
-/*
-
-
-*/
+# WINDOWS
+# set(CMAKE_FIND_LIBRARY_PREFIXES "lib")
+# set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+# include_directories(include)
+# file(GLOB LIB_SOURCES "src/*.c")
+# if (WIN32)
+#     file(GLOB LIB_SOURCES "src/windows/*.c")
+# endif (WIN32)
