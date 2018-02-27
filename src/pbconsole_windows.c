@@ -5,7 +5,6 @@
 #include <conio.h>
 
 #include <progbase\console.h>
-#include <progbase\console_win_ext.h>
 
 #ifndef CON_MIN_ROWS
 #	define CON_MIN_ROWS 5
@@ -107,34 +106,6 @@ static int BG_COLOR_CHOOSER(int BG) {
 		return white;
 }
 
-static char WinConsoleColorToColorSchemeColor(const int color) {
-		if(color <= lightblue)
-			return '0' + color;
-		else if(color > lightgreen)
-			return 'A' + color - 10;
-}
-
-// fix the problem in all Windows distributions
-// which prevence fullscreen command prompt window
-void Console_winFullScreenFix(void) {
-	system("mode 800");
-}
-
-// make global color change in command prompt
-// may clear up all other color changes
-void Console_winMainColorScheme(const int background, const int text) {
-	char back = WinConsoleColorToColorSchemeColor(background);
-	char txt = WinConsoleColorToColorSchemeColor(text);
-	char setColor[8];
-	sprintf(setColor, "color %c%c", back, txt);
-	system(setColor);
-}
-
-// simple native widows command prompty utility in one line
-// which change both background and text color
-void Console_winSetColorAttributes(const int background, const int text) {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD) ((background << 4) | text));
-}
 
 struct conpos conGetPos(void) {
 	struct conpos pos;
@@ -201,14 +172,18 @@ struct consize conGetSize(void) {
 	};
 }
 
-// it change size by pixels
 void conResize(unsigned short rows, unsigned short cols) {
+	if (cols < CON_MIN_COLS) cols = CON_MIN_COLS;
+	if (cols > 999) cols = 999;
+	if (rows < CON_MIN_ROWS) rows = CON_MIN_ROWS;
+	if (rows > 999) rows = 999;
 	HWND console = GetConsoleWindow();
 	RECT r;
-	/* TODO */
 	// formula which calculate rows/cols into pixel size
 	rows = (short)(((double) rows * 15 + /*size of window manager panel*/ 69));
 	cols = (short)(((double) cols * 7.3 + /*size of scrolling panel*/ 39));
+	/* TODO */
+	// find other, not by-pixel realization
 	GetWindowRect(console, &r);
 	MoveWindow(console, r.left, r.top, cols, rows, TRUE);
 }
@@ -305,3 +280,42 @@ void Console_lockInput(void) {
 void Console_unlockInput(void) {
 	conUnlockInput();
 }
+
+// some windows only functions that not included to release
+// but may be needed
+/*
+static char WinConsoleColorToColorSchemeColor(const int color) {
+		if(color <= lightblue)
+			return '0' + color;
+		else if(color > lightgreen)
+			return 'A' + color - 10;
+}
+*/
+
+// fix the problem in all Windows distributions
+// which prevence fullscreen command prompt window
+/*
+void Console_winFullScreenFix(void) {
+	system("mode 800");
+}
+*/
+
+// make global color change in command prompt
+// may clear up all other color changes
+/*
+void Console_winMainColorScheme(const int background, const int text) {
+	char back = WinConsoleColorToColorSchemeColor(background);
+	char txt = WinConsoleColorToColorSchemeColor(text);
+	char setColor[8];
+	sprintf(setColor, "color %c%c", back, txt);
+	system(setColor);
+}
+*/
+
+// simple native widows command prompty utility in one line
+// which change both background and text color
+/*
+void Console_winSetColorAttributes(const int background, const int text) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD) ((background << 4) | text));
+}
+*/
