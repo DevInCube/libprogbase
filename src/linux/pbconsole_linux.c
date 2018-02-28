@@ -165,7 +165,7 @@ void conUnlockInput(void) {
 
 // new interface implementation
 
-ConsoleCursorPosition Console_cursorPosition(void) { 
+ConsoleCursorPosition Console_cursorPosition(void) {
 	struct conpos pos = conGetPos();
 	return (ConsoleCursorPosition) {
 		.column = pos.column,
