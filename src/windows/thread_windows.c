@@ -1,5 +1,6 @@
 #include <progbase\thread.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // dummy implementation
 
@@ -12,7 +13,7 @@ bool Thread_equal(Thread a, Thread b) {
 }
 
 Thread Thread_current(void) {
-	typeof Thread temp;
+	Thread temp;
 	return temp;
 }
 

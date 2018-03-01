@@ -1,5 +1,6 @@
 #include <progbase\net.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // dummy implementation
 
