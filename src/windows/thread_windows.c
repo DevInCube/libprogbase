@@ -13,7 +13,7 @@ bool Thread_equal(Thread a, Thread b) {
 }
 
 Thread Thread_current(void) {
-	Thread temp;
+	Thread temp = {0};
 	return temp;
 }
 
