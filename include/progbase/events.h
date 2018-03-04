@@ -27,14 +27,21 @@ typedef struct EventHandler EventHandler;
 typedef void (*DestructorFunction)(void * data);
 
 /**
+	@typedef EventSystemObjectPrivate
+	@brief a private data of EventSystem objects
+*/
+typedef struct __EventSystemObjectPrivate EventSystemObjectPrivate;
+
+/**
 	@struct Event
 	@brief a structure that holds information about an event occured
 */
 struct Event {
+	EventSystemObjectPrivate * _private;
+	//
 	EventHandler * sender;  /**< pointer to an event handler that have raised this event */
 	int type;  /**< an identifier of event type  */
 	void * data;  /**< pointer to custom event data of type depending on event type */
-	DestructorFunction destructor;  /**< a callback function pointer to call to free data */
 };
 
 /** 
@@ -62,10 +69,11 @@ typedef void (*EventHandlerFunction)(EventHandler * self, Event * event);
 	@brief a structure that holds infomation about system event handlers
 */
 struct EventHandler {
+	EventSystemObjectPrivate * _private;
+	//
 	void * data;  /**< a pointer to an event handler data */
 	DestructorFunction destructor;  /**< a pointer to function that will be called to free data data*/
 	EventHandlerFunction handler;  /**< a pointer to function that will call on data events handle */
-	int _refCount;  /**< private reference counter */
 };
 
 
@@ -82,13 +90,13 @@ EventHandler * EventHandler_new(
 /**
 	@brief reference counting reference increase
 */
-void EventHandler_incref(EventHandler * self);
+void EventSystem_incref(EventSystemObjectPrivate * self);
 
 /**
 	@brief reference counting reference decrease
-	free's handler when reference counter is 0
+	free's object when reference counter is 0
 */
-void EventHandler_decref(EventHandler * self);
+void EventSystem_decref(EventSystemObjectPrivate * self);
 
 /* public EventSystem API */
 
@@ -120,16 +128,13 @@ void EventSystem_removeHandler(EventHandler * handler);
 /**
 	@brief add new event to EventSystem to handle by event handlers
 */
-void EventSystem_raiseEvent(Event * event) 
-	;//__attribute__((deprecated("use EventSystem_emitEvent() instead")));
-
 void EventSystem_emit(Event * event);
 
 /**
 	@brief some base events type ids
 */
 typedef enum { 
-	StartEventTypeId = INT_MIN,  /**< the first event generated before event loop start */
+	StartEventTypeId = -2147483648,  /**< the first event generated before event loop start */
 	UpdateEventTypeId,  /**< event is generated in every iteration of event loop */
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;

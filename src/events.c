@@ -9,7 +9,11 @@
 #include <progbase/list.h>
 #include <progbase/events.h>
 
-void Event_free(Event ** dataPtr);
+struct __EventSystemObjectPrivate {
+	int refCount;  /**< private reference counter */
+	void * data;  /**< a copy pointer to public data */
+	DestructorFunction destructor;  /**< a callback function pointer to call to free data */
+};
 
 /**
     @struct Clock
@@ -80,22 +84,20 @@ int EventQueue_size(EventQueue * self) {
 	return List_count(self->list);
 }
 
-Event * Event_new(EventHandler * sender, int type, void * data, DestructorFunction dest) {
-	Event * self = malloc(sizeof(struct Event));
-	self->sender = sender;
-	self->type = type;
-	self->data = data;
-	self->destructor = dest;
+EventSystemObjectPrivate * Private_new(void * data, DestructorFunction destructor) {
+	EventSystemObjectPrivate * self = malloc(sizeof(EventSystemObjectPrivate));
+	self->refCount = 0;
+	self->destructor = destructor;
 	return self;
 }
 
-void Event_free(Event ** selfPtr) {
-	Event * self = *selfPtr;
-	if (self->destructor != NULL && self->data != NULL) {
-		self->destructor(self->data);
-	}
-	free(self);
-	*selfPtr = NULL;
+Event * Event_new(EventHandler * sender, int type, void * data, DestructorFunction dest) {
+	Event * self = malloc(sizeof(struct Event));
+	self->_private = Private_new(data, dest);
+	self->sender = sender;
+	self->type = type;
+	self->data = data;
+	return self;
 }
 
 /**
@@ -137,17 +139,17 @@ EventHandler * EventHandler_new(void * data, DestructorFunction dest, EventHandl
 	self->data = data;
 	self->destructor = dest;
 	self->handler = handler; 
-	self->_refCount = 1;
+	self->_private->refCount = 1;
 	return self;
 }
 
-void EventHandler_incref(EventHandler * self) {
-	self->_refCount++;
-}
+void EventSystem_incref(EventSystemObjectPrivate * self) {
+	self->refCount++;
+} 
 
-void EventHandler_decref(EventHandler * self) {
-	self->_refCount--;
-	if (0 == self->_refCount) {
+void EventSystem_decref(EventSystemObjectPrivate * self) {
+	self->refCount--;
+	if (0 == self->refCount) {
 		// free
 		if (self->destructor != NULL && self->data != NULL) {
 			self->destructor(self->data);
@@ -197,7 +199,7 @@ EventHandlerEnumerator * EventSystem_getHandlers(void) {
 /* EventSystem implementations */
 
 enum {
-	RemoveHandlerEventTypeId = ExitEventTypeId + 1,
+	RemoveHandlerEventTypeId = (-2147483648) + 3,
 	BreakLoopEventTypeId
 };
 
@@ -209,7 +211,7 @@ bool EventSystem_handleEvent(Event * event) {
 		EventHandler * handler = event->data;
 		if (handler != NULL) {
 			List_remove(g_eventSystem->handlers, handler);
-			EventHandler_decref(handler);
+			EventSystem_decref(handler->_private);
 		}
 	}
 	return EventSystemActionContinue;
@@ -239,12 +241,12 @@ void EventSystem_init(void) {
 void EventSystem_cleanup(void) {
 	while (EventQueue_size(g_eventSystem->events) > 0) {
 		Event * event = EventQueue_dequeue(g_eventSystem->events);
-		Event_free(&event);
+		EventSystem_decref(event->_private);
 	}
 	EventQueue_free(&g_eventSystem->events);
 	for (int i = 0; i < List_count(g_eventSystem->handlers); i++) {
 		EventHandler * handler = List_get(g_eventSystem->handlers, i);
-		EventHandler_decref(handler);
+		EventSystem_decref(handler->_private);
 	}
 	List_free(&g_eventSystem->handlers);
 }
@@ -276,7 +278,7 @@ void EventSystem_loop(void) {
 				}
 				EventHandlerEnumerator_free(&handlersEnum);
 			}
-			Event_free(&event);
+			EventSystem_decref(event->_private);
 		}
 
 		double millis = Clock_diffMillis(Clock_now(), current);
