@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <list.h>
 #include <progbase/events.h>
 #include <progbase/console.h>
 

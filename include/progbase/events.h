@@ -72,7 +72,6 @@ struct EventHandler {
 	EventSystemObjectPrivate * _private;
 	//
 	void * data;  /**< a pointer to an event handler data */
-	DestructorFunction destructor;  /**< a pointer to function that will be called to free data data*/
 	EventHandlerFunction handler;  /**< a pointer to function that will call on data events handle */
 };
 
@@ -86,17 +85,6 @@ EventHandler * EventHandler_new(
 	void * data, 
 	DestructorFunction destructor, 
 	EventHandlerFunction eventHandler);
-
-/**
-	@brief reference counting reference increase
-*/
-void EventSystem_incref(EventSystemObjectPrivate * self);
-
-/**
-	@brief reference counting reference decrease
-	free's object when reference counter is 0
-*/
-void EventSystem_decref(EventSystemObjectPrivate * self);
 
 /* public EventSystem API */
 
@@ -138,6 +126,17 @@ typedef enum {
 	UpdateEventTypeId,  /**< event is generated in every iteration of event loop */
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;
+
+/**
+	@brief reference counting reference increase
+*/
+void EventSystem_incref(void * self);
+
+/**
+	@brief reference counting reference decrease
+	free's object when reference counter is 0
+*/
+void EventSystem_decref(void * self);
 
 #ifdef __cplusplus
 }

@@ -86,7 +86,8 @@ int EventQueue_size(EventQueue * self) {
 
 EventSystemObjectPrivate * Private_new(void * data, DestructorFunction destructor) {
 	EventSystemObjectPrivate * self = malloc(sizeof(EventSystemObjectPrivate));
-	self->refCount = 0;
+	self->refCount = 1;
+	self->data = data;
 	self->destructor = destructor;
 	return self;
 }
@@ -121,7 +122,7 @@ typedef enum {
 */
 typedef struct EventHandlerEnumerator EventHandlerEnumerator;
 
-bool EventSystem_handleEvent(Event * event);
+EventSystemAction EventSystem_handleEvent(Event * event);
 Event * EventSystem_getNextEvent(void);
 EventHandlerEnumerator * EventSystem_getHandlers(void);
 EventHandler * EventHandlerEnumerator_getNextHandler(EventHandlerEnumerator * self);
@@ -134,26 +135,29 @@ static EventSystem * g_eventSystem = &(EventSystem) { NULL, NULL };
 void EventHandler_handleEvent(EventHandler * self, Event * event);
 
 EventHandler * EventHandler_new(void * data, DestructorFunction dest, EventHandlerFunction handler) {
-	if (data != NULL && dest == NULL) assert(0 && "destructor for non-null data is null");
 	EventHandler * self = malloc(sizeof(EventHandler));
+	self->_private = Private_new(data, dest);
 	self->data = data;
-	self->destructor = dest;
 	self->handler = handler; 
-	self->_private->refCount = 1;
 	return self;
 }
 
-void EventSystem_incref(EventSystemObjectPrivate * self) {
-	self->refCount++;
+void EventSystem_incref(void * self) {
+	EventSystemObjectPrivate ** privPtr = (EventSystemObjectPrivate**)self;
+	EventSystemObjectPrivate * priv = *privPtr;
+	priv->refCount++;
 } 
 
-void EventSystem_decref(EventSystemObjectPrivate * self) {
-	self->refCount--;
-	if (0 == self->refCount) {
+void EventSystem_decref(void * self) {
+	EventSystemObjectPrivate ** privPtr = (EventSystemObjectPrivate**)self;
+	EventSystemObjectPrivate * priv = *privPtr;
+	priv->refCount--;
+	if (0 == priv->refCount) {
 		// free
-		if (self->destructor != NULL && self->data != NULL) {
-			self->destructor(self->data);
+		if (priv->destructor != NULL && priv->data != NULL) {
+			priv->destructor(priv->data);
 		}
+		free(priv);
 		free(self);
 	}
 }
@@ -203,7 +207,7 @@ enum {
 	BreakLoopEventTypeId
 };
 
-bool EventSystem_handleEvent(Event * event) {
+EventSystemAction EventSystem_handleEvent(Event * event) {
 	if (event->type == BreakLoopEventTypeId) {
 		return EventSystemActionExit;
 	}
@@ -211,7 +215,7 @@ bool EventSystem_handleEvent(Event * event) {
 		EventHandler * handler = event->data;
 		if (handler != NULL) {
 			List_remove(g_eventSystem->handlers, handler);
-			EventSystem_decref(handler->_private);
+			EventSystem_decref(handler);
 		}
 	}
 	return EventSystemActionContinue;
@@ -241,12 +245,12 @@ void EventSystem_init(void) {
 void EventSystem_cleanup(void) {
 	while (EventQueue_size(g_eventSystem->events) > 0) {
 		Event * event = EventQueue_dequeue(g_eventSystem->events);
-		EventSystem_decref(event->_private);
+		EventSystem_decref(event);
 	}
 	EventQueue_free(&g_eventSystem->events);
 	for (int i = 0; i < List_count(g_eventSystem->handlers); i++) {
 		EventHandler * handler = List_get(g_eventSystem->handlers, i);
-		EventSystem_decref(handler->_private);
+		EventSystem_decref(handler);
 	}
 	List_free(&g_eventSystem->handlers);
 }
@@ -278,7 +282,7 @@ void EventSystem_loop(void) {
 				}
 				EventHandlerEnumerator_free(&handlersEnum);
 			}
-			EventSystem_decref(event->_private);
+			EventSystem_decref(event);
 		}
 
 		double millis = Clock_diffMillis(Clock_now(), current);

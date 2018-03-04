@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <list.h>
 #include <progbase/events.h>
 #include <progbase/console.h>
 
@@ -74,7 +73,7 @@ void UpdatePrintHandler_update(EventHandler * self, Event * event) {
 }
 
 void KeyInputHandler_update(EventHandler * self, Event * event) {
-	if (conIsKeyDown()) {  // non-blocking key input check
+	if (Console_isKeyDown()) {  // non-blocking key input check
 		char * keyCode = malloc(sizeof(char));
 		*keyCode = getchar();
 		EventSystem_emit(Event_new(self, KeyInputEventTypeId, keyCode, free));
