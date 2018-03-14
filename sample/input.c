@@ -8,7 +8,7 @@ int main(void) {
     long l = 0L;
     float f = 0.0F;
     double d = 0.0F;
-    string s = NULL;
+    char * s = NULL;
 
 	printf("Enter char: ");
     c = getChar();
@@ -31,9 +31,9 @@ int main(void) {
     printf("Entered: %f\n", d);
 
     printf("Enter string: ");
-    s = getString();
+    s = getNewString();
     printf("Entered: %s\n", s);
 
-    freeString(s);
+    free(s);
     return 0;
 }
