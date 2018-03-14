@@ -60,40 +60,6 @@ enum conAttribute_e {
 	BG_INTENSITY_WHITE
 };
 
-struct conpos {
-	unsigned int column;
-	unsigned int row;
-};
-
-struct conpos conGetPos(void);
-void conMove(int row, int col);
-void conSetAttr(int attr);
-
-void strConMove(char * str, int row, int col);
-void strConSetAttr(char * str, int attr);
-
-void conClear(void);
-void conReset(void);
-
-int conIsKeyDown(void);
-char conGetChar(void);
-
-struct consize {
-	unsigned short cols;
-	unsigned short rows;
-};
-
-struct consize conGetSize(void);
-void conResize(unsigned short rows, unsigned short cols);
-
-void conHideCursor(void);
-void conShowCursor(void);
-
-void conLockInput(void);
-void conUnlockInput(void);
-
-// New Console module interface
-
 typedef struct ConsoleCursorPosition ConsoleCursorPosition;
 struct ConsoleCursorPosition {
 	unsigned short column;
