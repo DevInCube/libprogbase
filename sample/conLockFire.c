@@ -11,6 +11,7 @@ void conExit(void);
 void conPrint(int x, int y, const char * str);
 int bound(int value, int boundValue);
 void fire(int x, int y);
+void Console_setCursorColorRgb(float red, float green, float blue, char fg);
 
 int main(void) {
     const char * HELP = "Use [WASD] to control, [Space] to fire, [Q] - to quit:";
@@ -62,6 +63,16 @@ void conExit(void) {
 
 /* FIRE */
 
+typedef struct { 
+    float red;
+    float green;
+    float blue;
+} Color;
+
+Color Color_rgb(float red, float green, float blue) {
+    return (Color) { red, green, blue };
+}
+
 const int cols[] = {
     BG_DEFAULT,
     BG_BLACK,
@@ -78,6 +89,7 @@ const int die[] = {2, 3};
 const int dieLength = sizeof(die) / sizeof(die[0]);
 const int revive[] = {2};
 const int reviveLength = sizeof(revive) / sizeof(revive[0]);
+Color defaultColor = {1, 1, 1};
 
 struct World {
     int w;  /* world width */
@@ -88,14 +100,14 @@ struct World {
     int mapSize; /* in bytes */
 };
 
-struct World World_new(int width, int height, int cx, int cy);
-void World_free(struct World * world);
+struct World World_init(int width, int height, int cx, int cy);
+void World_fini(struct World * world);
 void World_update(struct World * world);
 void World_draw(struct World * world);
 
 void fire(int x, int y) {
     struct ConsoleSize size = Console_size();
-    struct World world = World_new(size.columns, size.rows, x, y);
+    struct World world = World_init(size.columns, size.rows * 2, x, y * 2);
     Console_clear();
     
     while (1) {
@@ -109,12 +121,12 @@ void fire(int x, int y) {
         double sleepTime = 33 - elapsedMillis;  /* ~ 30 FPS */
         sleepMillis(sleepTime > 0 ? sleepTime : 0);
     }
-    World_free(&world);
+    World_fini(&world);
     Console_setCursorAttributes(BG_DEFAULT);
     Console_clear();
 }
 
-struct World World_new(int width, int height, int cx, int cy) {
+struct World World_init(int width, int height, int cx, int cy) {
     struct World world;
     world.w = width;
     world.h = height;
@@ -135,7 +147,7 @@ struct World World_new(int width, int height, int cx, int cy) {
     return world;
 }
 
-void World_free(struct World * world) {
+void World_fini(struct World * world) {
     free(world->map);
     free(world->tmp);
     free(world->prev);
@@ -200,22 +212,89 @@ void World_update(struct World * world) {
     memcpy(world->map, world->tmp, world->mapSize);
 }
 
-void drawCell(int i, int j, int state) {
-    int color = cols[state];
-    Console_setCursorAttribute(color);
+Color getStateColor(float p) {
+    Color firstCol = Color_rgb(0.3, 0, 0);
+    Color secondCol = Color_rgb(1, 1, 0);
+    return Color_rgb(
+        firstCol.red * p + secondCol.red * (1 - p),
+        firstCol.green * p + secondCol.green * (1 - p),
+        firstCol.blue * p + secondCol.blue * (1 - p));
+}
+
+void drawCell(int i, int j, int stateUpper, int stateLower) {
+    float pu = (MAX_STATE - stateUpper) / ((float)MAX_STATE);
+    float pl = (MAX_STATE - stateLower) / ((float)MAX_STATE);
+    Color cu = getStateColor(pu);
+    Color cl = getStateColor(pl);
+    Console_setCursorColorRgb(cu.red, cu.green, cu.blue, 1);
+    Console_setCursorColorRgb(cl.red, cl.green, cl.blue, 0);
+    if ((1 - pu) < 0.1) Console_setCursorColorRgb(defaultColor.red, defaultColor.green, defaultColor.blue, 1);
+    if ((1 - pl) < 0.1) Console_setCursorColorRgb(defaultColor.red, defaultColor.green, defaultColor.blue, 0);
     Console_setCursorPosition(1 + i, 1 + j);
-    putchar(' ');
+    printf("\xE2\x96\x80");
 }
 
 void World_draw(struct World * world) {
     int i = 0;
     int j = 0;
-    for (i = 0; i < world->h; i++) {
+    for (i = 0; i < world->h; i += 2) {
         for (j = 0; j < world->w; j++) {
-            if (world->map[i * world->w + j] != world->prev[i * world->w + j]) {
-                drawCell(i, j, world->map[i * world->w + j]);
+            if (world->map[i * world->w + j] != world->prev[i * world->w + j]
+             || world->map[(i + 1) * world->w + j] != world->prev[(i + 1) * world->w + j]) {
+                drawCell(i / 2, j, world->map[i * world->w + j], world->map[(i + 1) * world->w + j]);
             }
         }
     }
     fflush(stdout);
+}
+
+void SetColor256(float r, float g, float b, char fg);
+
+void Console_setCursorColorRgb(float red, float green, float blue, char fg) {
+    SetColor256(red, green, blue, fg);
+}
+
+int rgb2color(float r, float g, float b) {
+    int col = 0;
+
+    if (g < 0) {
+        if (r < 0)
+            r = 0;
+        else if (r > 1)
+            r = 1;
+
+        col = 232 + (int)(r * 23);
+    } else {
+        r = (int)(r * 5);
+        g = (int)(g * 5);
+        b = (int)(b * 5);
+
+        if (r > 5)
+            r = 5;
+        else if (r < 0)
+            r = 0;
+
+        if (g > 5)
+            g = 5;
+        else if (g < 0)
+            g = 0;
+
+        if (b > 5)
+            b = 5;
+        else if (b < 0)
+            b = 0;
+
+        col = 16 + 36 * r + 6 * g + b;
+    }
+    return col;
+}
+
+// source: https://bitbucket.org/anatsanzh/progbase/src/a1c1764000bcd07850e908134c922b0b3f3f84ea/tasks/console_volumetric_rendering/raymarch_3D.c?at=master&fileviewer=file-view-defaultColort
+void SetColor256(float r, float g, float b, char fg) { //0-1
+    int col = rgb2color(r, g, b);
+
+    if (fg)
+        printf("\033[38;5;%im", col);
+    else
+        printf("\033[48;5;%im", col);
 }
