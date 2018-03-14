@@ -11,6 +11,8 @@
 	"files.associations": {
 		"thread": "cpp",
 		"functional": "cpp",
-		"climits": "cpp"
+		"climits": "cpp",
+		"list.h": "c",
+		"events.h": "c"
 	}
 }

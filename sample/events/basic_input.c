@@ -23,8 +23,8 @@ int main(void) {
 	EventSystem_init();
 
 	// add event handlers
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, KeyInputHandler_onEvent));
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, KeyInputListener_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, KeyInputHandler_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, KeyInputListener_onEvent));
 
 	// start infinite event loop
 	EventSystem_loop();
@@ -72,9 +72,10 @@ void KeyInputListener_onEvent(EventHandler * self, Event * event) {
 static Event * KeyInputEvent_new(EventHandler * sender, char keyCode) {
 	char * keyCodeData = malloc(sizeof(char));
     *keyCodeData = keyCode;
-	return Event_new(sender, KeyInputEventTypeId, keyCodeData, free);
+	ESObject * o = ESObject_new(keyCodeData, free);
+	return Event_new(sender, KeyInputEventTypeId, o);
 }
 
 static char KeyInputEvent_keyCode(Event * event) {
-	return *(char *)event->data;
+	return *(char *)ESObject_ref(event->payload);
 }

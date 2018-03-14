@@ -17,7 +17,7 @@ int main(void) {
 	EventSystem_init();
 
 	// add event handlers
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, CustomHandler_update));
+	EventSystem_addHandler(EventHandler_new(NULL, CustomHandler_update));
 
 	// start infinite event loop
 	EventSystem_loop();

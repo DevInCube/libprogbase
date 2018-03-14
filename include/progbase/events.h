@@ -27,35 +27,45 @@ typedef struct EventHandler EventHandler;
 typedef void (*DestructorFunction)(void * data);
 
 /**
-	@typedef EventSystemObjectPrivate
+	@typedef ESObjectPrivate
 	@brief a private data of EventSystem objects
 */
-typedef struct __EventSystemObjectPrivate EventSystemObjectPrivate;
+typedef struct __ESObject ESObject;
+
+ESObject * ESObject_new(void * ref, DestructorFunction destructor);
+void * ESObject_ref(ESObject * self);
+
+/**
+	@brief reference counting reference increase
+*/
+void ESObject_incref(ESObject * self);
+
+/**
+	@brief reference counting reference decrease
+	free's object when reference counter is 0
+*/
+void ESObject_decref(ESObject * self);
 
 /**
 	@struct Event
 	@brief a structure that holds information about an event occured
 */
 struct Event {
-	EventSystemObjectPrivate * _private;
-	//
 	EventHandler * sender;  /**< pointer to an event handler that have raised this event */
 	int type;  /**< an identifier of event type  */
-	void * data;  /**< pointer to custom event data of type depending on event type */
+	ESObject * payload;  /**< pointer to custom event data of type depending on event type */
 };
 
 /** 
 	@brief a new Event constructor with parameters
 	@param sender - who generated this event
 	@param type - event type
-	@param data - pointer to specific event data
-	@param destructor - destructor function for data
+	@param data - pointer to specific event data object
 */
 Event * Event_new(
 	EventHandler * sender, 
 	int type, 
-	void * data, 
-	DestructorFunction destructor);
+	ESObject * data);
 
 /**
 	@typedef EventHandlerFunction
@@ -69,21 +79,16 @@ typedef void (*EventHandlerFunction)(EventHandler * self, Event * event);
 	@brief a structure that holds infomation about system event handlers
 */
 struct EventHandler {
-	EventSystemObjectPrivate * _private;
-	//
-	void * data;  /**< a pointer to an event handler data */
+	ESObject * state;  /**< a pointer to an event handler data */
 	EventHandlerFunction handler;  /**< a pointer to function that will call on data events handle */
 };
 
-
 /**
-	@param data - an event handler data pointer
-	@param destructor - a DestructorFunction function pointer to call on data data free
+	@param data - an event handler state object
 	@param eventHandler - an EventHandlerFunction callback to handle events for data event handler
 */
 EventHandler * EventHandler_new(
-	void * data, 
-	DestructorFunction destructor, 
+	ESObject * state, 
 	EventHandlerFunction eventHandler);
 
 /* public EventSystem API */
@@ -128,17 +133,6 @@ typedef enum {
 } BaseEventTypes;
 
 double UpdateEvent_elapsedMillis(Event * event);
-
-/**
-	@brief reference counting reference increase
-*/
-void EventSystem_incref(void * self);
-
-/**
-	@brief reference counting reference decrease
-	free's object when reference counter is 0
-*/
-void EventSystem_decref(void * self);
 
 #ifdef __cplusplus
 }

@@ -43,13 +43,17 @@ int main(void) {
 	EventSystem_init();
 
 	// add stateless event handlers
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, Logger_onEvent));
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, KeyInput_onEvent));
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, RandomNumberGenerator_onEvent));
-	EventSystem_addHandler(EventHandler_new(NULL, NULL, MainEventsListener_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, Logger_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, KeyInput_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, RandomNumberGenerator_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, MainEventsListener_onEvent));
 	// add stateful event handlers
-	EventSystem_addHandler(EventHandler_new(SpaceHitCounter_new(), (DestructorFunction)SpaceHitCounter_free, SpaceHitCounter_onEvent));
-	EventSystem_addHandler(EventHandler_new(Timer_new(0, 100), (DestructorFunction)Timer_free, Timer_onEvent));
+	EventSystem_addHandler(EventHandler_new(
+		ESObject_new(SpaceHitCounter_new(), (DestructorFunction)SpaceHitCounter_free),
+		SpaceHitCounter_onEvent));
+	EventSystem_addHandler(EventHandler_new(
+		ESObject_new(Timer_new(0, 100), (DestructorFunction)Timer_free), 
+		Timer_onEvent));
 
 	// start infinite event loop
 	EventSystem_loop();
@@ -117,7 +121,9 @@ void MainEventsListener_onEvent(EventHandler * self, Event * event) {
 				EventSystem_emit(SpaceHitEvent_new(self));
 			}
 			if (keyCode == 'a') {
-				EventSystem_addHandler(EventHandler_new(Timer_new(rand() % 100, 50), (DestructorFunction)Timer_free, Timer_onEvent));
+				EventSystem_addHandler(EventHandler_new(
+					ESObject_new(Timer_new(rand() % 100, 50), (DestructorFunction)Timer_free), 
+					Timer_onEvent));
 			}
 			if (keyCode == 'q') {
 				EventSystem_exit();
@@ -143,7 +149,7 @@ void Timer_free(Timer * self) { free(self); }
 void Timer_onEvent(EventHandler * self, Event * event) {
 	switch(event->type) {
 		case UpdateEventTypeId: {
-			Timer * timer = (Timer *)self->data;
+			Timer * timer = (Timer *)ESObject_ref(self->state);
 			timer->timeCounter -= 1;
 			if (timer->timeCounter % 10 == 0) {
 				printf("\nTimer #%i: %i {%.1lf}\n", 
@@ -169,7 +175,7 @@ void SpaceHitCounter_free(int * self) { free(self); }
 void SpaceHitCounter_onEvent(EventHandler * self, Event * event) {
 	switch (event->type) {
 		case SpaceHitEventTypeId: {
-			int * counterPtr = (int *)self->data;
+			int * counterPtr = (int *)ESObject_ref(self->state);
 			(*counterPtr)++;
 			printf(">>> Custom event! Counter: %i\n", *counterPtr);
 			break;
@@ -182,21 +188,23 @@ void SpaceHitCounter_onEvent(EventHandler * self, Event * event) {
 static Event * KeyInputEvent_new(EventHandler * sender, char keyCode) {
 	char * keyCodeData = malloc(sizeof(char));
     *keyCodeData = keyCode;
-	return Event_new(sender, KeyInputEventTypeId, keyCodeData, free);
+	ESObject * o = ESObject_new(keyCodeData, free);
+	return Event_new(sender, KeyInputEventTypeId, o);
 }
 static char KeyInputEvent_keyCode(Event * event) {
-	return *(char *)event->data;
+	return *(char *)ESObject_ref(event->payload);
 }
 
 static Event * RandomNumberEvent_new(EventHandler * sender) {
 	int * number = malloc(sizeof(int));
 	*number = rand() % 200 - 100;
-	return Event_new(sender, RandomNumberEventTypeId, number, free);
+	ESObject * o = ESObject_new(number, free);
+	return Event_new(sender, RandomNumberEventTypeId, o);
 }
 static int RandomNumberEvent_number(Event * event) {
-	return *(int *)event->data;
+	return *(int *)ESObject_ref(event->payload);
 }
 
 static Event * SpaceHitEvent_new(EventHandler * sender) {
-	return Event_new(sender, SpaceHitEventTypeId, NULL, NULL);
+	return Event_new(sender, SpaceHitEventTypeId, NULL);
 }

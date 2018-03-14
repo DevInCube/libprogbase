@@ -4,6 +4,7 @@ include_directories(../../include)
 SET(CMAKE_С_FLAGS "-fsanitize=address")
 file(GLOB SOURCES 
     "../../src/events.c" 
+    "../../src/event_queue.c" 
     "../../src/list.c" 
     "../../src/progbase.c" 
     "../../src/clock.c" 
