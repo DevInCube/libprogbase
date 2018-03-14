@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.7)
 include_directories(../../include)
 
 SET(CMAKE_С_FLAGS "-fsanitize=address")
-file(GLOB SOURCES "../../src/events.c" "../../src/list.c" "../../src/progbase.c" "../../src/pbconsole_linux.c")
+file(GLOB SOURCES "../../src/events.c" "../../src/list.c" "../../src/progbase.c" "../../src/linux/pbconsole_linux.c")
 
 project (basic)
 add_executable(${CMAKE_PROJECT_NAME} "basic.c" ${SOURCES})

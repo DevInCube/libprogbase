@@ -1,6 +1,7 @@
-#include <progbase.h>
-#include <pbconsole.h>
 #include <stdio.h>
+
+#include <progbase.h>
+#include <progbase/console.h>
 
 int main(void) {
 	char key = 0;
@@ -12,30 +13,30 @@ int main(void) {
 	int x = 40;
 	int y = 5;
 	int clear = 1;
-	struct conpos pos;
-	atexit(conClear);
-	conClear();
+	struct ConsoleCursorPosition pos;
+	atexit(Console_clear);
+	Console_clear();
 	printf("Use 'wasd' to move, 'c' to toggle clear, 'q' to quit:\n");
 	for (i = box_left; i <= box_left + box_width; i++) {
-		conMove(box_top, i);
+		Console_setCursorPosition(box_top, i);
 		putchar('=');
-		conMove(box_top + box_height, i);
+		Console_setCursorPosition(box_top + box_height, i);
 		putchar('=');
 	}
 	for (i = box_top + 1; i < box_top + box_height; i++) {
-		conMove(i, box_left);
+		Console_setCursorPosition(i, box_left);
 		putchar('|');
-		conMove(i, box_left + box_width);
+		Console_setCursorPosition(i, box_left + box_width);
 		putchar('|');
 	}
-	conMove(y, x);
+	Console_setCursorPosition(y, x);
 	putchar('@');
-	conHideCursor();
+	Console_hideCursor();
 	while (key != 'q') {
-		conMove(2, 1);
-		key = conGetChar();
+		Console_setCursorPosition(2, 1);
+		key = Console_getChar();
 		if (clear) {
-			conMove(y, x);
+			Console_setCursorPosition(y, x);
 			putchar(' ');
 		}
 		switch (key) {
@@ -59,13 +60,13 @@ int main(void) {
 		if (x >= box_left + box_width) x = box_left + box_width - 1;
 		if (y <= box_top) y = box_top + 1;
 		if (y >= box_top + box_height) y = box_top + box_height - 1;
-		conMove(y, x);
-		pos = conGetPos();
+		Console_setCursorPosition(y, x);
+		pos = Console_cursorPosition();
 		putchar('@');
-		conMove(3, 1);
+		Console_setCursorPosition(3, 1);
 		printf("Row: %i\nCol: %i", pos.row, pos.column);
 	}
 	printf("\nThe end.\n");
-	conShowCursor();
+	Console_showCursor();
 	return 0;
 }

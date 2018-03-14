@@ -8,25 +8,13 @@
 #include <progbase.h>
 #include <progbase/list.h>
 #include <progbase/events.h>
+#include <progbase/clock.h>
 
 struct __EventSystemObjectPrivate {
 	int refCount;  /**< private reference counter */
 	void * data;  /**< a copy pointer to public data */
 	DestructorFunction destructor;  /**< a callback function pointer to call to free data */
 };
-
-/**
-    @struct Clock
-    @brief encapsulates clock data
-*/
-typedef struct Clock Clock;
-
-struct Clock {
-    struct timespec time;
-};
-
-Clock Clock_now(void);
-double Clock_diffMillis(Clock c1, Clock c2);
 
 /* Event Queue */
 
@@ -295,20 +283,6 @@ void EventSystem_exit(void) {
 	EventSystem_emit(Event_new(NULL, BreakLoopEventTypeId, NULL, NULL));
 }
 
-/* Clock implementations */
-
-Clock Clock_now(void) {
-    Clock clock;
-    clock_gettime(CLOCK_REALTIME, &(clock.time));
-    return clock;
-}
-
-static double _getMillis(struct timespec * t1, struct timespec * t2) {
-    double ms1 = (double)t1->tv_sec * 1000 + (double)t1->tv_nsec / 1000000.0;
-    double ms2 = (double)t2->tv_sec * 1000 + (double)t2->tv_nsec / 1000000.0;
-    return ms1 - ms2;
-}
-
-double Clock_diffMillis(Clock c1, Clock c2) {
-    return _getMillis(&c1.time, &c2.time);
+double UpdateEvent_elapsedMillis(Event * event) {
+	return *(double *)event->data;
 }

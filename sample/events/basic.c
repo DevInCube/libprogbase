@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
+
 #include <progbase/events.h>
 #include <progbase/console.h>
 
@@ -30,4 +30,5 @@ int main(void) {
 
 void CustomHandler_update(EventHandler * self, Event * event) {
 	// @todo implement
+	puts("Got some event!");
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
+
 #include <progbase.h>
-#include <pbconsole.h>
+#include <progbase/console.h>
 
 int main(void) {
 	int i = 0;
@@ -10,11 +11,11 @@ int main(void) {
 	puts(str);
 	conClear();
 	for (i = 0; i < 110; i++) {
-		conReset();
-		conSetAttr(i);
+		Console_reset();
+		Console_setCursorAttribute(i);
 		printf(" [%i] ", i);
 	}
 	puts("");
-	conReset();
+	Console_reset();
 	return 0;
 }

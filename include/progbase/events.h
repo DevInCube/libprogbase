@@ -127,6 +127,8 @@ typedef enum {
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;
 
+double UpdateEvent_elapsedMillis(Event * event);
+
 /**
 	@brief reference counting reference increase
 */
