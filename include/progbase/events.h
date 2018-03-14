@@ -11,6 +11,19 @@ extern "C" {
 #endif
 
 /**
+	@typedef DestructorFunction
+	@brief a pointer type for functions that can free generic pointed data
+*/
+typedef void (*DestructorFunction)(void * data);
+
+/**
+	@typedef ESObject
+	@brief an outer reference counting object to hold reference to some data 
+	along with it's destructor function
+*/
+typedef struct ESObject ESObject;
+
+/**
 	@typedef Event
 */
 typedef struct Event Event;
@@ -20,29 +33,26 @@ typedef struct Event Event;
 */
 typedef struct EventHandler EventHandler;
 
-/**
-	@typedef DestructorFunction
-	@brief a pointer type for functions that can free generic pointed data
+/** 
+	@brief a new ESObject constructor with parameters
+	@param ref - a reference to some data
+	@param destructor - data destructor function
 */
-typedef void (*DestructorFunction)(void * data);
-
-/**
-	@typedef ESObjectPrivate
-	@brief a private data of EventSystem objects
-*/
-typedef struct __ESObject ESObject;
-
 ESObject * ESObject_new(void * ref, DestructorFunction destructor);
+
+/*
+	@brief get data reference from ESObject
+*/
 void * ESObject_ref(ESObject * self);
 
 /**
-	@brief reference counting reference increase
+	@brief reference counting ref increase
 */
 void ESObject_incref(ESObject * self);
 
 /**
-	@brief reference counting reference decrease
-	free's object when reference counter is 0
+	@brief reference counting ref decrease
+	free's object when reference counter becomes 0
 */
 void ESObject_decref(ESObject * self);
 
@@ -60,12 +70,12 @@ struct Event {
 	@brief a new Event constructor with parameters
 	@param sender - who generated this event
 	@param type - event type
-	@param data - pointer to specific event data object
+	@param payload - pointer to specific event data object
 */
 Event * Event_new(
 	EventHandler * sender, 
 	int type, 
-	ESObject * data);
+	ESObject * payload);
 
 /**
 	@typedef EventHandlerFunction
@@ -84,7 +94,7 @@ struct EventHandler {
 };
 
 /**
-	@param data - an event handler state object
+	@param state - an event handler state object
 	@param eventHandler - an EventHandlerFunction callback to handle events for data event handler
 */
 EventHandler * EventHandler_new(
@@ -132,6 +142,9 @@ typedef enum {
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;
 
+/**
+    @brief get elapsed milliseconds value from UpdateEvent
+*/
 double UpdateEvent_elapsedMillis(Event * event);
 
 #ifdef __cplusplus

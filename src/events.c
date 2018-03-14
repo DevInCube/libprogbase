@@ -11,7 +11,7 @@
 #include <progbase/event_queue.h>
 #include <progbase/clock.h>
 
-struct __ESObject {
+struct ESObject {
 	void * ref;  /**< a pointer to custom data */
 	int refCount;  /**< reference counter */
 	DestructorFunction destructor;  /**< a callback function pointer to free data */
