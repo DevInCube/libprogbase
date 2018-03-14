@@ -5,6 +5,15 @@
 #include <string.h>
 #include <time.h>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	#include <sys/timeb.h>
+	#include <sys/types.h>
+	#include <winsock2.h>
+
+	#define CLOCK_REALTIME 0 
+	int clock_gettime(int X, struct timespec *tv);
+#endif
+
 #include <progbase.h>
 #include <progbase/list.h>
 #include <progbase/events.h>
@@ -16,7 +25,6 @@ void Event_free(Event ** dataPtr);
     @brief encapsulates clock data
 */
 typedef struct Clock Clock;
-
 struct Clock {
     struct timespec time;
 };
@@ -306,3 +314,67 @@ static double _getMillis(struct timespec * t1, struct timespec * t2) {
 double Clock_diffMillis(Clock c1, Clock c2) {
     return _getMillis(&c1.time, &c2.time);
 }
+
+
+/* Clock implementation for Windows */
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+
+// source: https://stackoverflow.com/a/5404467
+
+LARGE_INTEGER getFILETIMEoffset() {
+    SYSTEMTIME s;
+    FILETIME f;
+    LARGE_INTEGER t;
+
+    s.wYear = 1970;
+    s.wMonth = 1;
+    s.wDay = 1;
+    s.wHour = 0;
+    s.wMinute = 0;
+    s.wSecond = 0;
+    s.wMilliseconds = 0;
+    SystemTimeToFileTime(&s, &f);
+    t.QuadPart = f.dwHighDateTime;
+    t.QuadPart <<= 32;
+    t.QuadPart |= f.dwLowDateTime;
+    return (t);
+}
+
+int clock_gettime(int X, struct timespec *tv) {
+    LARGE_INTEGER           t;
+    FILETIME            f;
+    double                  microseconds;
+    static LARGE_INTEGER    offset;
+    static double           frequencyToMicroseconds;
+    static int              initialized = 0;
+    static BOOL             usePerformanceCounter = 0;
+
+    if (!initialized) {
+        LARGE_INTEGER performanceFrequency;
+        initialized = 1;
+        usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
+        if (usePerformanceCounter) {
+            QueryPerformanceCounter(&offset);
+            frequencyToMicroseconds = (double)performanceFrequency.QuadPart / 1000000.;
+        } else {
+            offset = getFILETIMEoffset();
+            frequencyToMicroseconds = 10.;
+        }
+    }
+    if (usePerformanceCounter) QueryPerformanceCounter(&t);
+    else {
+        GetSystemTimeAsFileTime(&f);
+        t.QuadPart = f.dwHighDateTime;
+        t.QuadPart <<= 32;
+        t.QuadPart |= f.dwLowDateTime;
+    }
+
+    t.QuadPart -= offset.QuadPart;
+    microseconds = (double)t.QuadPart / frequencyToMicroseconds;
+    t.QuadPart = microseconds;
+    tv->tv_sec = t.QuadPart / 1000000;
+    tv->tv_nsec = (t.QuadPart % 1000000) * 1000;  // to nanoseconds
+    return (0);
+}
+
+#endif
