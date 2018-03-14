@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8.7)
 
 set(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-
 find_package(OpenSSL QUIET)
+
 include_directories(include include/progbase)
 file(GLOB LIB_SOURCES_COMMON "src/*.c")
 if (UNIX)

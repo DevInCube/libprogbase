@@ -4,11 +4,22 @@
 
 #pragma once
 
+#include <stdlib.h>
 #include <stdbool.h>
-#include <netinet/in.h>
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef __linux__
+	#include <netinet/in.h>
+	struct IpAddress {
+		struct sockaddr_in addr;
+	};
+#else // for windows
+	struct IpAddress {
+		int _;
+	}
 #endif
 
 /* IP Protocol */
@@ -16,9 +27,6 @@ extern "C" {
 bool Ip_resolveHostname(char * ipv4, const char * hostname);
 
 typedef struct IpAddress IpAddress;
-struct IpAddress {
-	struct sockaddr_in addr;
-};
 
 IpAddress * IpAddress_init(IpAddress * self, const char * ipv4, int port);
 IpAddress * IpAddress_initAny(IpAddress * self, int port);

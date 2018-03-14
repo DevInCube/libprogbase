@@ -1,3 +1,7 @@
+/** @file
+    @brief Clock module
+*/
+
 #pragma once 
 
 #define _XOPEN_SOURCE 700  // to enable struct timespec and clock_gettime
