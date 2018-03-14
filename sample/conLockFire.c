@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <progbase.h>
 #include <progbase/console.h>
@@ -11,6 +12,8 @@ void conExit(void);
 void conPrint(int x, int y, const char * str);
 int bound(int value, int boundValue);
 void fire(int x, int y);
+
+int rgb2color(float r, float g, float b);
 void Console_setCursorColorRgb(float red, float green, float blue, char fg);
 
 int main(void) {
@@ -103,23 +106,40 @@ struct World {
 struct World World_init(int width, int height, int cx, int cy);
 void World_fini(struct World * world);
 void World_update(struct World * world);
-void World_draw(struct World * world);
+int World_draw(struct World * world);
 
 void fire(int x, int y) {
+    const int FPS = 30;
+    const double millisPerFrame = 1000 / FPS;
+
     struct ConsoleSize size = Console_size();
     struct World world = World_init(size.columns, size.rows * 2, x, y * 2);
     Console_clear();
     
+    double elapsedMillis = 0;
+    Clock lastTicks = Clock_now();
+    char fpsBuf[20] = "";
     while (1) {
-        Clock start = Clock_now();
+        Clock current = Clock_now();
+        elapsedMillis = Clock_diffMillis(current, lastTicks);
+
         if (Console_isKeyDown()) {
             break;
         }
         World_update(&world);
-        World_draw(&world);
-        double elapsedMillis = Clock_diffMillis(start, Clock_now());
-        double sleepTime = 33 - elapsedMillis;  /* ~ 30 FPS */
-        sleepMillis(sleepTime > 0 ? sleepTime : 0);
+        int count = World_draw(&world);
+        
+        double millis = Clock_diffMillis(Clock_now(), current);
+
+        snprintf(fpsBuf, 20, "%.2f [%i]", 
+            elapsedMillis < millisPerFrame ? FPS : (1000 / elapsedMillis),
+            count);
+        Console_setCursorAttribute(FG_BLACK);
+        Console_setCursorAttribute(BG_WHITE);
+        conPrint(1, 1, fpsBuf);
+
+        if (millis < millisPerFrame) sleepMillis(millisPerFrame - millis);
+        lastTicks = current;
     }
     World_fini(&world);
     Console_setCursorAttributes(BG_DEFAULT);
@@ -221,31 +241,57 @@ Color getStateColor(float p) {
         firstCol.blue * p + secondCol.blue * (1 - p));
 }
 
-void drawCell(int i, int j, int stateUpper, int stateLower) {
+typedef struct {
+    char * str;
+    int len;
+} StringBuffer;
+
+char * StringBuffer_end(StringBuffer * self) { return self->str + self->len; }
+int StringBuffer_print(StringBuffer * self) {
+    write(1, self->str, sizeof(char) * self->len);
+    // setvbuf(stdout, self->str, _IOFBF, self->len);
+    // fflush(stdout);
+    return self->len;
+} 
+
+void Console_setCursorColorRgbStr(StringBuffer * buf, Color c, char fg) {
+    int col = rgb2color(c.red, c.green, c.blue);
+
+    if (fg)
+        buf->len += sprintf(StringBuffer_end(buf), "\033[38;5;%im", col);
+    else
+        buf->len += sprintf(StringBuffer_end(buf), "\033[48;5;%im", col);
+}
+
+void drawCell(StringBuffer * buf, int i, int j, int stateUpper, int stateLower) {
     float pu = (MAX_STATE - stateUpper) / ((float)MAX_STATE);
     float pl = (MAX_STATE - stateLower) / ((float)MAX_STATE);
     Color cu = getStateColor(pu);
     Color cl = getStateColor(pl);
-    Console_setCursorColorRgb(cu.red, cu.green, cu.blue, 1);
-    Console_setCursorColorRgb(cl.red, cl.green, cl.blue, 0);
-    if ((1 - pu) < 0.1) Console_setCursorColorRgb(defaultColor.red, defaultColor.green, defaultColor.blue, 1);
-    if ((1 - pl) < 0.1) Console_setCursorColorRgb(defaultColor.red, defaultColor.green, defaultColor.blue, 0);
-    Console_setCursorPosition(1 + i, 1 + j);
-    printf("\xE2\x96\x80");
+    Console_setCursorColorRgbStr(buf, cu, 1);
+    Console_setCursorColorRgbStr(buf, cl, 0);
+    if ((1 - pu) < 0.1) Console_setCursorColorRgbStr(buf, defaultColor, 1);
+    if ((1 - pl) < 0.1) Console_setCursorColorRgbStr(buf, defaultColor, 0);
+    // Console_setCursorPosition(1 + i, 1 + j);
+    buf->len += sprintf(StringBuffer_end(buf), "\033[%i;%iH", 1 + i, 1 + j);
+    buf->len += sprintf(StringBuffer_end(buf), "\xE2\x96\x80");
 }
 
-void World_draw(struct World * world) {
+static char str[500000] = "";
+
+int World_draw(struct World * world) {
+    StringBuffer * buf = &(StringBuffer){str, 0};
     int i = 0;
     int j = 0;
     for (i = 0; i < world->h; i += 2) {
         for (j = 0; j < world->w; j++) {
             if (world->map[i * world->w + j] != world->prev[i * world->w + j]
              || world->map[(i + 1) * world->w + j] != world->prev[(i + 1) * world->w + j]) {
-                drawCell(i / 2, j, world->map[i * world->w + j], world->map[(i + 1) * world->w + j]);
+                drawCell(buf, i / 2, j, world->map[i * world->w + j], world->map[(i + 1) * world->w + j]);
             }
         }
     }
-    fflush(stdout);
+    return StringBuffer_print(buf);
 }
 
 void SetColor256(float r, float g, float b, char fg);
