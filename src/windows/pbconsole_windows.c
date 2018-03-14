@@ -67,6 +67,7 @@ static int fgColorChooser(const int fontGround) {
 		return WIN_LIGHTCYAN;
 	else if(fontGround == FG_INTENSITY_WHITE)
 		return WIN_WHITE;
+	return WIN_WHITE;  // default
 }
 
 static int bgColorChooser(const int backGround) {
@@ -104,6 +105,7 @@ static int bgColorChooser(const int backGround) {
 		return WIN_LIGHTCYAN;
 	else if(backGround == BG_INTENSITY_WHITE)
 		return WIN_WHITE;
+	return WIN_BLACK;  // default
 }
 
 ConsoleCursorPosition Console_cursorPosition(void) {

@@ -10,7 +10,7 @@ if (UNIX)
     file(GLOB LIB_SOURCES_SPECIFIC "src/linux/*.c")
 endif (UNIX)
 if (WIN32)
-    file(GLOB LIB_SOURCES_SPECIFIC "src\\windows\\*.c")
+    file(GLOB LIB_SOURCES_SPECIFIC "src/windows/*.c")
 endif (WIN32)
 
 project (progbase)
