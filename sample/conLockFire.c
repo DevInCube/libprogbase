@@ -1,32 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pbconsole.h>
+
 #include <progbase.h>
+#include <progbase/console.h>
 
 void conInit(void);
 void conExit(void);
-char conGetCharAndClear(void);
 void conPrint(int x, int y, const char * str);
 int bound(int value, int boundValue);
 void fire(int x, int y);
 
 int main(void) {
     const char * HELP = "Use [WASD] to control, [Space] to fire, [Q] - to quit:";
-    struct consize size = conGetSize();
-    int px = size.cols / 2;
+    struct ConsoleSize size = Console_size();
+    int px = size.columns / 2;
     int py = size.rows / 2;
     conInit();
     while (1) {
-        char key = conGetCharAndClear();
         conPrint(1, 1, HELP);
         conPrint(px, py, " ");  /* clear previous position */
-        if (key == 'q') break;
-        else if (key == 'w') py = bound(py - 1, size.rows);
-        else if (key == 'a') px = bound(px - 1, size.cols);
-        else if (key == 's') py = bound(py + 1, size.rows);
-        else if (key == 'd') px = bound(px + 1, size.cols);
-        else if (key == ' ') fire(px, py);
+        if (Console_isKeyDown()) {
+            char key = Console_getChar();
+            if (key == 'q') break;
+            else if (key == 'w') py = bound(py - 1, size.rows);
+            else if (key == 'a') px = bound(px - 1, size.columns);
+            else if (key == 's') py = bound(py + 1, size.rows);
+            else if (key == 'd') px = bound(px + 1, size.columns);
+            else if (key == ' ') fire(px, py);
+        }
         conPrint(px, py, "#");  /* draw new position */
         sleepMillis(33);  /* ~ 30 FPS */
     }
@@ -39,29 +41,29 @@ int bound(int value, int boundValue) {
 }
 
 char conGetCharAndClear(void) {
-    char key = getchar();
+    char key = Console_getChar();
     char ch;
-    while((ch = getchar()) != EOF && ch != '\n') {};
+    while((ch = Console_getChar()) != EOF && ch != '\n') {};
     return key;
 }
 
 void conPrint(int x, int y, const char * str) {
-    conMove(y, x);
+    Console_setCursorPosition(y, x);
     printf("%s", str);
     fflush(stdout);
 }
 
 void conInit(void) {
-    conLockInput();
-    conHideCursor();
-    conClear();
+    Console_lockInput();
+    Console_hideCursor();
+    Console_clear();
 }
 
 void conExit(void) {
-    conShowCursor();
-    conUnlockInput();
-    conMove(1, 1);
-    conClear();
+    Console_showCursor();
+    Console_unlockInput();
+    Console_setCursorPosition(1, 1);
+    Console_clear();
 }
 
 /* FIRE */
@@ -98,19 +100,21 @@ void World_update(struct World * world);
 void World_draw(struct World * world);
 
 void fire(int x, int y) {
-    struct consize size = conGetSize();
-    struct World world = World_new(size.cols, size.rows, x, y);
-    conClear();
+    struct ConsoleSize size = Console_size();
+    struct World world = World_new(size.columns, size.rows, x, y);
+    Console_clear();
     while (1) {
-        char key = conGetCharAndClear();
-        if (key != EOF) break;
+        if (Console_isKeyDown()) {
+            char key = Console_getChar();
+            if (key != EOF) break;
+        }
         World_update(&world);
         World_draw(&world);
         sleepMillis(33);  /* ~ 30 FPS */
     }
     World_free(&world);
-    conSetAttr(BG_DEFAULT);
-    conClear();
+    Console_setCursorAttributes(BG_DEFAULT);
+    Console_clear();
 }
 
 struct World World_new(int width, int height, int cx, int cy) {
@@ -201,7 +205,7 @@ void World_update(struct World * world) {
 
 void drawCell(int i, int j, int state) {
     int col = cols[state];
-    conSetAttr(col);
+    Console_setCursorAttribute(col);
     conPrint(1 + j, 1 + i, " ");
 }
 

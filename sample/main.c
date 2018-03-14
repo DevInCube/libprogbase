@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <progbase.h>
-#include <pbconsole.h>
+#include <progbase/console.h>
 
 int main(void) {
 	int i = 0;

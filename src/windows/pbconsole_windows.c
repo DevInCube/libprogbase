@@ -112,15 +112,15 @@ ConsoleCursorPosition Console_cursorPosition(void) {
 	ConsoleCursorPosition pos;
 	CONSOLE_SCREEN_BUFFER_INFO SBInfo;
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &SBInfo);
-	pos.row = SBInfo.dwCursorPosition.X;
-	pos.column = SBInfo.dwCursorPosition.Y;
+	pos.row = SBInfo.dwCursorPosition.X + 1;
+	pos.column = SBInfo.dwCursorPosition.Y + 1;
 	return pos;
 }
 
 void Console_setCursorPosition(unsigned short row, unsigned short column) {
 	COORD cursorPos;
-	cursorPos.X = column;
-  	cursorPos.Y = row;
+	cursorPos.X = column - 1;
+  	cursorPos.Y = row - 1;
   	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursorPos);
 }
 
