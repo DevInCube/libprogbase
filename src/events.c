@@ -297,6 +297,10 @@ void EventSystem_exit(void) {
 	EventSystem_emit(Event_new(NULL, BreakLoopEventTypeId, NULL, NULL));
 }
 
+double UpdateEvent_elapsedMillis(Event * event) {
+	return *(double *)event->data;
+}
+
 /* Clock implementations */
 
 Clock Clock_now(void) {

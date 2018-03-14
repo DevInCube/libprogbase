@@ -144,10 +144,12 @@ void Timer_onEvent(EventHandler * self, Event * event) {
 	switch(event->type) {
 		case UpdateEventTypeId: {
 			Timer * timer = (Timer *)self->data;
-			double elapsedMillis = *(double *)event->data;
 			timer->timeCounter -= 1;
 			if (timer->timeCounter % 10 == 0) {
-				printf("\nTimer #%i: %i {%.1lf}\n", timer->id, timer->timeCounter, elapsedMillis); 
+				printf("\nTimer #%i: %i {%.1lf}\n", 
+					timer->id, 
+					timer->timeCounter, 
+					UpdateEvent_elapsedMillis(event)); 
 			}
 			if (timer->timeCounter == 0) {
 				printf("\nTimer #%i: COMPLETED!\n", timer->id); 

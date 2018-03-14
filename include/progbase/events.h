@@ -134,6 +134,8 @@ typedef enum {
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;
 
+double UpdateEvent_elapsedMillis(Event * event);
+
 #ifdef __cplusplus
 }
 #endif
