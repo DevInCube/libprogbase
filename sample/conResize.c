@@ -8,15 +8,15 @@ int main(void) {
 	int resize = 0;
 	unsigned short width = 40;
 	unsigned short height = 20;
-	struct consize size;
-	conClear();
-	conResize(height, width);
+	struct ConsoleSize size;
+	Console_clear();
+	Console_setSize(height, width);
 	while (key != 'q') {
-		conClear();
+		Console_clear();
 		printf("Use 'wasd' to change terminal size,\n'q' to quit:\n");
-		size = conGetSize();
-		printf("rows: %i\ncols: %i", size.rows, size.cols);
-		key = conGetChar();
+		size = Console_size();
+		printf("rows: %i\ncols: %i", size.rows, size.columns);
+		key = Console_getChar();
 		resize = 1;
 		switch (key) {
 		case 'w':
@@ -37,7 +37,7 @@ int main(void) {
 		if (width < CON_MIN_COLS) width = CON_MIN_COLS;
 		if (height < CON_MIN_ROWS) height = CON_MIN_ROWS;
 		if (resize) {
-			conResize(height, width);
+			Console_setSize(height, width);
 		}
 	}
 	printf("\nThe end.\n");

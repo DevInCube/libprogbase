@@ -9,6 +9,6 @@ int main(void) {
 		putchar('*');
 		sleepMillis(50);
 	}
-	printf("\nYou've pressed key '%c'\n", Console_getChar());
+	printf("\nYou've pressed key '%c'\n", getchar());
 	return 0;
 }
