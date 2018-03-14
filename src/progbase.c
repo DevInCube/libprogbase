@@ -9,53 +9,49 @@ static char * inputString(FILE* fp, size_t size);
 
 char getChar(void) {
 	char val = 0;
-	string input = getString();
+	char * input = getNewString();
 	val = input[0];
-	freeString(input);
+	free(input);
 	return val;
 }
 
 int getInt(void) {
 	int val = 0;
-	string input = getString();
+	char * input = getNewString();
 	val = atoi(input);
-	freeString(input);
+	free(input);
 	return val;
 }
 
 long getLong(void) {
 	long val = 0L;
-	string input = getString();
+	char * input = getNewString();
 	val = atol(input);
-	freeString(input);
+	free(input);
 	return val;
 }
 
 float getFloat(void) {
 	float val = 0;
-	string input = getString();
+	char * input = getNewString();
 	val = atof(input);
-	freeString(input);
+	free(input);
 	return val;
 }
 
 double getDouble(void) {
 	double val = 0;
-	string input = getString();
+	char * input = getNewString();
 	val = atof(input);
-	freeString(input);
+	free(input);
 	return val;
 }
 
-string getString(void) {
+char * getNewString(void) {
 	return inputString(stdin, 10);
 }
 
-void freeString(string str) {
-	free(str);
-}
-
-char * getStringAr(char buffer[], size_t bufferLength) {
+char * getNewStringAr(char buffer[], size_t bufferLength) {
 	fgets(buffer, bufferLength, stdin);
 	buffer[strlen(buffer) - 1] = '\0';
 	return buffer;

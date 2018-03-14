@@ -9,20 +9,16 @@
 
 #include "progbase_info.h"
 
-typedef char * string;
-
 #ifdef __cplusplus
 extern "C"{
 #endif
 
 /**
- *	you should free string after usage with freeString function
+ *  @brief reads all input from console into allocated buffer
+ *  you should free string after usage with freeString function
+ *  @returns a pointer to allocated string buffer
  */
-string getString(void);
-/**
- *	free the string from getString function
- */
-void freeString(string);
+char * getNewString(void);
 
 char getChar(void);
 int getInt(void);
