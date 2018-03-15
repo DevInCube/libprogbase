@@ -5,6 +5,7 @@
 
 #include <progbase.h>
 #include <progbase/console.h>
+#include <progbase/list.h>
 #include <progbase/clock.h>
 
 void conInit(void);
@@ -263,16 +264,30 @@ void Console_setCursorColorRgbStr(StringBuffer * buf, Color c, char fg) {
         buf->len += sprintf(StringBuffer_end(buf), "\033[48;5;%im", col);
 }
 
-void drawCell(StringBuffer * buf, int i, int j, int stateUpper, int stateLower) {
+typedef struct {
+    int i;
+    int j;
+    int stateUpper;
+    int stateLower;
+} CellDiff;
+
+CellDiff * CellDiff_new(int i, int j, int stateUpper, int stateLower) {
+    CellDiff * self = malloc(sizeof(CellDiff));
+    self->i = i;
+    self->j = j;
+    self->stateUpper = stateUpper;
+    self->stateLower = stateLower;
+    return self;
+}
+
+void drawCell(StringBuffer * buf, int stateUpper, int stateLower) {
     float pu = (MAX_STATE - stateUpper) / ((float)MAX_STATE);
     float pl = (MAX_STATE - stateLower) / ((float)MAX_STATE);
-    Color cu = getStateColor(pu);
-    Color cl = getStateColor(pl);
-    Console_setCursorColorRgbStr(buf, cu, 1);
-    Console_setCursorColorRgbStr(buf, cl, 0);
-    if ((1 - pu) < 0.1) Console_setCursorColorRgbStr(buf, defaultColor, 1);
-    if ((1 - pl) < 0.1) Console_setCursorColorRgbStr(buf, defaultColor, 0);
-    // Console_setCursorPosition(1 + i, 1 + j);
+    Console_setCursorColorRgbStr(buf, ((1 - pu) < 0.1) ? defaultColor: getStateColor(pu), 1);
+    Console_setCursorColorRgbStr(buf, ((1 - pl) < 0.1) ? defaultColor: getStateColor(pl), 0);
+}
+
+void drawPoint(StringBuffer * buf, int i, int j) {
     buf->len += sprintf(StringBuffer_end(buf), "\033[%i;%iH", 1 + i, 1 + j);
     buf->len += sprintf(StringBuffer_end(buf), "\xE2\x96\x80");
 }
@@ -280,18 +295,38 @@ void drawCell(StringBuffer * buf, int i, int j, int stateUpper, int stateLower) 
 static char str[500000] = "";
 
 int World_draw(struct World * world) {
-    StringBuffer * buf = &(StringBuffer){str, 0};
-    int i = 0;
-    int j = 0;
-    for (i = 0; i < world->h; i += 2) {
-        for (j = 0; j < world->w; j++) {
+    List * diffs = List_new();
+    for (int i = 0; i < world->h; i += 2) {
+        for (int j = 0; j < world->w; j++) {
             if (world->map[i * world->w + j] != world->prev[i * world->w + j]
              || world->map[(i + 1) * world->w + j] != world->prev[(i + 1) * world->w + j]) {
-                drawCell(buf, i / 2, j, world->map[i * world->w + j], world->map[(i + 1) * world->w + j]);
+                 List_add(diffs, CellDiff_new(
+                     i / 2, 
+                     j, 
+                     world->map[i * world->w + j], 
+                     world->map[(i + 1) * world->w + j]));
             }
         }
     }
-    return StringBuffer_print(buf);
+    StringBuffer * buf = &(StringBuffer){str, 0};
+    // @todo create ArrayList and add all diffs there
+    // sort them with stateUpper + stateLower
+    // apply color once for all changes that have that color combination
+    for (int i = 0; i < List_count(diffs); i++) {
+        CellDiff * diff = List_get(diffs, i);
+        {
+            drawCell(buf, diff->stateUpper, diff->stateLower);
+            drawPoint(buf, diff->i, diff->j);
+        }
+    }
+    while(List_count(diffs) > 0) {
+        CellDiff * diff = List_get(diffs, List_count(diffs) - 1);
+        free(diff);
+        List_removeAt(diffs, List_count(diffs) - 1);
+    }
+    int count = StringBuffer_print(buf);
+    List_free(&diffs);
+    return count;
 }
 
 void SetColor256(float r, float g, float b, char fg);
