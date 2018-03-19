@@ -4,8 +4,9 @@ set(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 find_package(OpenSSL QUIET)
 
-include_directories(include include/progbase)
+include_directories(include include/progbase include/progbase/collections)
 file(GLOB LIB_SOURCES_COMMON "src/*.c")
+file(GLOB LIB_SOURCES_COLLECTIONS "src/collections/*.c")
 if (UNIX)
     file(GLOB LIB_SOURCES_SPECIFIC "src/linux/*.c")
 endif (UNIX)
@@ -30,6 +31,12 @@ install(
     DIRECTORY include/ DESTINATION /usr/local/include
     FILES_MATCHING PATTERN "*.h"
 )
+install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
+
+project (progbase-collections)
+add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_COLLECTIONS})
+set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
+
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
 SET(CMAKE_C_FLAGS "-std=c99 -Wall")

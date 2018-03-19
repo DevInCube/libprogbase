@@ -2,14 +2,13 @@ cmake_minimum_required(VERSION 2.8.7)
 include_directories(../../include)
 
 SET(CMAKE_С_FLAGS "-fsanitize=address")
-file(GLOB SOURCES 
-    "../../src/events.c" 
-    "../../src/events2.c" 
-    "../../src/queue.c" 
-    "../../src/list.c" 
+file(GLOB SOURCES  
     "../../src/progbase.c" 
     "../../src/clock.c" 
-    "../../src/linux/console.c")
+    "../../src/events.c" 
+    "../../src/linux/console.c"
+    "../../src/collections/queue.c" 
+    "../../src/collections/list.c")
 
 project (basic)
 add_executable(${CMAKE_PROJECT_NAME} "basic.c" ${SOURCES})

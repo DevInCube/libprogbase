@@ -6,10 +6,10 @@
 #include <time.h>
 
 #include <progbase.h>
-#include <progbase/list.h>
 #include <progbase/events.h> 
-#include <progbase/queue.h>
 #include <progbase/clock.h>
+#include <progbase/collections/list.h>
+#include <progbase/collections/queue.h>
 
 struct ESObject {
 	void * ref;  /**< a pointer to custom data */

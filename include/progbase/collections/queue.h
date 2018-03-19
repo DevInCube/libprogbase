@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
 	@struct Queue
 	@brief a queue of items
@@ -25,3 +29,7 @@ void *  Queue_dequeue(Queue *  self);
 	@returns the number of events in Queue
 */
 int     Queue_size(Queue * self);
+
+#ifdef __cplusplus
+}
+#endif

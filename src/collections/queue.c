@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include <progbase/list.h>
-#include <progbase/queue.h>
+#include <progbase/collections/list.h>
+#include <progbase/collections/queue.h>
 
 struct Queue {
 	List * list;

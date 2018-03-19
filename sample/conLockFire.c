@@ -5,7 +5,7 @@
 
 #include <progbase.h>
 #include <progbase/console.h>
-#include <progbase/list.h>
+#include <progbase/collections/list.h>
 #include <progbase/clock.h>
 
 void conInit(void);
