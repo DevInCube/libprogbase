@@ -15,6 +15,19 @@ extern "C" {
 #endif
 
 /**
+	@typedef DestructorFunction
+	@brief a pointer type for functions that can free generic pointed data
+*/
+typedef void (*DestructorFunction)(void * data);
+
+/**
+	@typedef ESObject
+	@brief an outer reference counting object to hold reference to some data 
+	along with it's destructor function
+*/
+typedef struct ESObject ESObject;
+
+/**
 	@typedef Event
 */
 typedef struct Event Event;
@@ -24,11 +37,28 @@ typedef struct Event Event;
 */
 typedef struct EventHandler EventHandler;
 
-/**
-	@typedef DestructorFunction
-	@brief a pointer type for functions that can free generic pointed data
+/** 
+	@brief a new ESObject constructor with parameters
+	@param ref - a reference to some data
+	@param destructor - data destructor function
 */
-typedef void (*DestructorFunction)(void * data);
+ESObject * ESObject_new(void * ref, DestructorFunction destructor);
+
+/*
+	@brief get data reference from ESObject
+*/
+void * ESObject_ref(ESObject * self);
+
+/**
+	@brief reference counting ref increase
+*/
+void ESObject_incref(ESObject * self);
+
+/**
+	@brief reference counting ref decrease
+	free's object when reference counter becomes 0
+*/
+void ESObject_decref(ESObject * self);
 
 /**
 	@struct Event
@@ -37,22 +67,19 @@ typedef void (*DestructorFunction)(void * data);
 struct Event {
 	EventHandler * sender;  /**< pointer to an event handler that have raised this event */
 	int type;  /**< an identifier of event type  */
-	void * data;  /**< pointer to custom event data of type depending on event type */
-	DestructorFunction destructor;  /**< a callback function pointer to call to free data */
+	ESObject * payload;  /**< pointer to custom event data of type depending on event type */
 };
 
 /** 
 	@brief a new Event constructor with parameters
 	@param sender - who generated this event
 	@param type - event type
-	@param data - pointer to specific event data
-	@param destructor - destructor function for data
+	@param payload - pointer to specific event data object
 */
 Event * Event_new(
 	EventHandler * sender, 
 	int type, 
-	void * data, 
-	DestructorFunction destructor);
+	ESObject * payload);
 
 /**
 	@typedef EventHandlerFunction
@@ -66,33 +93,17 @@ typedef void (*EventHandlerFunction)(EventHandler * self, Event * event);
 	@brief a structure that holds infomation about system event handlers
 */
 struct EventHandler {
-	void * data;  /**< a pointer to an event handler data */
-	DestructorFunction destructor;  /**< a pointer to function that will be called to free data data*/
+	ESObject * state;  /**< a pointer to an event handler data */
 	EventHandlerFunction handler;  /**< a pointer to function that will call on data events handle */
-	int _refCount;  /**< private reference counter */
 };
 
-
 /**
-	@param data - an event handler data pointer
-	@param destructor - a DestructorFunction function pointer to call on data data free
+	@param state - an event handler state object
 	@param eventHandler - an EventHandlerFunction callback to handle events for data event handler
 */
 EventHandler * EventHandler_new(
-	void * data, 
-	DestructorFunction destructor, 
+	ESObject * state, 
 	EventHandlerFunction eventHandler);
-
-/**
-	@brief reference counting reference increase
-*/
-void EventHandler_incref(EventHandler * self);
-
-/**
-	@brief reference counting reference decrease
-	free's handler when reference counter is 0
-*/
-void EventHandler_decref(EventHandler * self);
 
 /* public EventSystem API */
 
@@ -124,9 +135,6 @@ void EventSystem_removeHandler(EventHandler * handler);
 /**
 	@brief add new event to EventSystem to handle by event handlers
 */
-void EventSystem_raiseEvent(Event * event) 
-	;//__attribute__((deprecated("use EventSystem_emitEvent() instead")));
-
 void EventSystem_emit(Event * event);
 
 /**
@@ -137,6 +145,11 @@ typedef enum {
 	UpdateEventTypeId,  /**< event is generated in every iteration of event loop */
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;
+
+/**
+    @brief get elapsed milliseconds value from UpdateEvent
+*/
+double UpdateEvent_elapsedMillis(Event * event);
 
 #ifdef __cplusplus
 }

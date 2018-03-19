@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <progbase/events.h>
+#include <progbase/events2.h>
 #include <progbase/console.h>
 
 /* custom constant event type ids*/

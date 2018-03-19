@@ -11,64 +11,25 @@
 #include <progbase/collections/list.h>
 #include <progbase/collections/queue.h>
 
-struct ESObject {
-	void * ref;  /**< a pointer to custom data */
-	int refCount;  /**< reference counter */
-	DestructorFunction destructor;  /**< a callback function pointer to free data */
-};
+void Event_free(Event ** dataPtr);
 
-ESObject * ESObject_new(void * ref, DestructorFunction destructor) {
-	ESObject * self = malloc(sizeof(ESObject));
-	self->refCount = 1;
-	self->ref = ref;
-	self->destructor = destructor;
-	return self;
-}
-
-void * ESObject_ref(ESObject * self) {
-	assert(self != NULL);
-	return self->ref;
-}
-
-void ESObject_incref(ESObject * self) {
-	assert(self != NULL);
-	if (self->refCount > 0) {
-		self->refCount++;
-	}
-} 
-
-void ESObject_decref(ESObject * self) {
-	assert(self != NULL);
-	if (self->refCount > 0) {
-		self->refCount--;
-		if (0 == self->refCount) {
-			// free
-			if (self->destructor != NULL && self->ref != NULL) {
-				self->destructor(self->ref);
-			}
-			free(self);
-		}
-	}
-}
-
-// Event
-
-Event * Event_new(EventHandler * sender, int type, ESObject * payload) {
+Event * Event_new(EventHandler * sender, int type, void * data, DestructorFunction dest) {
 	Event * self = malloc(sizeof(struct Event));
 	self->sender = sender;
 	self->type = type;
-	self->payload = payload;
+	self->data = data;
+	self->destructor = dest;
 	return self;
 }
 
-static void Event_free(Event * self) {
-	if (self->payload) {
-		ESObject_decref(self->payload);
+void Event_free(Event ** selfPtr) {
+	Event * self = *selfPtr;
+	if (self->destructor != NULL && self->data != NULL) {
+		self->destructor(self->data);
 	}
 	free(self);
+	*selfPtr = NULL;
 }
-
-/* EventSystem */
 
 /**
 	@brief a structure that holds information about events and handlers
@@ -76,7 +37,9 @@ static void Event_free(Event * self) {
 struct EventSystem {
 	List * handlers;  /**< a list of system event handlers */
 	Queue * events;  /**< a a queue of unhandled events */
-}; 
+};
+
+/* EventSystem */
 
 typedef enum {
 	EventSystemActionContinue,
@@ -89,7 +52,7 @@ typedef enum {
 */
 typedef struct EventHandlerEnumerator EventHandlerEnumerator;
 
-EventSystemAction EventSystem_handleEvent(Event * event);
+bool EventSystem_handleEvent(Event * event);
 Event * EventSystem_getNextEvent(void);
 EventHandlerEnumerator * EventSystem_getHandlers(void);
 EventHandler * EventHandlerEnumerator_getNextHandler(EventHandlerEnumerator * self);
@@ -99,23 +62,34 @@ typedef struct EventSystem EventSystem;
 
 static EventSystem * g_eventSystem = &(EventSystem) { NULL, NULL };
 
-static void EventHandler_handleEvent(EventHandler * self, Event * event);
+void EventHandler_handleEvent(EventHandler * self, Event * event);
 
-EventHandler * EventHandler_new(ESObject * state, EventHandlerFunction handler) {
+EventHandler * EventHandler_new(void * data, DestructorFunction dest, EventHandlerFunction handler) {
+	if (data != NULL && dest == NULL) assert(0 && "destructor for non-null data is null");
 	EventHandler * self = malloc(sizeof(EventHandler));
-	self->state = state;
+	self->data = data;
+	self->destructor = dest;
 	self->handler = handler; 
+	self->_refCount = 1;
 	return self;
 }
 
-static void EventHandler_free(EventHandler * self) {
-	if (self->state) {
-		ESObject_decref(self->state);
-	}
-	free(self);
+void EventHandler_incref(EventHandler * self) {
+	self->_refCount++;
 }
 
-static void EventHandler_handleEvent(EventHandler * self, Event * event) {
+void EventHandler_decref(EventHandler * self) {
+	self->_refCount--;
+	if (0 == self->_refCount) {
+		// free
+		if (self->destructor != NULL && self->data != NULL) {
+			self->destructor(self->data);
+		}
+		free(self);
+	}
+}
+
+void EventHandler_handleEvent(EventHandler * self, Event * event) {
 	self->handler(self, event);
 }
 
@@ -156,19 +130,19 @@ EventHandlerEnumerator * EventSystem_getHandlers(void) {
 /* EventSystem implementations */
 
 enum {
-	RemoveHandlerEventTypeId = (-2147483648) + 3,
+	RemoveHandlerEventTypeId = ExitEventTypeId + 1,
 	BreakLoopEventTypeId
 };
 
-EventSystemAction EventSystem_handleEvent(Event * event) {
+bool EventSystem_handleEvent(Event * event) {
 	if (event->type == BreakLoopEventTypeId) {
 		return EventSystemActionExit;
 	}
 	if (event->type == RemoveHandlerEventTypeId) {
-		EventHandler * handler = ESObject_ref(event->payload);
+		EventHandler * handler = event->data;
 		if (handler != NULL) {
 			List_remove(g_eventSystem->handlers, handler);
-			EventHandler_free(handler);
+			EventHandler_decref(handler);
 		}
 	}
 	return EventSystemActionContinue;
@@ -179,10 +153,7 @@ void EventSystem_addHandler(EventHandler * handler) {
 }
 
 void EventSystem_removeHandler(EventHandler * handler) {
-	EventSystem_emit(Event_new(
-		NULL, 
-		RemoveHandlerEventTypeId, 
-		ESObject_new(handler, NULL)));
+	EventSystem_emit(Event_new(NULL, RemoveHandlerEventTypeId, handler, NULL));
 }
 
 void EventSystem_raiseEvent(Event * event) {
@@ -201,12 +172,12 @@ void EventSystem_init(void) {
 void EventSystem_cleanup(void) {
 	while (Queue_size(g_eventSystem->events) > 0) {
 		Event * event = Queue_dequeue(g_eventSystem->events);
-		Event_free(event);
+		Event_free(&event);
 	}
 	Queue_free(&g_eventSystem->events);
 	for (int i = 0; i < List_count(g_eventSystem->handlers); i++) {
 		EventHandler * handler = List_get(g_eventSystem->handlers, i);
-		EventHandler_free(handler);
+		EventHandler_decref(handler);
 	}
 	List_free(&g_eventSystem->handlers);
 }
@@ -215,7 +186,7 @@ void EventSystem_loop(void) {
 	const int FPS = 30;
     const double millisPerFrame = 1000 / FPS;
 
-	EventSystem_emit(Event_new(NULL, StartEventTypeId, NULL));
+	EventSystem_emit(Event_new(NULL, StartEventTypeId, NULL, NULL));
 	double elapsedMillis = 0;
 	Clock lastTicks = Clock_now();
 	bool isRunning = true;
@@ -223,14 +194,13 @@ void EventSystem_loop(void) {
 		Clock current = Clock_now();
         elapsedMillis = Clock_diffMillis(current, lastTicks);
 
-		ESObject * o = ESObject_new(&elapsedMillis, NULL);
-		EventSystem_emit(Event_new(NULL, UpdateEventTypeId, o));
+		EventSystem_emit(Event_new(NULL, UpdateEventTypeId, &elapsedMillis, NULL));
 		
 		Event * event = NULL;
 		while((event = EventSystem_getNextEvent()) != NULL) {
 			if (EventSystem_handleEvent(event) == EventSystemActionExit) {
 				isRunning = false;
-				EventSystem_emit(Event_new(NULL, ExitEventTypeId, NULL));
+				EventSystem_emit(Event_new(NULL, ExitEventTypeId, NULL, NULL));
 			} else {
 				EventHandlerEnumerator * handlersEnum = EventSystem_getHandlers();
 				EventHandler * handler = NULL;
@@ -239,7 +209,7 @@ void EventSystem_loop(void) {
 				}
 				EventHandlerEnumerator_free(&handlersEnum);
 			}
-			Event_free(event);
+			Event_free(&event);
 		}
 
 		double millis = Clock_diffMillis(Clock_now(), current);
@@ -249,9 +219,5 @@ void EventSystem_loop(void) {
 }
 
 void EventSystem_exit(void) {
-	EventSystem_emit(Event_new(NULL, BreakLoopEventTypeId, NULL));
-}
-
-double UpdateEvent_elapsedMillis(Event * event) {
-	return *(double *)ESObject_ref(event->payload);
+	EventSystem_emit(Event_new(NULL, BreakLoopEventTypeId, NULL, NULL));
 }

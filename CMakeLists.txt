@@ -6,7 +6,6 @@ find_package(OpenSSL QUIET)
 
 include_directories(include include/progbase include/progbase/collections)
 file(GLOB LIB_SOURCES_COMMON "src/*.c")
-file(GLOB LIB_SOURCES_COLLECTIONS "src/collections/*.c")
 if (UNIX)
     file(GLOB LIB_SOURCES_SPECIFIC "src/linux/*.c")
 endif (UNIX)
@@ -33,9 +32,30 @@ install(
 )
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
+# progbase-collections
+
 project (progbase-collections)
+file(GLOB LIB_SOURCES_COLLECTIONS "src/collections/*.c")
 add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_COLLECTIONS})
 set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
+
+install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
+
+# events
+
+project (progbase-events)
+file(GLOB LIB_SOURCES_EVENTS "src/events/events.c")
+add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_EVENTS})
+target_link_libraries(${CMAKE_PROJECT_NAME} progbase progbase-collections)
+
+install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
+
+# events 2
+
+project (progbase-events2)
+file(GLOB LIB_SOURCES_EVENTS2 "src/events/events2.c")
+add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_EVENTS2})
+target_link_libraries(${CMAKE_PROJECT_NAME} progbase progbase-collections)
 
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
