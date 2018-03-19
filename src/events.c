@@ -7,8 +7,8 @@
 
 #include <progbase.h>
 #include <progbase/list.h>
-#include <progbase/events.h>
-#include <progbase/event_queue.h>
+#include <progbase/events.h> 
+#include <progbase/queue.h>
 #include <progbase/clock.h>
 
 struct ESObject {
@@ -75,8 +75,8 @@ static void Event_free(Event * self) {
 */
 struct EventSystem {
 	List * handlers;  /**< a list of system event handlers */
-	EventQueue * events;  /**< a a queue of unhandled events */
-};
+	Queue * events;  /**< a a queue of unhandled events */
+}; 
 
 typedef enum {
 	EventSystemActionContinue,
@@ -145,8 +145,8 @@ EventHandler * EventHandlerEnumerator_getNextHandler(EventHandlerEnumerator * se
 }
 
 Event * EventSystem_getNextEvent(void) {
-	if (EventQueue_size(g_eventSystem->events) == 0) return NULL;
-	return EventQueue_dequeue(g_eventSystem->events);
+	if (Queue_size(g_eventSystem->events) == 0) return NULL;
+	return Queue_dequeue(g_eventSystem->events);
 }
 
 EventHandlerEnumerator * EventSystem_getHandlers(void) {
@@ -186,24 +186,24 @@ void EventSystem_removeHandler(EventHandler * handler) {
 }
 
 void EventSystem_raiseEvent(Event * event) {
-	EventQueue_enqueue(g_eventSystem->events, event);
+	Queue_enqueue(g_eventSystem->events, event);
 }
 
 void EventSystem_emit(Event * event) {
-	EventQueue_enqueue(g_eventSystem->events, event);
+	Queue_enqueue(g_eventSystem->events, event);
 }
 
 void EventSystem_init(void) {
 	g_eventSystem->handlers = List_new();
-	g_eventSystem->events = EventQueue_new();
+	g_eventSystem->events = Queue_new();
 }
 
 void EventSystem_cleanup(void) {
-	while (EventQueue_size(g_eventSystem->events) > 0) {
-		Event * event = EventQueue_dequeue(g_eventSystem->events);
+	while (Queue_size(g_eventSystem->events) > 0) {
+		Event * event = Queue_dequeue(g_eventSystem->events);
 		Event_free(event);
 	}
-	EventQueue_free(&g_eventSystem->events);
+	Queue_free(&g_eventSystem->events);
 	for (int i = 0; i < List_count(g_eventSystem->handlers); i++) {
 		EventHandler * handler = List_get(g_eventSystem->handlers, i);
 		EventHandler_free(handler);

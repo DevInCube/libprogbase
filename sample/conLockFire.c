@@ -319,7 +319,7 @@ int World_draw(struct World * world) {
             drawPoint(buf, diff->i, diff->j);
         }
     }
-    while(List_count(diffs) > 0) {
+    while (List_count(diffs) > 0) {
         CellDiff * diff = List_get(diffs, List_count(diffs) - 1);
         free(diff);
         List_removeAt(diffs, List_count(diffs) - 1);

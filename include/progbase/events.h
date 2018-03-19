@@ -4,6 +4,10 @@
 
 #pragma once
 
+#ifndef __INT_MAX__
+    #define __INT_MAX__ 2147483647
+#endif
+
 #include <limits.h>
 
 #ifdef __cplusplus
@@ -137,7 +141,7 @@ void EventSystem_emit(Event * event);
 	@brief some base events type ids
 */
 typedef enum { 
-	StartEventTypeId = -2147483648,  /**< the first event generated before event loop start */
+	StartEventTypeId = INT_MIN,  /**< the first event generated before event loop start */
 	UpdateEventTypeId,  /**< event is generated in every iteration of event loop */
 	ExitEventTypeId  /**< event to stop event loop */
 } BaseEventTypes;

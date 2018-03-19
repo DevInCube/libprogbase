@@ -13,6 +13,8 @@
 		"functional": "cpp",
 		"climits": "cpp",
 		"list.h": "c",
-		"events.h": "c"
+		"events.h": "c",
+		"event_queue.h": "c",
+		"events2.h": "c"
 	}
 }
