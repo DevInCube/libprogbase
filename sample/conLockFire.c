@@ -88,6 +88,17 @@ const int cols[] = {
     BG_YELLOW,
     BG_INTENSITY_YELLOW
 };
+const int fgcols[] = {
+    FG_DEFAULT,
+    FG_BLACK,
+    FG_INTENSITY_BLACK,
+    FG_BLUE,
+    FG_MAGENTA,
+    FG_RED,
+    FG_INTENSITY_RED,
+    FG_YELLOW,
+    FG_INTENSITY_YELLOW
+};
 const int MAX_STATE = sizeof(cols) / sizeof(cols[0]) - 1;
 const int die[] = {2, 3};
 const int dieLength = sizeof(die) / sizeof(die[0]);
@@ -314,10 +325,17 @@ int World_draw(struct World * world) {
     // apply color once for all changes that have that color combination
     for (int i = 0; i < List_count(diffs); i++) {
         CellDiff * diff = List_get(diffs, i);
+        #ifdef __linux__
         {
             drawCell(buf, diff->stateUpper, diff->stateLower);
             drawPoint(buf, diff->i, diff->j);
         }
+        #else
+        Console_setCursorAttribute(fgcols[diff->stateUpper]);
+        Console_setCursorAttribute(cols[diff->stateLower]);
+        Console_setCursorPosition(diff->i, diff->j);
+        printf("\xE2\x96\x80");
+        #endif
     }
     while (List_count(diffs) > 0) {
         CellDiff * diff = List_get(diffs, List_count(diffs) - 1);
