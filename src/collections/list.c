@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <progbase/collections/enumerator.h>
 #include <progbase/collections/list.h>
 
 /* array.h */
@@ -181,4 +182,43 @@ void Array_copy(
     char buffer[copySize];
     memcpy(buffer, sourceArray.items + (sourceIndex) * itemSize, copySize);
     memcpy(destinationArray.items + (destinationIndex) * itemSize, buffer, copySize);
+}
+
+/* list enumerator */
+
+struct __Enumerator {
+    List * list;
+    int index;
+};
+
+static Enumerator * Enumerator_new(List * list) {
+    Enumerator * self = malloc(sizeof(Enumerator));
+    self->list = list;
+    Enumerator_reset(self);
+    return self;
+}
+
+Enumerator * List_getNewEnumerator(List * self) {
+    return Enumerator_new(self);
+}
+
+void Enumerator_free(Enumerator * self) {
+    free(self);
+}
+
+void * Enumerator_current(Enumerator * self) {
+    if (self->index < 0) throw("Enumerator in initial state");
+    return List_at(self->list, self->index);
+}
+
+bool Enumerator_moveNext(Enumerator * self) {
+    if (self->index < List_count(self->list) - 1) {
+        self->index++;
+        return true;
+    }
+    return false;
+}
+
+void Enumerator_reset(Enumerator * self) {
+    self->index = -1;
 }

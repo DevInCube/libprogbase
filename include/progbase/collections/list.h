@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include "enumerator.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,9 +97,9 @@ void List_clear(List * self);
 
 //void List_clearFree(List * self, );
 /**
-    @brief returns a List Enumerator to iterate over List elements
+    @brief returns new List Enumerator to iterate over List elements
 */
-// Enumerator * List_getEnumerator(List * self);
+Enumerator * List_getNewEnumerator(List * self);
 
 #ifdef __cplusplus
 }

@@ -8,6 +8,7 @@
 #include <progbase.h>
 #include <progbase/events2.h> 
 #include <progbase/clock.h>
+#include <progbase/collections/enumerator.h>
 #include <progbase/collections/list.h>
 #include <progbase/collections/queue.h>
 
@@ -83,17 +84,8 @@ typedef enum {
 	EventSystemActionExit
 } EventSystemAction;
 
-/**
-	@class EventHandlerEnumerator
-	@brief an Enumerator (Iterator) to access List items of EventHandler type in EventSystem
-*/
-typedef struct EventHandlerEnumerator EventHandlerEnumerator;
-
 EventSystemAction EventSystem_handleEvent(Event * event);
-Event * EventSystem_getNextEvent(void);
-EventHandlerEnumerator * EventSystem_getHandlers(void);
-EventHandler * EventHandlerEnumerator_getNextHandler(EventHandlerEnumerator * self);
-void EventHandlerEnumerator_free(EventHandlerEnumerator ** selfPtr);
+Enumerator * EventSystem_getHandlers(void);
 
 typedef struct EventSystem EventSystem;
 
@@ -104,7 +96,7 @@ static void EventHandler_handleEvent(EventHandler * self, Event * event);
 EventHandler * EventHandler_new(ESObject * state, EventHandlerFunction handler) {
 	EventHandler * self = malloc(sizeof(EventHandler));
 	self->state = state;
-	self->handler = handler; 
+	self->handler = handler;
 	return self;
 }
 
@@ -119,38 +111,8 @@ static void EventHandler_handleEvent(EventHandler * self, Event * event) {
 	self->handler(self, event);
 }
 
-/* EventHandlerEnumerator */
-
-struct EventHandlerEnumerator {
-	List * handlers;
-	int index;
-};
-
-EventHandlerEnumerator * EventHandlerEnumerator_new(List * handlers) {
-	EventHandlerEnumerator * self = malloc(sizeof(EventHandlerEnumerator));
-	self->handlers = handlers;
-	self->index = 0;
-	return self;
-}
-
-void EventHandlerEnumerator_free(EventHandlerEnumerator ** selfPtr) {
-	EventHandlerEnumerator * self = *selfPtr;
-	free(self);
-	*selfPtr = NULL;
-}
-
-EventHandler * EventHandlerEnumerator_getNextHandler(EventHandlerEnumerator * self) {
-	if (self->index >= List_count(self->handlers)) return NULL;
-	return List_get(self->handlers, self->index++);
-}
-
-Event * EventSystem_getNextEvent(void) {
-	if (Queue_size(g_eventSystem->events) == 0) return NULL;
-	return Queue_dequeue(g_eventSystem->events);
-}
-
-EventHandlerEnumerator * EventSystem_getHandlers(void) {
-	return EventHandlerEnumerator_new(g_eventSystem->handlers);
+Enumerator * EventSystem_getHandlers(void) {
+	return List_getNewEnumerator(g_eventSystem->handlers);
 }
 
 /* EventSystem implementations */
@@ -172,6 +134,11 @@ EventSystemAction EventSystem_handleEvent(Event * event) {
 		}
 	}
 	return EventSystemActionContinue;
+}
+
+Event * EventSystem_getNextEvent(void) {
+	if (Queue_size(g_eventSystem->events) == 0) return NULL;
+	return Queue_dequeue(g_eventSystem->events);
 }
 
 void EventSystem_addHandler(EventHandler * handler) {
@@ -232,12 +199,13 @@ void EventSystem_loop(void) {
 				isRunning = false;
 				EventSystem_emit(Event_new(NULL, ExitEventTypeId, NULL));
 			} else {
-				EventHandlerEnumerator * handlersEnum = EventSystem_getHandlers();
+				Enumerator * handlersEnum = EventSystem_getHandlers();
 				EventHandler * handler = NULL;
-				while((handler = EventHandlerEnumerator_getNextHandler(handlersEnum)) != NULL) {
+				while(Enumerator_moveNext(handlersEnum)) {
+					handler = Enumerator_current(handlersEnum);
 					EventHandler_handleEvent(handler, event);
 				}
-				EventHandlerEnumerator_free(&handlersEnum);
+				Enumerator_free(handlersEnum);
 			}
 			Event_free(event);
 		}
