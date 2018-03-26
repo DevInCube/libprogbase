@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#define _XOPEN_SOURCE 700  // to enable struct timespec and clock_gettime
-#include <time.h>
 
 #include <progbase/clock.h>
 

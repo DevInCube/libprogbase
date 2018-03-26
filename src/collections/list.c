@@ -209,7 +209,7 @@ void Enumerator_free(Enumerator * self) {
 
 void * Enumerator_current(Enumerator * self) {
     if (self->index < 0) throw("Enumerator in initial state");
-    return List_at(self->list, self->index);
+    return List_get(self->list, self->index);
 }
 
 bool Enumerator_moveNext(Enumerator * self) {
