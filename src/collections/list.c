@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <progbase/collections/enumerator.h>
@@ -37,7 +38,7 @@ void Array_copy(
 /* list.h */
 
 #define empty(MEM, SIZE) memset(MEM, 0, SIZE)
-#define throw(MSG) assert(0 && MSG);
+#define throw(MSG) { assert(0 && MSG); fprintf(stderr, MSG); }
 
 struct List {
     int capacity;

@@ -12,6 +12,15 @@
 #include <progbase/collections/list.h>
 #include <progbase/collections/queue.h>
 
+#define foreach(VARTYPE, VARNAME, LIST)   \
+   for (int VARNAME##_i = 0; !VARNAME##_i; ) \
+       for (Enumerator * VARNAME##_e = List_getNewEnumerator(LIST); \
+            !VARNAME##_i; \
+            ++VARNAME##_i, Enumerator_free(VARNAME##_e))\
+         for (VARTYPE VARNAME = NULL; \
+             (VARNAME##_i = Enumerator_moveNext(VARNAME##_e), VARNAME = Enumerator_current(VARNAME##_e), VARNAME##_i); \
+             )
+
 struct ESObject {
 	void * ref;  /**< a pointer to custom data */
 	int refCount;  /**< reference counter */
@@ -84,8 +93,7 @@ typedef enum {
 	EventSystemActionExit
 } EventSystemAction;
 
-EventSystemAction EventSystem_handleEvent(Event * event);
-Enumerator * EventSystem_getHandlers(void);
+static EventSystemAction EventSystem_handleEvent(Event * event);
 
 typedef struct EventSystem EventSystem;
 
@@ -111,18 +119,14 @@ static void EventHandler_handleEvent(EventHandler * self, Event * event) {
 	self->handler(self, event);
 }
 
-Enumerator * EventSystem_getHandlers(void) {
-	return List_getNewEnumerator(g_eventSystem->handlers);
-}
-
 /* EventSystem implementations */
 
 enum {
-	RemoveHandlerEventTypeId = (-2147483648) + 3,
+	RemoveHandlerEventTypeId = INT_MIN + 3,
 	BreakLoopEventTypeId
 };
 
-EventSystemAction EventSystem_handleEvent(Event * event) {
+static EventSystemAction EventSystem_handleEvent(Event * event) {
 	if (event->type == BreakLoopEventTypeId) {
 		return EventSystemActionExit;
 	}
@@ -136,9 +140,10 @@ EventSystemAction EventSystem_handleEvent(Event * event) {
 	return EventSystemActionContinue;
 }
 
-Event * EventSystem_getNextEvent(void) {
-	if (Queue_size(g_eventSystem->events) == 0) return NULL;
-	return Queue_dequeue(g_eventSystem->events);
+static Event * EventSystem_dequeueNextEvent(void) {
+	return Queue_size(g_eventSystem->events) != 0
+		? Queue_dequeue(g_eventSystem->events)
+		: NULL;
 }
 
 void EventSystem_addHandler(EventHandler * handler) {
@@ -166,8 +171,8 @@ void EventSystem_init(void) {
 }
 
 void EventSystem_cleanup(void) {
-	while (Queue_size(g_eventSystem->events) > 0) {
-		Event * event = Queue_dequeue(g_eventSystem->events);
+    Event * event = NULL;
+	while ((event = EventSystem_dequeueNextEvent()) != NULL) {
 		Event_free(event);
 	}
 	Queue_free(&g_eventSystem->events);
@@ -194,18 +199,14 @@ void EventSystem_loop(void) {
 		EventSystem_emit(Event_new(NULL, UpdateEventTypeId, o));
 		
 		Event * event = NULL;
-		while((event = EventSystem_getNextEvent()) != NULL) {
+		while((event = EventSystem_dequeueNextEvent()) != NULL) {
 			if (EventSystem_handleEvent(event) == EventSystemActionExit) {
 				isRunning = false;
 				EventSystem_emit(Event_new(NULL, ExitEventTypeId, NULL));
 			} else {
-				Enumerator * handlersEnum = EventSystem_getHandlers();
-				EventHandler * handler = NULL;
-				while(Enumerator_moveNext(handlersEnum)) {
-					handler = Enumerator_current(handlersEnum);
+				foreach(EventHandler *, handler, g_eventSystem->handlers) {
 					EventHandler_handleEvent(handler, event);
 				}
-				Enumerator_free(handlersEnum);
 			}
 			Event_free(event);
 		}
