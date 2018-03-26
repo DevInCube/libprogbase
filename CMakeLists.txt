@@ -59,4 +59,4 @@ target_link_libraries(${CMAKE_PROJECT_NAME} progbase progbase-collections)
 
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
-SET(CMAKE_C_FLAGS "-std=c99 -Wall")
+SET(CMAKE_C_FLAGS "-std=c99 -Werror -Wall -pedantic-errors -Wno-unused")
