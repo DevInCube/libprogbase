@@ -1,9 +1,7 @@
-#define _XOPEN_SOURCE 700  // to enable struct timespec and clock_gettime
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <time.h>
 
 #include <progbase.h>
 #include <progbase/events.h> 
