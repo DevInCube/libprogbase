@@ -4,7 +4,13 @@
 
 #pragma once 
 
-#define _XOPEN_SOURCE 700  // to enable struct timespec and clock_gettime
+#if __STDC_VERSION__ >= 199901L
+#define _XOPEN_SOURCE 600
+#else
+#define _XOPEN_SOURCE 500
+#endif /* __STDC_VERSION__ */
+// #define _XOPEN_SOURCE 700  // to enable struct timespec and clock_gettime
+
 #include <time.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
