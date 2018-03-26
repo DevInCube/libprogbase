@@ -4,7 +4,7 @@
 
 #pragma once 
 
-#define _XOPEN_SOURCE 700  // to enable struct timespec and clock_gettime
+#define _XOPEN_SOURCE 600  // to enable struct timespec and clock_gettime
 
 #include <time.h>
 
