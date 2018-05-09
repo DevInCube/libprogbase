@@ -26,10 +26,17 @@ int main(void) {
     // to store information about current client
     TcpClient client;
     while (1) {
+        printf("Waiting for a clients...\n");
+        fflush(stdout);
         // wait for someone to connect to server
-        TcpListener_accept(server, &client);
+        if (!TcpListener_accept(server, &client)) {
+            perror("accept");
+			return 1;
+        }
+        printf("Client accepted\n"); 
+        fflush(stdout);
         // wait for data from client
-        if(!TcpClient_receive(&client, message)) {
+        if(!TcpClient_receive(&client, message)) { 
 			perror("recv");
 			return 1;
 		}
@@ -39,6 +46,7 @@ int main(void) {
             IpAddress_port(clientAddress),  // client port
             NetMessage_dataLength(message),
             NetMessage_data(message));
+        fflush(stdout);
         // echo send data back
         if(!TcpClient_send(&client, message)) {
 			perror("send");

@@ -197,16 +197,20 @@ void TcpListener_close(TcpListener * self) {
 	close(self->socket);
 }
 
+static TcpClient * __TcpClient_initSocket(TcpClient * self, int socket);
+
 TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client) {
 	struct sockaddr_in addr;
 	socklen_t addrlen = sizeof(addr);
-	client->socket = accept(
+	int sock = accept(
 		self->socket,
 		(struct sockaddr *)&addr,
 		&addrlen);
-	if (client->socket < 0) {
-		assert(0 && "Accept error");
+	if (sock < 0) {
+		assert(0 && "Accept client error");
+		return NULL;
 	}
+	__TcpClient_initSocket(client, sock);
 	client->address.addr = addr;
 	return client;
 }
@@ -217,15 +221,19 @@ IpAddress * TcpListener_address(TcpListener * self) {
 
 // Tcp client
 
-TcpClient * TcpClient_init(TcpClient * self) {
+static TcpClient * __TcpClient_initSocket(TcpClient * self, int socket) {
+	IpAddress_init(&self->address, "127.0.0.1", 0);
+	self->socket = socket;
 	self->ssl = NULL;
-	self->socket = -1;
+	return self;
+}
+
+TcpClient * TcpClient_init(TcpClient * self) {
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
 		return NULL;
     }
-	self->socket = sock;
-	return self;
+	return __TcpClient_initSocket(self, sock);
 }
 
 struct __Ssl_priv {
@@ -314,6 +322,10 @@ IpAddress * TcpClient_address(TcpClient * self) {
 Ssl * Ssl_init(Ssl * self) {
 #ifndef SSL_MISSING
 	self->__priv = malloc(sizeof(__Ssl_priv));
+	if (self->__priv == NULL) {
+		assert(0 && "Ssl init priv error");
+		return NULL;
+	}
     self->__priv->conn = NULL;
     SSL_load_error_strings();
     SSL_library_init();
@@ -358,6 +370,8 @@ bool Ssl_send(Ssl * self, NetMessage * message) {
 
 bool Ssl_receive(Ssl * self, NetMessage * message) {
 #ifndef SSL_MISSING
+	printf("reading ssl, %i", self->__priv != NULL);
+	fflush(stdout);
     int bytes = SSL_read(self->__priv->conn, message->buffer, message->bufferLength);
     if (bytes < message->bufferLength) {
         message->buffer[bytes] = '\0';  // null-terminate string
