@@ -16,7 +16,7 @@ int main(void) {
         perror("tcp server start");
         return 1;
     }
-    printf("TCP Server is listening on port %d\n", 
+    printf(">> TCP Server is listening on port %d\n", 
         IpAddress_port(TcpListener_address(server)));
     
     NetMessage * message = NetMessage_init(
@@ -26,14 +26,14 @@ int main(void) {
     // to store information about current client
     TcpClient client;
     while (1) {
-        printf("Waiting for a clients...\n");
+        printf(">> Waiting for a client connections...\n");
         fflush(stdout);
         // wait for someone to connect to server
         if (!TcpListener_accept(server, &client)) {
             perror("accept");
 			return 1;
         }
-        printf("Client accepted\n"); 
+        printf(">> Client connection accepted\n"); 
         fflush(stdout);
         // wait for data from client
         if(!TcpClient_receive(&client, message)) { 
@@ -41,20 +41,23 @@ int main(void) {
 			return 1;
 		}
         IpAddress * clientAddress = TcpClient_address(&client);
-        printf("Received message from %s:%d (%d bytes): `%s`\n",
+        printf(">> Received message from %s:%d (%d bytes):\n%s\n",
             IpAddress_address(clientAddress),  // client IP-address
             IpAddress_port(clientAddress),  // client port
             NetMessage_dataLength(message),
             NetMessage_data(message));
         fflush(stdout);
+        printf(">> Sending message back to the client\n");
         // echo send data back
         if(!TcpClient_send(&client, message)) {
 			perror("send");
 			return 1;
 		}
+        printf(">> Closing client connection\n");
         // close tcp connection
         TcpClient_close(&client);
     }
+    printf(">> Closing server\n");
     // close listener
     TcpListener_close(server);
 	return 0;
