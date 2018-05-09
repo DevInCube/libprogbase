@@ -14,6 +14,11 @@ if (WIN32)
 endif (WIN32)
 
 file(GLOB LIB_SOURCES_COLLECTIONS "src/collections/*.c")
+file(GLOB LIB_SOURCES_EVENTS "src/events/events.c")
+if (ENABLE_EVENTS2)
+    MESSAGE(STATUS "Events2 enabled")
+    file(GLOB LIB_SOURCES_EVENTS "src/events/events2.c")
+endif (ENABLE_EVENTS2)
 
 project (progbase)
 
@@ -25,7 +30,8 @@ endif()
 add_library(${CMAKE_PROJECT_NAME} STATIC 
     ${LIB_SOURCES_COMMON} 
     ${LIB_SOURCES_SPECIFIC} 
-    ${LIB_SOURCES_COLLECTIONS})
+    ${LIB_SOURCES_COLLECTIONS}
+    ${LIB_SOURCES_EVENTS})
 if (OPENSSL_FOUND)
     target_link_libraries(${CMAKE_PROJECT_NAME} ssl)
 endif()
@@ -35,24 +41,6 @@ install(
     DIRECTORY include/ DESTINATION /usr/local/include
     FILES_MATCHING PATTERN "*.h"
 )
-install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
-
-# events
-
-project (progbase-events)
-file(GLOB LIB_SOURCES_EVENTS "src/events/events.c")
-add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_EVENTS})
-target_link_libraries(${CMAKE_PROJECT_NAME} progbase progbase-collections)
-
-install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
-
-# events 2
-
-project (progbase-events2)
-file(GLOB LIB_SOURCES_EVENTS2 "src/events/events2.c")
-add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_EVENTS2})
-target_link_libraries(${CMAKE_PROJECT_NAME} progbase progbase-collections)
-
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
 # flags
