@@ -165,9 +165,9 @@ int NetMessage_dataLength(NetMessage * self) {
 
 // TCP
 
-static bool TcpPbListener_listen(TcpPbListener * self, int queueMaxSize);
+static bool TcpListener_listen(TcpListener * self, int queueMaxSize);
 
-TcpPbListener * TcpPbListener_init(TcpPbListener * self) {
+TcpListener * TcpListener_init(TcpListener * self) {
 	self->socket = -1;
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
@@ -177,11 +177,11 @@ TcpPbListener * TcpPbListener_init(TcpPbListener * self) {
 	return self;
 }
 
-bool TcpPbListener_start(TcpPbListener * self) {
-	return TcpPbListener_listen(self, 10);
+bool TcpListener_start(TcpListener * self) {
+	return TcpListener_listen(self, 10);
 }
 
-bool TcpPbListener_bind(TcpPbListener * self, IpAddress * address) {
+bool TcpListener_bind(TcpListener * self, IpAddress * address) {
 	self->address = *address;
     return bind(
 		self->socket,
@@ -189,15 +189,15 @@ bool TcpPbListener_bind(TcpPbListener * self, IpAddress * address) {
 		sizeof(self->address.addr)) >= 0;
 }
 
-bool TcpPbListener_listen(TcpPbListener * self, int queueMaxSize) {
+bool TcpListener_listen(TcpListener * self, int queueMaxSize) {
 	return listen(self->socket, queueMaxSize) >= 0;
 }
 
-void TcpPbListener_close(TcpPbListener * self) {
+void TcpListener_close(TcpListener * self) {
 	close(self->socket);
 }
 
-TcpClient * TcpPbListener_accept(TcpPbListener * self, TcpClient * client) {
+TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client) {
 	struct sockaddr_in addr;
 	socklen_t addrlen = sizeof(addr);
 	client->socket = accept(
@@ -211,7 +211,7 @@ TcpClient * TcpPbListener_accept(TcpPbListener * self, TcpClient * client) {
 	return client;
 }
 
-IpAddress * TcpPbListener_address(TcpPbListener * self) {
+IpAddress * TcpListener_address(TcpListener * self) {
 	return &self->address;
 }
 
