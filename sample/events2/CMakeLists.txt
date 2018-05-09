@@ -5,12 +5,12 @@ SET(CMAKE_С_FLAGS "-fsanitize=address")
 
 project (basic)
 add_executable(${PROJECT_NAME} "basic.c")
-target_link_libraries(${PROJECT_NAME} progbase-events2 progbase-collections progbase)
+target_link_libraries(${PROJECT_NAME} progbase)
 
 project (basic_input)
 add_executable(${CMAKE_PROJECT_NAME} "basic_input.c")
-target_link_libraries(${PROJECT_NAME} progbase-events2 progbase-collections progbase)
+target_link_libraries(${PROJECT_NAME} progbase)
 
 project (many_handlers)
 add_executable(${CMAKE_PROJECT_NAME} "many_handlers.c")
-target_link_libraries(${PROJECT_NAME} progbase-events2 progbase-collections progbase)
+target_link_libraries(${PROJECT_NAME} progbase)
