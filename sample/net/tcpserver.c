@@ -6,18 +6,18 @@
 #define BUFFER_LEN 1024
 
 int main(void) {
-	TcpListener * server = TcpListener_init(&(TcpListener){});
+	TcpPbListener * server = TcpPbListener_init(&(TcpPbListener){});
     IpAddress * address = IpAddress_initAny(&(IpAddress){}, 3000);
-    if(!TcpListener_bind(server, address)) {
+    if(!TcpPbListener_bind(server, address)) {
         perror("tcp bind");
         return 1;
     }
-    if (!TcpListener_start(server)) {
+    if (!TcpPbListener_start(server)) {
         perror("tcp server start");
         return 1;
     }
     printf("TCP Server is listening on port %d\n", 
-        IpAddress_port(TcpListener_address(server)));
+        IpAddress_port(TcpPbListener_address(server)));
     
     NetMessage * message = NetMessage_init(
         &(NetMessage){},  // value on stack
@@ -27,7 +27,7 @@ int main(void) {
     TcpClient client;
     while (1) {
         // wait for someone to connect to server
-        TcpListener_accept(server, &client);
+        TcpPbListener_accept(server, &client);
         // wait for data from client
         if(!TcpClient_receive(&client, message)) {
 			perror("recv");
@@ -48,6 +48,6 @@ int main(void) {
         TcpClient_close(&client);
     }
     // close listener
-    TcpListener_close(server);
+    TcpPbListener_close(server);
 	return 0;
 }

@@ -6,17 +6,17 @@
 #include <progbase.h>
 #include <progbase/events2.h> 
 #include <progbase/clock.h>
-#include <progbase/collections/enumerator.h>
-#include <progbase/collections/list.h>
-#include <progbase/collections/queue.h>
+#include <progbase/collections/pbenumerator.h>
+#include <progbase/collections/pblist.h>
+#include <progbase/collections/pbqueue.h>
 
 #define foreach(VARTYPE, VARNAME, LIST)   \
    for (int VARNAME##_i = 0; !VARNAME##_i; ) \
-       for (Enumerator * VARNAME##_e = List_getNewEnumerator(LIST); \
+       for (PbEnumerator * VARNAME##_e = PbList_getNewPbEnumerator(LIST); \
             !VARNAME##_i; \
-            ++VARNAME##_i, Enumerator_free(VARNAME##_e))\
+            ++VARNAME##_i, PbEnumerator_free(VARNAME##_e))\
          for (VARTYPE VARNAME = NULL; \
-             (VARNAME##_i = Enumerator_moveNext(VARNAME##_e), VARNAME = Enumerator_current(VARNAME##_e), VARNAME##_i); \
+             (VARNAME##_i = PbEnumerator_moveNext(VARNAME##_e), VARNAME = PbEnumerator_current(VARNAME##_e), VARNAME##_i); \
              )
 
 struct ESObject {
@@ -82,8 +82,8 @@ static void Event_free(Event * self) {
 	@brief a structure that holds information about events and handlers
 */
 struct EventSystem {
-	List * handlers;  /**< a list of system event handlers */
-	Queue * events;  /**< a a queue of unhandled events */
+	PbList * handlers;  /**< a list of system event handlers */
+	PbQueue * events;  /**< a a queue of unhandled events */
 }; 
 
 typedef enum {
@@ -131,7 +131,7 @@ static EventSystemAction EventSystem_handleEvent(Event * event) {
 	if (event->type == RemoveHandlerEventTypeId) {
 		EventHandler * handler = ESObject_ref(event->payload);
 		if (handler != NULL) {
-			List_remove(g_eventSystem->handlers, handler);
+			PbList_remove(g_eventSystem->handlers, handler);
 			EventHandler_free(handler);
 		}
 	}
@@ -139,13 +139,13 @@ static EventSystemAction EventSystem_handleEvent(Event * event) {
 }
 
 static Event * EventSystem_dequeueNextEvent(void) {
-	return Queue_size(g_eventSystem->events) != 0
-		? Queue_dequeue(g_eventSystem->events)
+	return PbQueue_size(g_eventSystem->events) != 0
+		? PbQueue_dequeue(g_eventSystem->events)
 		: NULL;
 }
 
 void EventSystem_addHandler(EventHandler * handler) {
-	List_add(g_eventSystem->handlers, handler);
+	PbList_add(g_eventSystem->handlers, handler);
 }
 
 void EventSystem_removeHandler(EventHandler * handler) {
@@ -156,16 +156,16 @@ void EventSystem_removeHandler(EventHandler * handler) {
 }
 
 void EventSystem_raiseEvent(Event * event) {
-	Queue_enqueue(g_eventSystem->events, event);
+	PbQueue_enqueue(g_eventSystem->events, event);
 }
 
 void EventSystem_emit(Event * event) {
-	Queue_enqueue(g_eventSystem->events, event);
+	PbQueue_enqueue(g_eventSystem->events, event);
 }
 
 void EventSystem_init(void) {
-	g_eventSystem->handlers = List_new();
-	g_eventSystem->events = Queue_new();
+	g_eventSystem->handlers = PbList_new();
+	g_eventSystem->events = PbQueue_new();
 }
 
 void EventSystem_cleanup(void) {
@@ -173,12 +173,12 @@ void EventSystem_cleanup(void) {
 	while ((event = EventSystem_dequeueNextEvent()) != NULL) {
 		Event_free(event);
 	}
-	Queue_free(&g_eventSystem->events);
-	for (int i = 0; i < List_count(g_eventSystem->handlers); i++) {
-		EventHandler * handler = List_get(g_eventSystem->handlers, i);
+	PbQueue_free(&g_eventSystem->events);
+	for (int i = 0; i < PbList_count(g_eventSystem->handlers); i++) {
+		EventHandler * handler = PbList_get(g_eventSystem->handlers, i);
 		EventHandler_free(handler);
 	}
-	List_free(&g_eventSystem->handlers);
+	PbList_free(&g_eventSystem->handlers);
 }
 
 void EventSystem_loop(void) {

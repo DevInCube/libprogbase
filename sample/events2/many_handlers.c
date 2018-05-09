@@ -24,7 +24,7 @@ static Event * SpaceHitEvent_new(EventHandler * sender);
 void RandomNumberGenerator_onEvent(EventHandler * self, Event * event);
 void Logger_onEvent(EventHandler * self, Event * event);
 void KeyInput_onEvent(EventHandler * self, Event * event);
-void MainEventsListener_onEvent(EventHandler * self, Event * event);
+void MainEventsPbListener_onEvent(EventHandler * self, Event * event);
 
 // timer
 typedef struct Timer Timer;
@@ -46,7 +46,7 @@ int main(void) {
 	EventSystem_addHandler(EventHandler_new(NULL, Logger_onEvent));
 	EventSystem_addHandler(EventHandler_new(NULL, KeyInput_onEvent));
 	EventSystem_addHandler(EventHandler_new(NULL, RandomNumberGenerator_onEvent));
-	EventSystem_addHandler(EventHandler_new(NULL, MainEventsListener_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, MainEventsPbListener_onEvent));
 	// add stateful event handlers
 	EventSystem_addHandler(EventHandler_new(
 		ESObject_new(SpaceHitCounter_new(), (DestructorFunction)SpaceHitCounter_free),
@@ -109,7 +109,7 @@ void RandomNumberGenerator_onEvent(EventHandler * self, Event * event) {
 	}
 }
 
-void MainEventsListener_onEvent(EventHandler * self, Event * event) {
+void MainEventsPbListener_onEvent(EventHandler * self, Event * event) {
 	switch (event->type) {
 		case RandomNumberEventTypeId: {
 			printf("Random number %i\n", RandomNumberEvent_number(event));

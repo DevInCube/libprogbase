@@ -12,9 +12,9 @@
 		"thread": "cpp",
 		"functional": "cpp",
 		"climits": "cpp",
-		"list.h": "c",
+		"pblist.h": "c",
 		"events.h": "c",
-		"event_queue.h": "c",
+		"event_pbqueue.h": "c",
 		"events2.h": "c"
 	}
 }

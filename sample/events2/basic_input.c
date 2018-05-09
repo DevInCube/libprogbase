@@ -16,7 +16,7 @@ static char KeyInputEvent_keyCode(Event * event);
 
 /* event handler functions prototypes */
 void KeyInputHandler_onEvent(EventHandler * self, Event * event);
-void KeyInputListener_onEvent(EventHandler * self, Event * event);
+void KeyInputPbListener_onEvent(EventHandler * self, Event * event);
 
 int main(void) {
 	// startup event system
@@ -24,7 +24,7 @@ int main(void) {
 
 	// add event handlers
 	EventSystem_addHandler(EventHandler_new(NULL, KeyInputHandler_onEvent));
-	EventSystem_addHandler(EventHandler_new(NULL, KeyInputListener_onEvent));
+	EventSystem_addHandler(EventHandler_new(NULL, KeyInputPbListener_onEvent));
 
 	// start infinite event loop
 	EventSystem_loop();
@@ -52,7 +52,7 @@ void KeyInputHandler_onEvent(EventHandler * self, Event * event) {
 	}
 }
 
-void KeyInputListener_onEvent(EventHandler * self, Event * event) {
+void KeyInputPbListener_onEvent(EventHandler * self, Event * event) {
 	switch(event->type) {
 		case StartEventTypeId: {
 			puts("Press [Esc] to exit");

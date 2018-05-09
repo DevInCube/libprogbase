@@ -66,7 +66,7 @@ IpAddress * UdpClient_address(UdpClient * self);
 
 /* TCP Protocol */
 
-typedef struct TcpListener TcpListener;
+typedef struct TcpPbListener TcpPbListener;
 typedef struct TcpClient TcpClient;
 typedef struct Ssl Ssl;
 
@@ -78,17 +78,17 @@ struct Ssl {
 Ssl * Ssl_init(Ssl * self);
 void Ssl_cleanup(Ssl * self);
 
-struct TcpListener {
+struct TcpPbListener {
 	IpAddress address;  /**< server IP-address */
 	int socket;  /**< private server socket handle */
 };
 
-TcpListener * TcpListener_init(TcpListener * self);
-bool TcpListener_bind(TcpListener * self, IpAddress * address);
-bool TcpListener_start(TcpListener * self);
-void TcpListener_close(TcpListener * self);
-TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client);
-IpAddress * TcpListener_address(TcpListener * self);
+TcpPbListener * TcpPbListener_init(TcpPbListener * self);
+bool TcpPbListener_bind(TcpPbListener * self, IpAddress * address);
+bool TcpPbListener_start(TcpPbListener * self);
+void TcpPbListener_close(TcpPbListener * self);
+TcpClient * TcpPbListener_accept(TcpPbListener * self, TcpClient * client);
+IpAddress * TcpPbListener_address(TcpPbListener * self);
 
 struct TcpClient {
 	IpAddress address;  /**< server IP-address */

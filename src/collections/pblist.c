@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <progbase/collections/enumerator.h>
-#include <progbase/collections/list.h>
+#include <progbase/collections/pbenumerator.h>
+#include <progbase/collections/pblist.h>
 
 /* array.h */
 
@@ -35,12 +35,12 @@ void Array_copy(
     int length
 );
 
-/* list.h */
+/* pblist.h */
 
 #define empty(MEM, SIZE) memset(MEM, 0, SIZE)
 #define throw(MSG) { assert(0 && MSG); fprintf(stderr, MSG); }
 
-struct List {
+struct PbList {
     int capacity;
     int size;
     void ** items;    /**< holds a pointer to items array */
@@ -48,10 +48,10 @@ struct List {
 
 static const int initialCapacity = 4;
 
-static void __ensureCapacity(List * self, int min);
+static void __ensureCapacity(PbList * self, int min);
 
-List * List_new(void) {
-	List * self = malloc(sizeof(struct List));
+PbList * PbList_new(void) {
+	PbList * self = malloc(sizeof(struct PbList));
 	self->capacity = initialCapacity;
 	self->size = 0;
 	self->items = malloc(0);
@@ -59,31 +59,31 @@ List * List_new(void) {
     return self;
 }
 
-void List_free(List ** selfPtr) {
+void PbList_free(PbList ** selfPtr) {
 	if (selfPtr == NULL) throw("Null pointer on free()");
-    List * self = *selfPtr;
+    PbList * self = *selfPtr;
     free(self->items);
     free(self);
     *selfPtr = NULL;
 }
 
-void * List_get(List * self, int index) {
+void * PbList_get(PbList * self, int index) {
     if (index < 0 || index >= self->size) throw("Index out of bounds");
     return self->items[index];
 }
-void List_set(List * self, int index, void * ref) {
+void PbList_set(PbList * self, int index, void * ref) {
     if (ref == NULL) throw("NULL reference");
     if (index < 0 || index >= self->size) throw("Index out of bounds");
     self->items[index] = ref;
 }
-void List_add(List * self, void * ref) {
+void PbList_add(PbList * self, void * ref) {
     if (ref == NULL) throw("NULL reference");
     if (self->size <= self->capacity) {
         __ensureCapacity(self, self->size + 1);
     }
-    List_set(self, self->size++, ref);
+    PbList_set(self, self->size++, ref);
 }
-void List_insert(List * self, int index, void * ref) {
+void PbList_insert(PbList * self, int index, void * ref) {
     if (ref == NULL) throw("NULL reference");
     if (index > self->size) throw("Argument out of range");
     if (self->size >= self->capacity - 1) {
@@ -97,11 +97,11 @@ void List_insert(List * self, int index, void * ref) {
         };
         Array_copy(items, index, items, index + 1, self->size - index);
     }
-    List_set(self, index, ref);
+    PbList_set(self, index, ref);
     self->size++;
 }
 
-int List_indexOf(List * self, void * ref) {
+int PbList_indexOf(PbList * self, void * ref) {
     if (ref == NULL) throw("NULL reference");
     for (int i = 0; i < self->size; i++) {
         if (self->items[i] == ref) {
@@ -111,22 +111,22 @@ int List_indexOf(List * self, void * ref) {
     return -1;
 }
 
-bool List_contains(List * self, void * ref) {
+bool PbList_contains(PbList * self, void * ref) {
     if (ref == NULL) throw("NULL reference");
-    return List_indexOf(self, ref) >= 0;
+    return PbList_indexOf(self, ref) >= 0;
 }
 
-bool List_remove(List * self, void * ref) {
+bool PbList_remove(PbList * self, void * ref) {
     if (ref == NULL) throw("NULL reference");
-    int index = List_indexOf(self, ref);
+    int index = PbList_indexOf(self, ref);
     if (index >= 0) {
-        List_removeAt(self, index);
+        PbList_removeAt(self, index);
         return true;
     }
     return false;
 }
 
-void List_removeAt(List * self, int index) {
+void PbList_removeAt(PbList * self, int index) {
     if (index < 0 || index >= self->size) throw("Index out of bounds");
     self->size--;
     if (index < self->size) {
@@ -138,13 +138,13 @@ void List_removeAt(List * self, int index) {
         Array_copy(items, index + 1, items, index, self->size - index);
     }
 }
-bool List_isEmpty(List * self) {
+bool PbList_isEmpty(PbList * self) {
     return self->size == 0;
 }
-int  List_count(List * self) {
+int  PbList_count(PbList * self) {
     return self->size;
 }
-void List_copyTo(List * self, void * array, int arrayIndex) {
+void PbList_copyTo(PbList * self, void * array, int arrayIndex) {
     if (arrayIndex < 0 || arrayIndex >= self->size) throw("Index out of bounds");
     memcpy(
         array, 
@@ -152,13 +152,13 @@ void List_copyTo(List * self, void * array, int arrayIndex) {
         (self->size - arrayIndex) * sizeof(void *));
 }
 
-void List_clear(List * self) {
+void PbList_clear(PbList * self) {
     if (self->size > 0) {
         self->size = 0;
     }
 }
 
-static void __ensureCapacity(List * self, int min) {
+static void __ensureCapacity(PbList * self, int min) {
     if (self->size <= min) {
         int newCapacity = self->size == 0 ? initialCapacity : self->size * 2;
         if (newCapacity < min) newCapacity = min;
@@ -185,41 +185,41 @@ void Array_copy(
     memcpy(destinationArray.items + (destinationIndex) * itemSize, buffer, copySize);
 }
 
-/* list enumerator */
+/* list PbEnumerator */
 
-struct __Enumerator {
-    List * list;
+struct __PbEnumerator {
+    PbList * list;
     int index;
 };
 
-static Enumerator * Enumerator_new(List * list) {
-    Enumerator * self = malloc(sizeof(Enumerator));
+static PbEnumerator * PbEnumerator_new(PbList * list) {
+    PbEnumerator * self = malloc(sizeof(PbEnumerator));
     self->list = list;
-    Enumerator_reset(self);
+    PbEnumerator_reset(self);
     return self;
 }
 
-Enumerator * List_getNewEnumerator(List * self) {
-    return Enumerator_new(self);
+PbEnumerator * PbList_getNewPbEnumerator(PbList * self) {
+    return PbEnumerator_new(self);
 }
 
-void Enumerator_free(Enumerator * self) {
+void PbEnumerator_free(PbEnumerator * self) {
     free(self);
 }
 
-void * Enumerator_current(Enumerator * self) {
-    if (self->index < 0) throw("Enumerator in initial state");
-    return List_get(self->list, self->index);
+void * PbEnumerator_current(PbEnumerator * self) {
+    if (self->index < 0) throw("PbEnumerator in initial state");
+    return PbList_get(self->list, self->index);
 }
 
-bool Enumerator_moveNext(Enumerator * self) {
-    if (self->index < List_count(self->list) - 1) {
+bool PbEnumerator_moveNext(PbEnumerator * self) {
+    if (self->index < PbList_count(self->list) - 1) {
         self->index++;
         return true;
     }
     return false;
 }
 
-void Enumerator_reset(Enumerator * self) {
+void PbEnumerator_reset(PbEnumerator * self) {
     self->index = -1;
 }

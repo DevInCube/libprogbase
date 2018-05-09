@@ -13,6 +13,8 @@ if (WIN32)
     file(GLOB LIB_SOURCES_SPECIFIC "src/windows/*.c")
 endif (WIN32)
 
+file(GLOB LIB_SOURCES_COLLECTIONS "src/collections/*.c")
+
 project (progbase)
 
 if(NOT OPENSSL_FOUND)
@@ -20,7 +22,10 @@ if(NOT OPENSSL_FOUND)
     add_definitions(-DSSL_MISSING)
 endif()
 
-add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_COMMON} ${LIB_SOURCES_SPECIFIC})
+add_library(${CMAKE_PROJECT_NAME} STATIC 
+    ${LIB_SOURCES_COMMON} 
+    ${LIB_SOURCES_SPECIFIC} 
+    ${LIB_SOURCES_COLLECTIONS})
 if (OPENSSL_FOUND)
     target_link_libraries(${CMAKE_PROJECT_NAME} ssl)
 endif()
@@ -30,15 +35,6 @@ install(
     DIRECTORY include/ DESTINATION /usr/local/include
     FILES_MATCHING PATTERN "*.h"
 )
-install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
-
-# progbase-collections
-
-project (progbase-collections)
-file(GLOB LIB_SOURCES_COLLECTIONS "src/collections/*.c")
-add_library(${CMAKE_PROJECT_NAME} STATIC ${LIB_SOURCES_COLLECTIONS})
-set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
-
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
 # events
