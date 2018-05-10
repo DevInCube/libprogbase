@@ -4,6 +4,11 @@ set(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 find_package(OpenSSL QUIET)
 
+if(NOT OPENSSL_FOUND)
+    message(WARNING "OpenSSL library not found. Install 'libssl-dev' package.")
+    add_definitions(-DSSL_MISSING)
+endif()
+
 include_directories(include include/progbase include/progbase/collections)
 file(GLOB LIB_SOURCES_COMMON "src/*.c")
 if (UNIX)
@@ -24,11 +29,6 @@ if (ENABLE_EVENTS2)
 endif (ENABLE_EVENTS2)
 
 project (progbase)
-
-if(NOT OPENSSL_FOUND)
-    message(WARNING "SSL library no found. Install libssl-dev package.")
-    add_definitions(-DSSL_MISSING)
-endif()
 
 add_library(${CMAKE_PROJECT_NAME} STATIC 
     ${LIB_SOURCES_COMMON} 
