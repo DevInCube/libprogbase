@@ -18,6 +18,8 @@
 
 #include <progbase/net.h>
 
+#define FATAL(MSG) { assert(0 && MSG); fprintf(stderr, "%s", MSG); }
+
 static struct sockaddr_in __ip_init(in_addr_t address, int port) {
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof(addr));
@@ -37,13 +39,13 @@ IpAddress * IpAddress_initAny(IpAddress * self, int port) {
 	return self;
 }
 
+// adapted from https://www.binarytides.com/hostname-to-ip-address-c-sockets-linux/
 bool Ip_resolveHostname(char * ipv4, const char * hostname) {
-	struct hostent *he = gethostbyname(hostname);
-    if (NULL == he) return false;
+	struct hostent * he = gethostbyname(hostname);
+    if (NULL == he) { return false; }
 
     struct in_addr ** addr_list = (struct in_addr **) he->h_addr_list;
-    for(int i = 0; addr_list[i] != NULL; i++)
-    {
+    for (int i = 0; addr_list[i] != NULL; i++) {
 		strcpy(ipv4, inet_ntoa(*addr_list[i]));
         return true;
     }
@@ -138,7 +140,8 @@ NetMessage * NetMessage_init(NetMessage * self, char * buf, size_t bufLen) {
 
 NetMessage * NetMessage_setData(NetMessage * self, const char * data, size_t dataLen) {
 	if (self->bufferLength < dataLen) {
-		assert(0 && "Input data is longer than message buffer");
+		FATAL("Input data is longer than message buffer");
+		return NULL;
 	}
 	memcpy(self->buffer, data, dataLen);
 	self->dataLength = dataLen;
@@ -148,7 +151,8 @@ NetMessage * NetMessage_setData(NetMessage * self, const char * data, size_t dat
 NetMessage * NetMessage_setDataString(NetMessage * self, const char * str) {
 	int dataLength = strlen(str) + 1;  // + null-termination
 	if (dataLength >= self->bufferLength) {
-		assert(0 && "Buffer overflow error");
+		FATAL("Buffer overflow error");
+		return NULL;
 	}
 	strcpy(self->buffer, str);
 	self->dataLength = dataLength;
@@ -171,7 +175,8 @@ TcpListener * TcpListener_init(TcpListener * self) {
 	self->socket = -1;
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
-		return self;
+		FATAL("Can't create socket");
+		return NULL;
     }
 	self->socket = sock;
 	return self;
@@ -207,7 +212,7 @@ TcpClient * TcpListener_accept(TcpListener * self, TcpClient * client) {
 		(struct sockaddr *)&addr,
 		&addrlen);
 	if (sock < 0) {
-		assert(0 && "Accept client error");
+		FATAL("Accept client error");
 		return NULL;
 	}
 	__TcpClient_initSocket(client, sock);
@@ -231,6 +236,7 @@ static TcpClient * __TcpClient_initSocket(TcpClient * self, int socket) {
 TcpClient * TcpClient_init(TcpClient * self) {
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
+		FATAL("Can't create socket");
 		return NULL;
     }
 	return __TcpClient_initSocket(self, sock);
@@ -323,7 +329,7 @@ Ssl * Ssl_init(Ssl * self) {
 #ifndef SSL_MISSING
 	self->__priv = malloc(sizeof(__Ssl_priv));
 	if (self->__priv == NULL) {
-		assert(0 && "Ssl init priv error");
+		FATAL("Ssl init priv error");
 		return NULL;
 	}
     self->__priv->conn = NULL;
@@ -346,7 +352,7 @@ bool Ssl_connect(Ssl * self, TcpClient * client) {
 	//
 	// bind ssl for client socket
     if(SSL_set_fd(self->__priv->conn, client->socket) < 0) {
-	return false;
+		return false;
     }
     //
     // perform the SSL/TLS handshake with the server - when on the
@@ -370,8 +376,6 @@ bool Ssl_send(Ssl * self, NetMessage * message) {
 
 bool Ssl_receive(Ssl * self, NetMessage * message) {
 #ifndef SSL_MISSING
-	printf("reading ssl, %i", self->__priv != NULL);
-	fflush(stdout);
     int bytes = SSL_read(self->__priv->conn, message->buffer, message->bufferLength);
     if (bytes < message->bufferLength) {
         message->buffer[bytes] = '\0';  // null-terminate string
