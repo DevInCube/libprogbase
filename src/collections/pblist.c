@@ -9,36 +9,10 @@
 
 #include <progbase/collections/pbenumerator.h>
 #include <progbase/collections/pblist.h>
-
-/* array.h */
-
-/**
-    @struct Array
-    @brief array of generic items
-*/
-typedef struct Array Array;
-
-/**
-    helper type for list methods implementation 
-*/
-struct Array {
-    size_t itemSize;
-    char * items;
-    size_t length;
-};
-
-void Array_copy(
-    Array sourceArray,
-    int sourceIndex,
-    Array destinationArray,
-    int destinationIndex,
-    int length
-);
-
-/* pblist.h */
+#include <progbase/collections/pbarray.h>
 
 #define empty(MEM, SIZE) memset(MEM, 0, SIZE)
-#define throw(MSG) { assert(0 && MSG); fprintf(stderr, MSG); }
+#define throw(MSG) { fprintf(stderr, MSG); assert(0 && MSG); }
 
 struct PbList {
     int capacity;
@@ -59,15 +33,12 @@ PbList * PbList_new(void) {
     return self;
 }
 
-void PbList_free(PbList ** selfPtr) {
-	if (selfPtr == NULL) throw("Null pointer on free()");
-    PbList * self = *selfPtr;
+void PbList_free(PbList * self) {
     free(self->items);
     free(self);
-    *selfPtr = NULL;
 }
 
-void * PbList_get(PbList * self, int index) {
+void * PbList_at(PbList * self, int index) {
     if (index < 0 || index >= self->size) throw("Index out of bounds");
     return self->items[index];
 }
@@ -90,12 +61,12 @@ void PbList_insert(PbList * self, int index, void * ref) {
         __ensureCapacity(self, self->size + 1);
     }
     if (index < self->size) {
-        Array items = {
+        PbArray items = {
             .itemSize = sizeof(void *),
             .items = (char *)self->items,
             .length = self->size
         };
-        Array_copy(items, index, items, index + 1, self->size - index);
+        PbArray_copy(items, index, items, index + 1, self->size - index);
     }
     PbList_set(self, index, ref);
     self->size++;
@@ -130,12 +101,12 @@ void PbList_removeAt(PbList * self, int index) {
     if (index < 0 || index >= self->size) throw("Index out of bounds");
     self->size--;
     if (index < self->size) {
-        Array items = {
+        PbArray items = {
             .itemSize = sizeof(void *),
             .items = (char *)self->items,
             .length = self->size
         };
-        Array_copy(items, index + 1, items, index, self->size - index);
+        PbArray_copy(items, index + 1, items, index, self->size - index);
     }
 }
 bool PbList_isEmpty(PbList * self) {
@@ -164,25 +135,10 @@ static void __ensureCapacity(PbList * self, int min) {
         if (newCapacity < min) newCapacity = min;
         self->capacity = newCapacity;
         size_t newSize = sizeof(void *) * self->capacity;
-        self->items = realloc(self->items, newSize);
+        void * newMem = realloc(self->items, newSize);
+        if (newMem == NULL) throw("Realloc error");
+        self->items = newMem;
     }
-}
-	
-/* array.c */
-
-void Array_copy(
-    Array sourceArray,
-    int sourceIndex,
-    Array destinationArray,
-    int destinationIndex,
-    int length
-) {
-    // @todo add checks
-    size_t itemSize = sourceArray.itemSize;
-    size_t copySize = itemSize * length;
-    char buffer[copySize];
-    memcpy(buffer, sourceArray.items + (sourceIndex) * itemSize, copySize);
-    memcpy(destinationArray.items + (destinationIndex) * itemSize, buffer, copySize);
 }
 
 /* list PbEnumerator */
@@ -209,7 +165,7 @@ void PbEnumerator_free(PbEnumerator * self) {
 
 void * PbEnumerator_current(PbEnumerator * self) {
     if (self->index < 0) throw("PbEnumerator in initial state");
-    return PbList_get(self->list, self->index);
+    return PbList_at(self->list, self->index);
 }
 
 bool PbEnumerator_moveNext(PbEnumerator * self) {

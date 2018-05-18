@@ -1,4 +1,4 @@
-# libprogbase v0.3.6
+# libprogbase v0.5.0
 
 [![Travis-CI][travis-badge]][travis-builds]
 

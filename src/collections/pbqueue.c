@@ -15,7 +15,7 @@ PbQueue * PbQueue_new(void) {
 
 void PbQueue_free(PbQueue ** selfPtr) {
 	PbQueue * self = *selfPtr;
-	PbList_free(&self->list);
+	PbList_free(self->list);
 	free(self);
 	*selfPtr = NULL;
 }
@@ -25,7 +25,7 @@ void PbQueue_enqueue(PbQueue *  self, void * value) {
 }
 
 void * PbQueue_dequeue(PbQueue *  self) {
-	void * value = PbList_get(self->list, 0);
+	void * value = PbList_at(self->list, 0);
 	PbList_removeAt(self->list, 0);
 	return value;
 }

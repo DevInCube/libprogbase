@@ -142,10 +142,10 @@ void EventSystem_cleanup(void) {
 	}
 	PbQueue_free(&g_eventSystem->events);
 	for (int i = 0; i < PbList_count(g_eventSystem->handlers); i++) {
-		EventHandler * handler = PbList_get(g_eventSystem->handlers, i);
+		EventHandler * handler = PbList_at(g_eventSystem->handlers, i);
 		EventHandler_decref(handler);
 	}
-	PbList_free(&g_eventSystem->handlers);
+	PbList_free(g_eventSystem->handlers);
 }
 
 void EventSystem_loop(void) {

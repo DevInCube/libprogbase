@@ -17,11 +17,6 @@ extern "C" {
     @brief defines a generic PbList data type
 */
 typedef struct PbList PbList;
-// typedef struct PbListPrivate PbListPrivate;
-// struct PbList {
-//     // implements(Enumerable);
-// 	PbListPrivate * priv;
-// };
 
 /**
     @brief PbList constructor
@@ -30,13 +25,13 @@ PbList * PbList_new(void);
 /** 
     @brief PbList destructor
 */
-void PbList_free(PbList ** self);
+void PbList_free(PbList * self);
 /**
     @brief PbList items getter
     @param index - index of element
-    @param ref - reference to memory where to write the value
+    @returns an item reference at index
 */
-void * PbList_get(PbList * self, int index);
+void * PbList_at(PbList * self, int index);
 /**
     @brief PbList items setter
     @param index - index of element

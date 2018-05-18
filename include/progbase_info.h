@@ -5,8 +5,8 @@
 #pragma once
 
 #define PROGBASE_MAJOR_VERSION 0
-#define PROGBASE_MINOR_VERSION 3
-#define PROGBASE_PATCH_VERSION 6
+#define PROGBASE_MINOR_VERSION 5
+#define PROGBASE_PATCH_VERSION 0
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
