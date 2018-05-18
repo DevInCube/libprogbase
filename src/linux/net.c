@@ -11,9 +11,6 @@
 
 #ifndef SSL_MISSING
 	#include <openssl/ssl.h>
-#else
-	// install: sudo apt-get install libssl-dev
-	#warning "SSL is not installed"
 #endif
 
 #include <progbase/net.h>
