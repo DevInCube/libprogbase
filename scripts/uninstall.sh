@@ -1,0 +1,1 @@
+xargs rm < build/install_manifest.txt

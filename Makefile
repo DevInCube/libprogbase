@@ -4,6 +4,9 @@ repo:
 version:
 	@sh scripts/print_installed_version.sh
 
+uninstall:
+	@sh scripts/uninstall.sh
+
 install: 
 	@sh scripts/install.sh
 
