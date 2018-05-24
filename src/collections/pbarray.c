@@ -4,19 +4,28 @@
 
 #include <progbase/collections/pbarray.h>
 #include <string.h>
+#include <assert.h>
 
 void PbArray_copy(
-    PbArray sourcePbArray,
+    PbArray sourceAr,
     int sourceIndex,
-    PbArray destinationPbArray,
+    PbArray destAr,
     int destinationIndex,
     int length
 ) {
-    // @todo add checks
-    size_t itemSize = sourcePbArray.itemSize;
+    assert(sourceIndex >= 0 && sourceIndex < (int)sourceAr.length);
+    assert(destinationIndex >= 0 && destinationIndex < (int)destAr.length);
+    if (sourceAr.itemSize != destAr.itemSize) { return; }  // can't copy when items are of different types
+    if (sourceIndex + length > (int)sourceAr.length) {
+        length = sourceAr.length - sourceIndex;  // trim copy length
+    }
+    if (destinationIndex + length > (int)destAr.length) {
+        length = destAr.length - destinationIndex;  // trim copy length
+    }
+    size_t itemSize = sourceAr.itemSize;
     size_t copySize = itemSize * length;
     char * buffer = malloc(copySize * sizeof(char));
-    memcpy(buffer, sourcePbArray.items + (sourceIndex) * itemSize, copySize);
-    memcpy(destinationPbArray.items + (destinationIndex) * itemSize, buffer, copySize);
+    memcpy(buffer, sourceAr.items + (sourceIndex) * itemSize, copySize);
+    memcpy(destAr.items + (destinationIndex) * itemSize, buffer, copySize);
     free(buffer);
 }
