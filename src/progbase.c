@@ -3,6 +3,10 @@
 #include <time.h>
 #include <string.h>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	#include <windows.h>
+#endif
+
 #include <progbase.h>
 
 static char * inputString(FILE* fp, size_t size);
@@ -108,9 +112,13 @@ static char * inputString(FILE * fp, size_t size) {
 }
 
 void sleepMillis(unsigned long int milliseconds) {
+#ifdef __linux__
 	struct timespec tim;
 	tim.tv_sec = (milliseconds / 1000L);
 	tim.tv_nsec = (milliseconds % 1000L) * 1000000L;
 
 	nanosleep(&tim, NULL);
+#else
+	Sleep(milliseconds);
+#endif
 }

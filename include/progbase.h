@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "progbase_info.h"
-
 #ifdef __cplusplus
 extern "C"{
 #endif

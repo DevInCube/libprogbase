@@ -48,8 +48,14 @@ install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)
 
 # flags
 if (UNIX)
-    SET(CMAKE_C_FLAGS "-std=gnu99 -Werror -Wall -pedantic-errors -Wno-unused")
+    SET(CMAKE_C_FLAGS "-std=gnu99 -Wall -pedantic-errors")
 endif (UNIX)
 if (WIN32)
-    SET(CMAKE_C_FLAGS "-std=c99 -Werror -Wall -pedantic-errors -Wno-unused")
+    SET(CMAKE_C_FLAGS "-std=c99 -Wall -pedantic-errors")
 endif (WIN32)
+
+# Set default compile flags for GCC
+if(CMAKE_COMPILER_IS_GNUC)
+    message(STATUS "GCC detected, adding compile flags")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wno-unused")
+endif (CMAKE_COMPILER_IS_GNUC)

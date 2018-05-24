@@ -15,7 +15,8 @@ void PbArray_copy(
     // @todo add checks
     size_t itemSize = sourcePbArray.itemSize;
     size_t copySize = itemSize * length;
-    char buffer[copySize];
+    char * buffer = malloc(copySize * sizeof(char));
     memcpy(buffer, sourcePbArray.items + (sourceIndex) * itemSize, copySize);
     memcpy(destinationPbArray.items + (destinationIndex) * itemSize, buffer, copySize);
+    free(buffer);
 }
