@@ -29,5 +29,5 @@ int main(void) {
 /* event handlers functions implementations */
 
 void CustomHandler_update(EventHandler * self, Event * event) {
-	// @todo implement
+	// implement behaviour here
 }

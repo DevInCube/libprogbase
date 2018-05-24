@@ -320,7 +320,7 @@ int World_draw(struct World * world) {
         }
     }
     StringBuffer * buf = &(StringBuffer){str, 0};
-    // @todo create PbArrayPbList and add all diffs there
+    // @improve create PbArrayPbList and add all diffs there
     // sort them with stateUpper + stateLower
     // apply color once for all changes that have that color combination
     for (int i = 0; i < PbList_count(diffs); i++) {
