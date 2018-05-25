@@ -129,6 +129,13 @@ void PbList_clear(PbList * self) {
     }
 }
 
+void PbList_forEach(PbList * self, PbListForEachCallback callback, void * context) {
+    for (int i = 0; i < self->size; i++) {
+        void * value = PbList_at(self, i);
+        callback(value, i, self, context);
+    }
+}
+
 static void __ensureCapacity(PbList * self, int min) {
     if (self->size <= min) {
         int newCapacity = self->size == 0 ? initialCapacity : self->size * 2;

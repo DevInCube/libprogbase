@@ -90,7 +90,20 @@ void PbList_copyTo(PbList * self, void * array, int arrayIndex);
 */
 void PbList_clear(PbList * self);
 
-//void PbList_clearFree(PbList * self, );
+/**
+ * @brief Function to execute for each element of list in PbList_forEach() call.
+ * @param currentValue - the value of the current element being processed in the list.
+ * @param index - the index of the current element being processed in the list.
+ * @param list - the list that PbList_forEach() is being applied to
+ * @param context - the custom user data pointer, provided into PbList_forEach() call
+ */
+typedef void (*PbListForEachCallback)(void * currentValue, int index, PbList * list, void * context);
+
+/**
+ * @brief Executes a provided callback function once for each list element.
+ * @param callback - a callback function to 
+ */
+void PbList_forEach(PbList * self, PbListForEachCallback callback, void * context);
 /**
     @brief returns new PbList PbEnumerator to iterate over PbList elements
 */
