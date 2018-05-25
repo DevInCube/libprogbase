@@ -12,7 +12,8 @@
 #include <progbase/collections/pbarray.h>
 
 #define empty(MEM, SIZE) memset(MEM, 0, SIZE)
-#define throw(MSG) { fprintf(stderr, MSG); assert(0 && MSG); }
+#define throw(MSG) { fprintf(stderr, MSG); assert(0 && MSG); return; }
+#define throw_return(MSG, RETURN_VALUE) { fprintf(stderr, MSG); assert(0 && MSG); return RETURN_VALUE; }
 
 struct PbList {
     int capacity;
@@ -39,7 +40,7 @@ void PbList_free(PbList * self) {
 }
 
 void * PbList_at(PbList * self, int index) {
-    if (index < 0 || index >= self->size) throw("Index out of bounds");
+    if (index < 0 || index >= self->size) throw_return("Index out of bounds", NULL);
     return self->items[index];
 }
 void PbList_set(PbList * self, int index, void * ref) {
@@ -73,7 +74,7 @@ void PbList_insert(PbList * self, int index, void * ref) {
 }
 
 int PbList_indexOf(PbList * self, void * ref) {
-    if (ref == NULL) throw("NULL reference");
+    if (ref == NULL) throw_return("NULL reference", -1);
     for (int i = 0; i < self->size; i++) {
         if (self->items[i] == ref) {
             return i;
@@ -83,12 +84,12 @@ int PbList_indexOf(PbList * self, void * ref) {
 }
 
 bool PbList_contains(PbList * self, void * ref) {
-    if (ref == NULL) throw("NULL reference");
+    if (ref == NULL) throw_return("NULL reference", false);
     return PbList_indexOf(self, ref) >= 0;
 }
 
 bool PbList_remove(PbList * self, void * ref) {
-    if (ref == NULL) throw("NULL reference");
+    if (ref == NULL) throw_return("NULL reference", false);
     int index = PbList_indexOf(self, ref);
     if (index >= 0) {
         PbList_removeAt(self, index);
@@ -171,7 +172,7 @@ void PbEnumerator_free(PbEnumerator * self) {
 }
 
 void * PbEnumerator_current(PbEnumerator * self) {
-    if (self->index < 0) throw("PbEnumerator in initial state");
+    if (self->index < 0) throw_return("PbEnumerator in initial state", NULL);
     return PbList_at(self->list, self->index);
 }
 
