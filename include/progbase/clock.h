@@ -18,7 +18,7 @@
 	#include <winsock2.h>
 #endif
 
-#ifndef _CRT_NO_TIME_T
+#ifdef _CRT_NO_TIME_T
 struct timespec
 {
     time_t tv_sec; // Seconds - >= 0
