@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-#include <progbase.h>
+#include <progbase/progbase.h>
 #include <progbase/net.h>
 #include <progbase/console.h>
 

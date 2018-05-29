@@ -22,7 +22,7 @@ typedef struct PbVector PbVector;
 /**
     @brief PbVector constructor
 */
-PbVector * PbVector_new(void);
+PbVector * PbVector_new(size_t itemSize);
 /** 
     @brief PbVector destructor
 */
@@ -32,7 +32,7 @@ void PbVector_free(PbVector * self);
     @param index - index of element
     @returns an item reference at index
 */
-void * PbVector_at(PbVector * self, int index);
+void PbVector_at(PbVector * self, int index, void * ref);
 /**
     @brief PbVector items setter
     @param index - index of element

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <progbase.h>
+#include <progbase/progbase.h>
 
 int main(void) {
 	char c = '\0';

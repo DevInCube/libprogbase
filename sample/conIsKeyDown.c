@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include <progbase.h>
+#include <progbase/progbase.h>
 #include <progbase/console.h>
 
 int main(void) {

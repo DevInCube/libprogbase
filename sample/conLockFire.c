@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <progbase.h>
+#include <progbase/progbase.h>
 #include <progbase/console.h>
 #include <progbase/collections/pblist.h>
 #include <progbase/clock.h>

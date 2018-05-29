@@ -18,6 +18,7 @@
 struct PbVector {
     int capacity;
     int size;
+    size_t itemSize;
     void ** items;    /**< holds a pointer to items array */
 };
 
@@ -25,10 +26,11 @@ static const int initialCapacity = 4;
 
 static void __ensureCapacity(PbVector * self, int min);
 
-PbVector * PbVector_new(void) {
+PbVector * PbVector_new(size_t itemSize) {
 	PbVector * self = malloc(sizeof(struct PbVector));
 	self->capacity = initialCapacity;
 	self->size = 0;
+    self->itemSize = itemSize;
 	self->items = malloc(0);
     __ensureCapacity(self, 0);
     return self;
@@ -39,9 +41,9 @@ void PbVector_free(PbVector * self) {
     free(self);
 }
 
-void * PbVector_at(PbVector * self, int index) {
-    if (index < 0 || index >= self->size) throw_return("Index out of bounds", NULL);
-    return self->items[index];
+void PbVector_at(PbVector * self, int index, void * ref) {
+    if (index < 0 || index >= self->size) throw("Index out of bounds");
+    ref = &self->items[index];
 }
 void PbVector_set(PbVector * self, int index, void * ref) {
     if (ref == NULL) throw("NULL reference");
@@ -131,10 +133,12 @@ void PbVector_clear(PbVector * self) {
 }
 
 void PbVector_forEach(PbVector * self, PbVectorForEachCallback callback, void * context) {
+    char * itemMem = malloc(self->itemSize);
     for (int i = 0; i < self->size; i++) {
-        void * value = PbVector_at(self, i);
-        callback(value, i, self, context);
+        PbVector_at(self, i, itemMem);
+        callback(itemMem, i, self, context);
     }
+    free(itemMem);
 }
 
 static void __ensureCapacity(PbVector * self, int min) {
@@ -147,43 +151,4 @@ static void __ensureCapacity(PbVector * self, int min) {
         if (newMem == NULL) throw("Realloc error");
         self->items = newMem;
     }
-}
-
-/* list PbEnumerator */
-
-struct __PbEnumerator {
-    PbVector * list;
-    int index;
-};
-
-static PbEnumerator * PbEnumerator_new(PbVector * list) {
-    PbEnumerator * self = malloc(sizeof(PbEnumerator));
-    self->list = list;
-    PbEnumerator_reset(self);
-    return self;
-}
-
-PbEnumerator * PbVector_getNewPbEnumerator(PbVector * self) {
-    return PbEnumerator_new(self);
-}
-
-void PbEnumerator_free(PbEnumerator * self) {
-    free(self);
-}
-
-void * PbEnumerator_current(PbEnumerator * self) {
-    if (self->index < 0) throw_return("PbEnumerator in initial state", NULL);
-    return PbVector_at(self->list, self->index);
-}
-
-bool PbEnumerator_moveNext(PbEnumerator * self) {
-    if (self->index < PbVector_count(self->list) - 1) {
-        self->index++;
-        return true;
-    }
-    return false;
-}
-
-void PbEnumerator_reset(PbEnumerator * self) {
-    self->index = -1;
 }

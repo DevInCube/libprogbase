@@ -14,10 +14,10 @@
 ### New in v0.3.1
 
 * `make version` now defines version of __installed__ library.
-* You can use new macro `PROGBASE_VERSION_CHECK(maj, min, patch)` from `<progbase.h>` to check your code compatibility with installed library. Example:
+* You can use new macro `PROGBASE_VERSION_CHECK(maj, min, patch)` from `<progbase/progbase.h>` to check your code compatibility with installed library. Example:
 
   	```c
-  	#include <progbase.h>
+  	#include <progbase/progbase.h>
 
 	#ifdef PROGBASE_VERSION
 		#if !PROGBASE_VERSION_CHECK(0, 3, 1)
