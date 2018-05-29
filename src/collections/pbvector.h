@@ -106,8 +106,7 @@ typedef void (*PbVectorForEachCallback)(void * currentValue, int index, PbVector
  */
 void PbVector_forEach(PbVector * self, PbVectorForEachCallback callback, void * context);
 
-// extensions
-#define PbValue(VALUE) ((void *)(&(__typeof__(VALUE)){VALUE}))
+#define PbRef(VALUE) ((void *)(&(__typeof__(VALUE)){VALUE}))
 
 #ifdef __cplusplus
 }
