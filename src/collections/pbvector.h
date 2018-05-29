@@ -13,12 +13,6 @@
 extern "C" {
 #endif
 
-typedef struct PbValue PbValue;
-struct PbValue {
-    void * ref;
-    size_t size;
-};
-
 /**
     @struct PbVector
     @brief defines a generic PbVector data type
@@ -38,24 +32,24 @@ void PbVector_free(PbVector * self);
     @param index - index of element
     @returns an item reference at index
 */
-void PbVector_at(PbVector * self, int index, PbValue ref);
+void * PbVector_at(PbVector * self, int index);
 /**
     @brief PbVector items setter
     @param index - index of element
     @param ref - reference to memory from where to read new value
 */
-void PbVector_set(PbVector * self, int index, PbValue ref);
+void PbVector_set(PbVector * self, int index, void * ref);
 /**
     @brief adds new item to the end of PbVector
     @param ref - reference to memory from where to read new value
 */
-void PbVector_add(PbVector * self, PbValue ref);
+void PbVector_add(PbVector * self, void * ref);
 /**
     @brief inserts new item into PbVector at specified position
     @param index - index of element to insert before
     @param ref - reference to memory from where to read new value
 */
-void PbVector_insert(PbVector * self, int index, PbValue ref);
+void PbVector_insert(PbVector * self, int index, void * ref);
 /**
     @brief remove item from list by value
     @param ref - reference to memory from where to read compared value
@@ -113,7 +107,7 @@ typedef void (*PbVectorForEachCallback)(void * currentValue, int index, PbVector
 void PbVector_forEach(PbVector * self, PbVectorForEachCallback callback, void * context);
 
 // extensions
-#define PBVALUE(VALUE) ((PbValue){(&(__typeof__(VALUE)){VALUE}), sizeof(VALUE)})
+#define PbValue(VALUE) ((void *)(&(__typeof__(VALUE)){VALUE}))
 
 #ifdef __cplusplus
 }

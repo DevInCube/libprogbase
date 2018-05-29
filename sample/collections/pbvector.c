@@ -9,9 +9,9 @@ void printInt(int * item, int index) {
 
 int main(void) {
     PbVector * numbers = PbVector_new(sizeof(int));
-    PbVector_add(numbers, PBVALUE(5));
-    PbVector_add(numbers, PBVALUE(-2));
-    PbVector_add(numbers, PBVALUE(13));
+    PbVector_add(numbers, PbValue(5));
+    PbVector_add(numbers, PbValue(-2));
+    PbVector_add(numbers, PbValue(13));
     printf("%i items:\n", PbVector_count(numbers));
     PbVector_forEach(numbers, (PbVectorForEachCallback)printInt, NULL);
     PbVector_free(numbers);
