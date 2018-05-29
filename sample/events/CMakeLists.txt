@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.8.7)
-include_directories(include)
 
 project (basic)
 add_executable(${CMAKE_PROJECT_NAME} "basic.c")
