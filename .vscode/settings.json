@@ -20,6 +20,10 @@
 		"clock.h": "c",
 		"string.h": "c",
 		"console.h": "c",
-		"progbase.h": "c"
+		"progbase.h": "c",
+		"array": "c",
+		"initializer_list": "c",
+		"string_view": "c",
+		"utility": "c"
 	}
 }

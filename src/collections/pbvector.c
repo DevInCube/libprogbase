@@ -16,10 +16,10 @@
 #define throw_return(MSG, RETURN_VALUE) { fprintf(stderr, MSG); assert(0 && MSG); return RETURN_VALUE; }
 
 struct PbVector {
-    int capacity;
-    int size;
-    size_t itemSize;
-    void ** items;    /**< holds a pointer to items array */
+    int capacity;     /**< a number of items in allocated memory */
+    int size;         /**< a number of items in vector */
+    size_t itemSize;  /**< a size of memory for one array item */
+    void * items;     /**< holds a pointer to items array */
 };
 
 static const int initialCapacity = 4;
@@ -43,12 +43,14 @@ void PbVector_free(PbVector * self) {
 
 void PbVector_at(PbVector * self, int index, void * ref) {
     if (index < 0 || index >= self->size) throw("Index out of bounds");
-    ref = &self->items[index];
+    void * srcPtr = (char *)self->items + (self->itemSize * index);
+    memcpy(ref, srcPtr, self->itemSize);
 }
 void PbVector_set(PbVector * self, int index, void * ref) {
     if (ref == NULL) throw("NULL reference");
     if (index < 0 || index >= self->size) throw("Index out of bounds");
-    self->items[index] = ref;
+    void * destPtr = (char *)self->items + (self->itemSize * index);
+    memcpy(destPtr, ref, self->itemSize);
 }
 void PbVector_add(PbVector * self, void * ref) {
     if (ref == NULL) throw("NULL reference");
@@ -65,7 +67,7 @@ void PbVector_insert(PbVector * self, int index, void * ref) {
     }
     if (index < self->size) {
         PbArray items = {
-            .itemSize = sizeof(void *),
+            .itemSize = self->itemSize,
             .items = (char *)self->items,
             .length = self->size
         };
@@ -78,7 +80,8 @@ void PbVector_insert(PbVector * self, int index, void * ref) {
 int PbVector_indexOf(PbVector * self, void * ref) {
     if (ref == NULL) throw_return("NULL reference", -1);
     for (int i = 0; i < self->size; i++) {
-        if (self->items[i] == ref) {
+        void * iref = (char *)self->items + (self->itemSize * i);
+        if (0 == memcmp(ref, iref, self->itemSize)) {
             return i;
         }
     }
@@ -105,7 +108,7 @@ void PbVector_removeAt(PbVector * self, int index) {
     self->size--;
     if (index < self->size) {
         PbArray items = {
-            .itemSize = sizeof(void *),
+            .itemSize = self->itemSize,
             .items = (char *)self->items,
             .length = self->size
         };
@@ -120,10 +123,11 @@ int  PbVector_count(PbVector * self) {
 }
 void PbVector_copyTo(PbVector * self, void * array, int arrayIndex) {
     if (arrayIndex < 0 || arrayIndex >= self->size) throw("Index out of bounds");
+    void * ref = (char *)self->items + (self->itemSize * arrayIndex);
     memcpy(
         array, 
-        self->items[arrayIndex], 
-        (self->size - arrayIndex) * sizeof(void *));
+        ref, 
+        (self->size - arrayIndex) * self->itemSize);
 }
 
 void PbVector_clear(PbVector * self) {
@@ -133,20 +137,20 @@ void PbVector_clear(PbVector * self) {
 }
 
 void PbVector_forEach(PbVector * self, PbVectorForEachCallback callback, void * context) {
-    char * itemMem = malloc(self->itemSize);
     for (int i = 0; i < self->size; i++) {
-        PbVector_at(self, i, itemMem);
-        callback(itemMem, i, self, context);
+        void * srcPtr = (char *)self->items + (self->itemSize * i);
+        callback(srcPtr, i, self, context);
     }
-    free(itemMem);
 }
 
 static void __ensureCapacity(PbVector * self, int min) {
     if (self->size <= min) {
         int newCapacity = self->size == 0 ? initialCapacity : self->size * 2;
-        if (newCapacity < min) newCapacity = min;
+        if (newCapacity < min) {
+            newCapacity = min;
+        }
         self->capacity = newCapacity;
-        size_t newSize = sizeof(void *) * self->capacity;
+        size_t newSize = self->itemSize * self->capacity;
         void * newMem = realloc(self->items, newSize);
         if (newMem == NULL) throw("Realloc error");
         self->items = newMem;
