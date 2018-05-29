@@ -3,7 +3,11 @@
 #include <assert.h>
 #include <string.h>
 
-#include <progbase/clock.h>
+#include "clock.h"
+
+#ifndef CLOCK_REALTIME
+#   define CLOCK_REALTIME 0 
+#endif
 
 #ifndef CLOCK_REALTIME
 #   define CLOCK_REALTIME 0 
