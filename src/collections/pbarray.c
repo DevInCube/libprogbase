@@ -2,9 +2,10 @@
     @brief Generic array implementation
 */
 
-#include <progbase/collections/pbarray.h>
 #include <string.h>
 #include <assert.h>
+
+#include "pbarray.h"
 
 void PbArray_copy(
     PbArray sourceAr,

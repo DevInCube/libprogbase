@@ -17,6 +17,9 @@
 		"event_pbqueue.h": "c",
 		"events2.h": "c",
 		"pbenumerator.h": "c",
-		"clock.h": "c"
+		"clock.h": "c",
+		"string.h": "c",
+		"console.h": "c",
+		"progbase.h": "c"
 	}
 }

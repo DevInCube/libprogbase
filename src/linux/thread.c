@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#include <progbase/thread.h>
+#include "../thread.h"
 
 typedef void * (*pthread_func)(void *);
 
