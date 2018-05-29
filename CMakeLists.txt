@@ -41,7 +41,7 @@ endif()
 set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
 
 install(
-    DIRECTORY include/ DESTINATION /usr/local/include
+    DIRECTORY src/ DESTINATION /usr/local/include/progbase
     FILES_MATCHING PATTERN "*.h"
 )
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION /usr/local/lib)

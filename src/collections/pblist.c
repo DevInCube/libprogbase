@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <progbase/collections/pbenumerator.h>
-#include <progbase/collections/pblist.h>
-#include <progbase/collections/pbarray.h>
+#include "pbenumerator.h"
+#include "pblist.h"
+#include "pbarray.h"
 
 #define empty(MEM, SIZE) memset(MEM, 0, SIZE)
 #define throw(MSG) { fprintf(stderr, MSG); assert(0 && MSG); return; }

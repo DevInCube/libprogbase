@@ -4,7 +4,7 @@
 #include <string.h>
 #include <conio.h>
 
-#include <progbase\console.h>
+#include "../console.h"
 
 #ifndef CON_MIN_ROWS
 #	define CON_MIN_ROWS 5

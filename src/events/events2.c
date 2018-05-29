@@ -3,12 +3,12 @@
 #include <assert.h>
 #include <string.h>
 
-#include <progbase.h>
-#include <progbase/events2.h> 
-#include <progbase/clock.h>
-#include <progbase/collections/pbenumerator.h>
-#include <progbase/collections/pblist.h>
-#include <progbase/collections/pbqueue.h>
+#include "../progbase.h"
+#include "../events2.h"
+#include "../clock.h"
+#include "../collections/pbenumerator.h"
+#include "../collections/pblist.h"
+#include "../collections/pbqueue.h"
 
 #define foreach(VARTYPE, VARNAME, LIST)   \
    for (int VARNAME##_i = 0; !VARNAME##_i; ) \

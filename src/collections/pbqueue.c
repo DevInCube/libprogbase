@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include <progbase/collections/pblist.h>
-#include <progbase/collections/pbqueue.h>
+#include "pblist.h"
+#include "pbqueue.h"
 
 struct PbQueue {
 	PbList * list;

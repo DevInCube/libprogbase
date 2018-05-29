@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "pbenumerator.h"
 
 #ifdef __cplusplus

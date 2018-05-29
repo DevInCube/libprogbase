@@ -13,7 +13,7 @@
 	#include <openssl/ssl.h>
 #endif
 
-#include <progbase/net.h>
+#include "../net.h"
 
 #define FATAL(MSG) { assert(0 && MSG); fprintf(stderr, "%s", MSG); }
 

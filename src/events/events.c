@@ -3,12 +3,12 @@
 #include <assert.h>
 #include <string.h>
 
-#include <progbase.h>
-#include <progbase/events.h> 
-#include <progbase/clock.h>
-#include <progbase/collections/pbenumerator.h>
-#include <progbase/collections/pblist.h>
-#include <progbase/collections/pbqueue.h>
+#include "../progbase.h"
+#include "../events.h"
+#include "../clock.h"
+#include "../collections/pbenumerator.h"
+#include "../collections/pblist.h"
+#include "../collections/pbqueue.h"
 
 void Event_free(Event ** dataPtr);
 
