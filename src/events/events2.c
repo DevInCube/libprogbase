@@ -7,12 +7,12 @@
 #include "../events2.h"
 #include "../clock.h"
 #include "../collections/pbenumerator.h"
-#include "../collections/pblist.h"
+#include "../collections/pbvector.h"
 #include "../collections/pbqueue.h"
 
 #define foreach(VARTYPE, VARNAME, LIST)   \
    for (int VARNAME##_i = 0; !VARNAME##_i; ) \
-       for (PbEnumerator * VARNAME##_e = PbList_getNewPbEnumerator(LIST); \
+       for (PbEnumerator * VARNAME##_e = PbVector_getNewPbEnumerator(LIST); \
             !VARNAME##_i; \
             ++VARNAME##_i, PbEnumerator_free(VARNAME##_e))\
          for (VARTYPE VARNAME = NULL; \
@@ -82,7 +82,7 @@ static void Event_free(Event * self) {
 	@brief a structure that holds information about events and handlers
 */
 struct EventSystem {
-	PbList * handlers;  /**< a list of system event handlers */
+	PbVector * handlers;  /**< a list of system event handlers */
 	PbQueue * events;  /**< a a queue of unhandled events */
 }; 
 
@@ -131,7 +131,7 @@ static EventSystemAction EventSystem_handleEvent(Event * event) {
 	if (event->type == RemoveHandlerEventTypeId) {
 		EventHandler * handler = ESObject_ref(event->payload);
 		if (handler != NULL) {
-			PbList_remove(g_eventSystem->handlers, handler);
+			PbVector_remove(g_eventSystem->handlers, handler);
 			EventHandler_free(handler);
 		}
 	}
@@ -145,7 +145,7 @@ static Event * EventSystem_dequeueNextEvent(void) {
 }
 
 void EventSystem_addHandler(EventHandler * handler) {
-	PbList_add(g_eventSystem->handlers, handler);
+	PbVector_add(g_eventSystem->handlers, handler);
 }
 
 void EventSystem_removeHandler(EventHandler * handler) {
@@ -164,7 +164,7 @@ void EventSystem_emit(Event * event) {
 }
 
 void EventSystem_init(void) {
-	g_eventSystem->handlers = PbList_new();
+	g_eventSystem->handlers = PbVector_new();
 	g_eventSystem->events = PbQueue_new();
 }
 
@@ -174,11 +174,11 @@ void EventSystem_cleanup(void) {
 		Event_free(event);
 	}
 	PbQueue_free(&g_eventSystem->events);
-	for (int i = 0; i < PbList_count(g_eventSystem->handlers); i++) {
-		EventHandler * handler = PbList_at(g_eventSystem->handlers, i);
+	for (int i = 0; i < PbVector_count(g_eventSystem->handlers); i++) {
+		EventHandler * handler = PbVector_at(g_eventSystem->handlers, i);
 		EventHandler_free(handler);
 	}
-	PbList_free(g_eventSystem->handlers);
+	PbVector_free(g_eventSystem->handlers);
 }
 
 void EventSystem_loop(void) {

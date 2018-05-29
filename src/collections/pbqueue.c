@@ -1,35 +1,35 @@
 #include <stdlib.h>
 
-#include "pblist.h"
+#include "pbvector.h"
 #include "pbqueue.h"
 
 struct PbQueue {
-	PbList * list;
+	PbVector * list;
 };
 
 PbQueue * PbQueue_new(void) {
 	PbQueue * self = malloc(sizeof(PbQueue));
-	self->list = PbList_new();
+	self->list = PbVector_new();
 	return self;
 }
 
 void PbQueue_free(PbQueue ** selfPtr) {
 	PbQueue * self = *selfPtr;
-	PbList_free(self->list);
+	PbVector_free(self->list);
 	free(self);
 	*selfPtr = NULL;
 }
 
 void PbQueue_enqueue(PbQueue *  self, void * value) {
-	PbList_add(self->list, value);
+	PbVector_add(self->list, value);
 }
 
 void * PbQueue_dequeue(PbQueue *  self) {
-	void * value = PbList_at(self->list, 0);
-	PbList_removeAt(self->list, 0);
+	void * value = PbVector_at(self->list, 0);
+	PbVector_removeAt(self->list, 0);
 	return value;
 }
 
 int PbQueue_size(PbQueue * self) {
-	return PbList_count(self->list);
+	return PbVector_count(self->list);
 } 

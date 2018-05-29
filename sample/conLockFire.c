@@ -5,7 +5,7 @@
 
 #include <progbase.h>
 #include <progbase/console.h>
-#include <progbase/collections/pblist.h>
+#include <progbase/collections/pbvector.h>
 #include <progbase/clock.h>
 
 void conInit(void);
@@ -306,12 +306,12 @@ void drawPoint(StringBuffer * buf, int i, int j) {
 static char str[500000] = "";
 
 int World_draw(struct World * world) {
-    PbList * diffs = PbList_new();
+    PbVector * diffs = PbVector_new();
     for (int i = 0; i < world->h; i += 2) {
         for (int j = 0; j < world->w; j++) {
             if (world->map[i * world->w + j] != world->prev[i * world->w + j]
              || world->map[(i + 1) * world->w + j] != world->prev[(i + 1) * world->w + j]) {
-                 PbList_add(diffs, CellDiff_new(
+                 PbVector_add(diffs, CellDiff_new(
                      i / 2, 
                      j, 
                      world->map[i * world->w + j], 
@@ -320,11 +320,11 @@ int World_draw(struct World * world) {
         }
     }
     StringBuffer * buf = &(StringBuffer){str, 0};
-    // @improve create PbArrayPbList and add all diffs there
+    // @improve create PbArrayPbVector and add all diffs there
     // sort them with stateUpper + stateLower
     // apply color once for all changes that have that color combination
-    for (int i = 0; i < PbList_count(diffs); i++) {
-        CellDiff * diff = PbList_at(diffs, i);
+    for (int i = 0; i < PbVector_count(diffs); i++) {
+        CellDiff * diff = PbVector_at(diffs, i);
         #ifdef __linux__
         {
             drawCell(buf, diff->stateUpper, diff->stateLower);
@@ -337,13 +337,13 @@ int World_draw(struct World * world) {
         printf("\xE2\x96\x80");
         #endif
     }
-    while (PbList_count(diffs) > 0) {
-        CellDiff * diff = PbList_at(diffs, PbList_count(diffs) - 1);
+    while (PbVector_count(diffs) > 0) {
+        CellDiff * diff = PbVector_at(diffs, PbVector_count(diffs) - 1);
         free(diff);
-        PbList_removeAt(diffs, PbList_count(diffs) - 1);
+        PbVector_removeAt(diffs, PbVector_count(diffs) - 1);
     }
     int count = StringBuffer_print(buf);
-    PbList_free(diffs);
+    PbVector_free(diffs);
     return count;
 }
 
