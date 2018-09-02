@@ -17,7 +17,7 @@
 	#include <sys/types.h>
 	#include <winsock2.h>
 #endif
-
+/*
 #ifndef _CRT_NO_TIME_T
 struct timespec
 {
@@ -25,7 +25,7 @@ struct timespec
     long tv_nsec; // Nanoseconds - [0, 999999999]
 };
 #endif
-
+*/
 /**
     @struct Clock
     @brief encapsulates clock data

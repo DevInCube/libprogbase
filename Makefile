@@ -10,10 +10,6 @@ uninstall:
 install: 
 	@sh scripts/install.sh
 
-install-ssl: 
-	@sh scripts/install_open_ssl.sh
-	@sh scripts/install.sh
-
 update: 
 	@sh scripts/install_latest_release.sh
 

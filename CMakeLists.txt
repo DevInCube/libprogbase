@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 2.8.7)
 
 set(CMAKE_FIND_LIBRARY_PREFIXES "lib")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-find_package(OpenSSL QUIET)
-
-if(NOT OPENSSL_FOUND)
-    message(WARNING "OpenSSL library not found. Install 'libssl-dev' package.")
-    add_definitions(-DSSL_MISSING)
-endif()
 
 include_directories(include include/progbase include/progbase/collections)
 file(GLOB LIB_SOURCES_COMMON "src/*.c")
@@ -35,9 +29,7 @@ add_library(${CMAKE_PROJECT_NAME} STATIC
     ${LIB_SOURCES_SPECIFIC} 
     ${LIB_SOURCES_COLLECTIONS}
     ${LIB_SOURCES_EVENTS})
-if (OPENSSL_FOUND)
-    target_link_libraries(${CMAKE_PROJECT_NAME} ssl)
-endif()
+
 set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY C_STANDARD 99)
 
 install(

@@ -16,41 +16,27 @@ All release notes up to 0.3.4 are [here](/old_releases.md)
 
 Clone this repository with command:
 
-```
+```sh
 git clone https://github.com/PublicHadyniak/libprogbase.git
 ```
 
 Change directory to the newly created `libprogbase/` directory and execute this command:
 
-```
+```sh
 sudo make install
 ```
 
 Include header files from `include/` directory and compile your code with linker option `-lprogbase`:
 
-```
+```sh
 gcc main.c -lprogbase
-```
-
-### Install with OpenSSL (since v0.4.0)
-
-You can install or reinstall library with SSL support (for `net` module) with the `Makefile` command:
-
-```
-sudo make install-ssl
-```
-
-You should link `ssl` to your program's compilation then (only if you use SSL in `net` module):
-
-```
-gcc main.c -lprogbase -lssl
 ```
 
 ## Check library version (since version 0.1.0)
 
 You need to change directory to cloned `libprogbase/` directory and execute command:
 
-```
+```sh
 make version
 ```
 
@@ -62,7 +48,7 @@ Works only if you cloned this repository with Git.
 
 Change directory to cloned `libprogbase/` and execute command:
 
-```
+```sh
 sudo make update
 ```
 
