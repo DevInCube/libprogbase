@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 	#include <netinet/in.h>
 	struct IpAddress {
 		struct sockaddr_in addr;
@@ -19,7 +19,7 @@ extern "C" {
 #else // for windows
 	struct IpAddress {
 		int _;
-	}
+	};
 #endif
 
 /* IP Protocol */
