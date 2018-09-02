@@ -32,4 +32,5 @@ void * PbQueue_dequeue(PbQueue *  self) {
 
 int PbQueue_size(PbQueue * self) {
 	return PbList_count(self->list);
-} 
+}
+

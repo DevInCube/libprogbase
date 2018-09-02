@@ -1,5 +1,8 @@
 #define _DEFAULT_SOURCE
-#define _POSIX_SOURCE
+
+#ifdef __linux__
+	#define _POSIX_SOURCE
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>

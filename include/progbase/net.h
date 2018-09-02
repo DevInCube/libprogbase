@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-#ifdef __linux__
+#if defined(_linux__) || defined(__APPLE__)
 	#include <netinet/in.h>
 	struct IpAddress {
 		struct sockaddr_in addr;
