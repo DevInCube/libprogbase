@@ -187,3 +187,4 @@ bool PbEnumerator_moveNext(PbEnumerator * self) {
 void PbEnumerator_reset(PbEnumerator * self) {
     self->index = -1;
 }
+
