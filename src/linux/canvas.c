@@ -1,7 +1,7 @@
-#include <progbase/console.h>
-#include "canvas.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "console.h"
+#include "canvas.h"
 
 typedef struct _pix
 {
@@ -103,6 +103,8 @@ static unsigned char EncodeColor(unsigned char r, unsigned char g, unsigned char
 void Canvas_beginDraw(void)
 {
     CHECK_DRAWING(0);
+
+    Console_hideCursor();
 
     for (int i = 0; i < width * height; i++)
     {
@@ -301,13 +303,14 @@ void Canvas_endDraw(void)
 
             fwrite("\xE2\x96\x80", 1, 3, stdout);
         }
-        
+
         if (!setPosManually)
         {
             fwrite("\n", 1, 1, stdout);
         }
     }
     Console_reset();
+    Console_showCursor();
 
     startedDrawing = 0;
 }
