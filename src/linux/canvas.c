@@ -93,7 +93,7 @@ void Canvas_setColorRGB(int red, int green, int blue)
     }
 }
 
-void Canvas_setColorValue(unsigned char value) 
+void Canvas_setColorValue(int value) 
 {
     CHECK_DRAWING(1);
 
