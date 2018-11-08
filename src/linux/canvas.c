@@ -3,15 +3,10 @@
 #include "console.h"
 #include "canvas.h"
 
-typedef struct _pix
-{
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-} Color;
+typedef unsigned char CanvasColor;
 
-Color *canvas = NULL;
-Color currentColor = {0, 0, 0};
+CanvasColor *canvas = NULL;
+CanvasColor currentColor = 0;
 
 int originRow = 1;
 int originColumn = 1;
@@ -22,7 +17,7 @@ int height = 0;
 char startedDrawing = 0;
 char yOrientation = 0; // 0 = top->down, 1 = down->top
 
-const Color black = {0, 0, 0};
+CanvasColor black = 0;
 
 #define CANVAS_AT(X, Y) canvas[(X) + (Y)*width]
 #define IN_BOUNDS(X, A, B) ((X) >= (A) && (X) <= (B))
@@ -58,7 +53,7 @@ void Canvas_setSize(int widthPixels, int heightPixels)
         free(canvas);
     }
 
-    canvas = (Color *)malloc(sizeof(Color) * widthPixels * heightPixels);
+    canvas = (CanvasColor *)malloc(sizeof(CanvasColor) * widthPixels * heightPixels);
 
     if (canvas != NULL)
     {
@@ -79,25 +74,33 @@ void Canvas_invertYOrientation(void)
     yOrientation = 1 - yOrientation;
 }
 
-void Canvas_setColorRGB(int red, int green, int blue)
-{
-    CHECK_DRAWING(1);
-
-    if (IN_BOUNDS(red, 0, 255) && IN_BOUNDS(green, 0, 255) && IN_BOUNDS(blue, 0, 255))
-    {
-        currentColor.red = red;
-        currentColor.green = green;
-        currentColor.blue = blue;
-    }
-}
-
-static unsigned char EncodeColor(unsigned char r, unsigned char g, unsigned char b)
+static CanvasColor EncodeColor(unsigned char r, unsigned char g, unsigned char b)
 {
     r /= 51;
     g /= 51;
     b /= 51;
 
     return 16 + 36 * r + 6 * g + b;
+}
+
+void Canvas_setColorRGB(int red, int green, int blue)
+{
+    CHECK_DRAWING(1);
+
+    if (IN_BOUNDS(red, 0, 255) && IN_BOUNDS(green, 0, 255) && IN_BOUNDS(blue, 0, 255))
+    {
+        currentColor = EncodeColor(red, green, blue);
+    }
+}
+
+void Canvas_setColorValue(unsigned char value) 
+{
+    CHECK_DRAWING(1);
+
+    if (IN_BOUNDS(value, 0, 255))
+    {
+        currentColor = value;
+    }
 }
 
 void Canvas_beginDraw(void)
@@ -256,8 +259,8 @@ void Canvas_endDraw(void)
 {
     CHECK_DRAWING(1);
 
-    int r_UP = -1, g_UP = -1, b_UP = -1;
-    int r_DOWN = -1, g_DOWN = -1, b_DOWN = -1;
+    int rCol_UP = -1;
+    int rCol_DOWN = -1;
 
     char setPosManually = originRow || originColumn;
 
@@ -277,28 +280,20 @@ void Canvas_endDraw(void)
 
         for (int x = 0; x < width; x++)
         {
-            int newR_UP = CANVAS_AT(x, y * 2).red;
-            int newG_UP = CANVAS_AT(x, y * 2).green;
-            int newB_UP = CANVAS_AT(x, y * 2).blue;
+            int newCol_UP = CANVAS_AT(x, y * 2);
 
-            if (newR_UP != r_UP || newB_UP != b_UP || newG_UP != g_UP)
+            if (newCol_UP != rCol_UP)
             {
-                printf(yOrientation ? SET_COL_BG : SET_COL_FG, EncodeColor(newR_UP, newG_UP, newB_UP));
-                r_UP = newR_UP;
-                b_UP = newB_UP;
-                g_UP = newG_UP;
+                printf(yOrientation ? SET_COL_BG : SET_COL_FG, newCol_UP);
+                rCol_UP = newCol_UP;
             }
 
-            int newR_DOWN = CANVAS_AT(x, y * 2 + 1).red;
-            int newG_DOWN = CANVAS_AT(x, y * 2 + 1).green;
-            int newB_DOWN = CANVAS_AT(x, y * 2 + 1).blue;
+            int newCol_DOWN = CANVAS_AT(x, y * 2 + 1);
 
-            if (newR_DOWN != r_DOWN || newB_DOWN != b_DOWN || newG_DOWN != g_DOWN)
+            if (newCol_DOWN != rCol_DOWN)
             {
-                printf(yOrientation ? SET_COL_FG : SET_COL_BG, EncodeColor(newR_DOWN, newG_DOWN, newB_DOWN));
-                r_DOWN = newR_DOWN;
-                b_DOWN = newB_DOWN;
-                g_DOWN = newG_DOWN;
+                printf(yOrientation ? SET_COL_FG : SET_COL_BG, newCol_DOWN);
+                rCol_DOWN = newCol_DOWN;
             }
 
             fwrite("\xE2\x96\x80", 1, 3, stdout);

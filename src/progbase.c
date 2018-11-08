@@ -112,13 +112,13 @@ static char * inputString(FILE * fp, size_t size) {
 }
 
 void sleepMillis(unsigned long int milliseconds) {
-#ifdef __linux__
+#if defined(_WIN32)
+	Sleep(milliseconds);
+#else
 	struct timespec tim;
 	tim.tv_sec = (milliseconds / 1000L);
 	tim.tv_nsec = (milliseconds % 1000L) * 1000000L;
 
 	nanosleep(&tim, NULL);
-#else
-	Sleep(milliseconds);
 #endif
 }

@@ -12,6 +12,8 @@ void Canvas_invertYOrientation(void);
 
 void Canvas_setColorRGB(int red, int green, int blue);
 
+void Canvas_setColorInt(int value);
+
 void Canvas_beginDraw(void);
 
 void Canvas_putPixel(int x, int y);
