@@ -3,6 +3,8 @@
 #include "console.h"
 #include "canvas.h"
 
+#define PI 3.1415926
+
 typedef unsigned char CanvasColor;
 
 CanvasColor *canvas = NULL;
