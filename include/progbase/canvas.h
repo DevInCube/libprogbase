@@ -26,6 +26,14 @@ void Canvas_strokeCircle(int x0, int y0, int radius);
 
 void Canvas_fillCircle(int x0, int y0, int radius);
 
+void Canvas_strokeEllipse(int cx, int cy,  int a,  int b);
+
+void Canvas_fillEllipse(int cx, int cy,  int a, int b); 
+
+void Canvas_strokeCircle2(int cx, int cy, int r);
+
+void Canvas_fillCircle2(int cx, int cy, int r);
+
 void Canvas_strokeLine(int x1, int y1, int x2, int y2);
 
 void Canvas_endDraw(void);
