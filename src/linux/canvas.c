@@ -96,7 +96,7 @@ void Canvas_setColorRGB(int red, int green, int blue)
     }
 }
 
-void Canvas_setColorValue(int value) 
+void Canvas_setColorValue(int value)
 {
     CHECK_DRAWING(1);
 
@@ -258,42 +258,46 @@ void Canvas_fillCircle(int x0, int y0, int radius)
                 Canvas_putPixel(x0 + x, y0 + y);
 }
 
-void Canvas_strokeCircle2(int cx, int cy, int r) 
+void Canvas_strokeCircle2(int cx, int cy, int r)
 {
     if (r <= 0)
         return;
     Canvas_strokeEllipse(cx, cy, r, r);
 }
 
-void Canvas_fillCircle2(int cx, int cy, int r) 
+void Canvas_fillCircle2(int cx, int cy, int r)
 {
     if (r <= 0)
         return;
     Canvas_fillEllipse(cx, cy, r, r);
 }
 
-void Canvas_strokeEllipse(int cx, int cy, int a, int b) 
+void Canvas_strokeEllipse(int cx, int cy, int a, int b)
 {
     if (a <= 0 || b <= 0)
         return;
-    float len_ellipse = PI*(a + b);
+    float len_ellipse = PI * (a + b);
     float additional_accuracy = 1.5;
-    float angle = 2*PI/(len_ellipse * additional_accuracy);
-    for (float tmp_angle = 0; tmp_angle <= 2 * PI; tmp_angle += angle) {
-        float x = a*cos(tmp_angle);
-        float y = b*sin(tmp_angle);
+    float angle = 2 * PI / (len_ellipse * additional_accuracy);
+    for (float tmp_angle = 0; tmp_angle <= 2 * PI; tmp_angle += angle)
+    {
+        float x = a * cos(tmp_angle);
+        float y = b * sin(tmp_angle);
         Canvas_putPixel(x + cx, y + cy);
     }
 }
 
-void Canvas_fillEllipse(int cx, int cy,  int a, int b)
+void Canvas_fillEllipse(int cx, int cy, int a, int b)
 {
     if (a <= 0 || b <= 0)
         return;
-    for (float x = -a; x < a; x++) {
-        for (float y = -b; y < b; y++) {
-            if (x*x/(a*a) + y*y/(b*b) <= 1) {
-                Canvas_putPixel(x + cx, y  + cy);
+    for (float x = -a; x < a; x++)
+    {
+        for (float y = -b; y < b; y++)
+        {
+            if (x * x / (a * a) + y * y / (b * b) <= 1)
+            {
+                Canvas_putPixel(x + cx, y + cy);
             }
         }
     }

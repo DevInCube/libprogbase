@@ -22,6 +22,10 @@ int main()
     Canvas_setColorRGB(0, 0, 255);
     Canvas_fillCircle(30, 30, 10);
     Canvas_setColorRGB(255, 0, 255);
+    Canvas_strokeEllipse(20, 20, 15, 30);
+    Canvas_setColorRGB(255, 125, 255);
+    Canvas_fillEllipse(30, 10, 14, 7);
+    Canvas_setColorRGB(0, 255, 0);
     Canvas_fillRect(30, 30, 10, 10);
     Canvas_endDraw();
     return 0;
