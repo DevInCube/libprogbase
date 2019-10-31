@@ -29,7 +29,7 @@ sudo make install
 Include header files from `include/` directory and compile your code with linker option `-lprogbase`:
 
 ```sh
-gcc main.c -lprogbase
+gcc main.c -lprogbase -lm
 ```
 
 ## Check library version (since version 0.1.0)
